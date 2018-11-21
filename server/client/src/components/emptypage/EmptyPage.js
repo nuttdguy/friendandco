@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
+import AppTopbar from '../apptopbar/AppTopbar';
 
 
-export class EmptyPage extends Component {
+export default class EmptyPage extends Component {
     constructor() {
         super();
         this.state = {}
@@ -11,8 +12,10 @@ export class EmptyPage extends Component {
     render() {
         return (
             <div className="p-grid">
-
-
+                <AppTopbar/>
+                <div className="p-col p-col-4">
+                    <p>placeholder</p>
+                </div>
             </div>
         )
     }
