@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import AppTopbar from '../apptopbar/AppTopbar';
+import AppTopbar from './AppTopbar';
 
 
 export default class EmptyPage extends Component {

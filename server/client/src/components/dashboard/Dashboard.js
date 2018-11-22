@@ -16,21 +16,6 @@ export default class Dashboard extends Component {
             // this is for the dashboard main view
             <div className="p-grid dashboard">
 
-                {/*=====> this is for breaking down grid. Use for displaying activities */}
-                <div className="p-col-8 p-md-8">
-
-                    {/*=====> TODO convert card into a self contained component */}
-                    <div className="card overview">
-                        <div className="overview-content clearfix">
-                            <span className="overview-title">Activity Title</span>
-                            <span className="overview-badge">Organizer Groups (3)</span>
-                            <span className="overview-detail">Activity Description</span>
-                            <img className="overview-footer" alt="add new css rules for img" />
-                            <button>Join</button>
-                        </div>
-                    </div>
-                </div>
-
                 {/*=====> add timeline for activities */}
                 <div className="p-col-4 p-col-md-4">
                     <div className="card timeline p-fluid">
@@ -65,6 +50,21 @@ export default class Dashboard extends Component {
                                 </div>
                             </div>
 
+                        </div>
+                    </div>
+                </div>
+
+                {/*=====> this is for breaking down grid. Use for displaying activities */}
+                <div className="p-col-8 p-md-8">
+
+                    {/*=====> TODO convert card into a self contained component */}
+                    <div className="card overview">
+                        <div className="overview-content clearfix">
+                            <span className="overview-title">Activity Title</span>
+                            <span className="overview-badge">Organizer Groups (3)</span>
+                            <span className="overview-detail">Activity Description</span>
+                            <img className="overview-footer" alt="add new css rules for img" />
+                            <button>Join</button>
                         </div>
                     </div>
                 </div>

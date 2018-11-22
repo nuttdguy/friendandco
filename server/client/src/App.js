@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import classNames from 'classnames';
-import AppTopbar from '../components/apptopbar/AppTopbar';
-import Dashboard from '../components/dashboard/Dashboard';
-import AppMenu from '../components/appmenu/AppMenu';
-import AppInlineProfile from '../components/appinlineprofile/AppInlineProfile'
+import AppTopbar from './common/AppTopbar';
+import Dashboard from './components/dashboard/Dashboard';
+import AppMenu from './common/AppMenu';
+import AppInlineProfile from './common/AppInlineProfile'
 import { ScrollPanel } from 'primereact/scrollpanel';
 import './App.css';
 
@@ -83,6 +83,7 @@ class App extends Component {
             },
             {label: 'Your Activities', icon: 'menu',
                 items: [
+                    {label: 'add new', icon: 'menu'},
                     {label: 'leading', icon: 'menu'},
                     {label: 'participating', icon: 'menu'},
                 ]
