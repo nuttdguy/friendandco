@@ -11,11 +11,11 @@ export default class EmptyPage extends Component {
 
     render() {
         return (
-            <div className="p-grid">
+            <div className="layout-container layout-main">
                 <AppTopbar/>
-                <div className="p-col p-col-4">
-                    <p>placeholder</p>
-                </div>
+                {/*<div className="card p-col-12">*/}
+                    {/*<p>placeholder</p>*/}
+                {/*</div>*/}
             </div>
         )
     }

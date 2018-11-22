@@ -10,7 +10,24 @@ export default class AppTopbar extends Component {
     render() {
         return (
             <div className="topbar clearfix">
-                <p>AppTopbar placeholder</p>
+
+                {/*=====> menubar items for left side */}
+                <div className="topbar-left">
+                    <div className="logo">AppTopbar placeholder</div>
+                </div>
+
+                {/*=====> menu bar items right side */}
+                <div className="topbar-right">
+                    <div id="menu-button">
+                        <i> </i>
+                    </div>
+                    <div id="rightpanel-menu-button">
+                        <span>Welcome registered user</span>
+                    </div>
+                    <div id="topbar-menu-button">
+                        <i className="material-icons">menu</i>
+                    </div>
+                </div>
             </div>
         )
     }
