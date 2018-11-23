@@ -4,6 +4,7 @@ import AppTopbar from './common/AppTopbar';
 import Dashboard from './components/dashboard/Dashboard';
 import AppMenu from './common/AppMenu';
 import AppInlineProfile from './common/AppInlineProfile'
+import Activities from './components/activities/Activities';
 import { ScrollPanel } from 'primereact/scrollpanel';
 import './App.css';
 
@@ -74,6 +75,7 @@ class App extends Component {
 
     createMenu() {
         this.menu = [
+            //===> TODO add user and peer rating
             {label: 'Dashboard', icon: 'dashboard', command:()=>{ window.location = "#/"}},
             {label: 'Activities', icon: 'palette',
                 items: [
@@ -84,6 +86,7 @@ class App extends Component {
             {label: 'Your Activities', icon: 'menu',
                 items: [
                     {label: 'add new', icon: 'menu'},
+                    {label: 'created', icon: 'menu'},
                     {label: 'leading', icon: 'menu'},
                     {label: 'participating', icon: 'menu'},
                 ]
@@ -169,7 +172,8 @@ class App extends Component {
                         {/* ==========> BEGIN MAIN CONTENT LAYOUT */}
                         <div className="layout-content">
 
-                            <Dashboard />
+                            {/*<Dashboard />*/}
+                            <Activities />
 
                         </div>
 
