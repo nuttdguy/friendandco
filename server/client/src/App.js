@@ -1,12 +1,49 @@
 import React, {Component} from 'react';
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import {withRouter} from "react-router";
+import jwt_decode from 'jwt-decode';
+
+import setAuthToken from './utils/setAuthToken';
+import {setCurrentUser, logoutUser} from './actions/authAction';
+import {clearCurrentProfile} from './actions/profileActions';
+
+import {Provider} from 'react-redux';
+// import store from './store';
 import classNames from 'classnames';
+
+import {AppBreadcrumb} from "./common/AppBreadcrumb";
 import AppTopbar from './common/AppTopbar';
 import Dashboard from './components/dashboard/Dashboard';
 import AppMenu from './common/AppMenu';
 import AppInlineProfile from './common/AppInlineProfile'
 import Activities from './components/activities/Activities';
-import { ScrollPanel } from 'primereact/scrollpanel';
+import {ActivityForm} from "./components/activities/activityform/ActivityForm";
+import {ScrollPanel} from 'primereact/scrollpanel';
+import 'primeflex/primeflex.css';
+import 'primeflex/primegrid.css';
+import 'primereact/resources/primereact.css';
 import './App.css';
+
+// check for token
+// if (localStorage.jwtToken) {
+//     setAuthToken(localStorage.jwtToken);
+//     // Set auth token header auth
+//     const decoded = jwt_decode(localStorage.jwtToken);
+//     // Set user and isAuthenticated
+//     store.dispatch(setCurrentUser(decoded));
+//
+//     // Check for expired token
+//     const currentTime = Date.now() / 1000;
+//     if (decoded.exp < currentTime) {
+//         // Logout user
+//         store.dispatch(logoutUser());
+//         // Clear current profile
+//         store.dispatch(clearCurrentProfile());
+//         // Redirect to login
+//         window.location.href = '/login';
+//     }
+// }
+
 
 class App extends Component {
 
@@ -38,14 +75,16 @@ class App extends Component {
     onMenuClick(event) {
         this.menuClick = true;
 
-        if(!this.isHorizontal()) {
-            setTimeout(() => {this.layoutMenuScroller.moveBar(); }, 500);
+        if (!this.isHorizontal()) {
+            setTimeout(() => {
+                this.layoutMenuScroller.moveBar();
+            }, 500);
         }
     }
 
     // this sets the state of menus
     onDocumentClick(event) {
-    //    TODO add logic for menu
+        //    TODO add logic for menu
 
     }
 
@@ -76,22 +115,29 @@ class App extends Component {
     createMenu() {
         this.menu = [
             //===> TODO add user and peer rating
-            {label: 'Dashboard', icon: 'dashboard', command:()=>{ window.location = "#/"}},
-            {label: 'Activities', icon: 'palette',
+            {
+                label: 'Dashboard', icon: 'dashboard', command: () => {
+                    window.location = "#/"
+                }
+            },
+            {
+                label: 'Activities', icon: 'palette',
                 items: [
                     {label: 'category', icon: 'menu'},
                     {label: 'mob size', icon: 'menu'}
                 ]
             },
-            {label: 'Your Activities', icon: 'menu',
+            {
+                label: 'Your Activities', icon: 'menu', command:()=>{window.location="#/activities"},
                 items: [
-                    {label: 'add new', icon: 'menu'},
+                    {label: 'add new', icon: 'menu', command:()=>{window.location ="#/activities/activityform"}},
                     {label: 'created', icon: 'menu'},
                     {label: 'leading', icon: 'menu'},
                     {label: 'participating', icon: 'menu'},
                 ]
             },
-            {label: 'Profile', icon: 'contacts',
+            {
+                label: 'Profile', icon: 'contacts',
                 items: [
                     {label: 'identity', icon: 'label'},
                     {label: 'match preferences', icon: 'label'},
@@ -102,7 +148,8 @@ class App extends Component {
                     {label: 'peer identified tags', icon: 'person-pin'}
                 ]
             },
-            {label: 'friends', icon: 'person-pin',
+            {
+                label: 'friends', icon: 'person-pin',
                 items: [
                     {label: 'matched peers', icon: 'contacts'},
                     {label: 'friends', icon: 'contacts'},
@@ -127,6 +174,7 @@ class App extends Component {
 
         //=====> sidebar menu configuration
         const menuClassName = classNames('layout-menu', {'layout-menu-dark:': this.state.darkMenu});
+        const AppBreadCrumbWithRouter = withRouter(AppBreadcrumb);
 
         return (
             <div className="layout-wrapper" onClick={this.onDocumentClick}>
@@ -146,8 +194,10 @@ class App extends Component {
 
                             <div className="menu-scroll-content">
                                 {/*=====> add <AppLineProfile /> component if what the expanded profile view*/}
-                                { (this.state.profileMode === 'inline' && this.state.horizontal === 'horizontal') &&
-                                <AppInlineProfile />}
+                                {(this.state.profileMode === 'inline' && this.state.horizontal === 'horizontal') &&
+                                <AppInlineProfile/>}
+
+                                {/*== TODO add menu item click for command in appMenu */}
                                 <AppMenu
 
                                     model={this.menu}
@@ -165,20 +215,19 @@ class App extends Component {
                     {/* =========> BEGIN MAIN LAYOUT */}
                     <div className="layout-main">
 
-                        {/* TODO == add router */}
-
-
+                        <AppBreadCrumbWithRouter/>
 
                         {/* ==========> BEGIN MAIN CONTENT LAYOUT */}
                         <div className="layout-content">
 
-                            {/*<Dashboard />*/}
-                            <Activities />
+                            <Route path="/" exact component={Dashboard}/>
+                            <Route path="/activities" exact component={Activities}/>
+                            <Route path="/activities/activityform" component={ActivityForm}/>
 
                         </div>
 
                         {/* a dark tint overlay mask */}
-                        <div className="layout-mask"> </div>
+                        <div className="layout-mask"></div>
 
 
                     </div>

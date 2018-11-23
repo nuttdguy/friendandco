@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {ActivityForm} from "./activityform/ActivityForm";
 // import classNames from 'classnames';
 
 
@@ -58,7 +57,6 @@ export default class Activities extends Component {
                     <h2 >Activities (All)</h2>
                 </div>
                 {activityList}
-                <ActivityForm />
             </div>
         )
     }

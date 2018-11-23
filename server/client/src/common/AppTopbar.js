@@ -13,7 +13,7 @@ export default class AppTopbar extends Component {
 
                 {/*=====> menubar items for left side */}
                 <div className="topbar-left">
-                    <div className="logo">AppTopbar placeholder</div>
+                    <div className="logo"></div>
                 </div>
 
                 {/*=====> menu bar items right side */}
