@@ -8,6 +8,7 @@ const passport = require('passport');
 
 
 // Load input validation
+const validateRegisterInput = require('../validation/register');
 
 
 // Load User model
@@ -24,34 +25,56 @@ router.get('/test', (req, res) => res.json({msg: 'User works'}));
 // @access  Public
 router.post('/register', (req, res) => {
 
-    const user = new User(req.body);
+    const {errors, isValid} = validateRegisterInput(req.body);
 
-    user.save()
-        .then(user => res.json(user))
-        .catch(err => console.log(err));
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
 
-    // const {errors, isValid} = validateRegisterInput(req.body);
-    //
-    // if(!isValid) {
-    //     return res.status(400).json(errors);
-    // }
-    //
-    // User.findOne({email: req.body.email})
-    //     .then(user => {
-    //         if(user) {
-    //             errors.email = 'Email already exists';
-    //         } else {
-    //
-    //             const avatar = gravatar.url(req.body.email, {
-    //                 s: 200, // Size
-    //                 r: 'pg', // Rating
-    //                 d: 'm', // Default
-    //             });
-    //
-    //         }
-    //     })
+    User.findOne({email: req.body.email})
+        .then(user => {
+
+            if (user) {
+                // user exist, return message
+                errors.email = 'Email already exists';
+                return res.status(400).json(errors);
+
+            } else {
+                // create an avatar
+                const avatar = gravatar.url(req.body.email, {
+                    s: 200, // Size
+                    r: 'pg', // Rating
+                    d: 'm', // Default
+                });
+
+                const newUser = new User({
+                    name: req.body.name,
+                    email: req.body.email,
+                    avatar,
+                    password: req.body.password
+                });
+
+                bcrypt.genSalt(10, (err, salt) => {
+                    bcrypt.hash(newUser.password, salt, (err, hash) => {
+
+                        if (err) throw err;
+
+                        newUser.password = hash;
+                        newUser.save()
+                            .then(user => {
+                                res.json(user);
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            })
+                    })
+                })
+            }
+        })
 
 });
+
+
 
 
 module.exports = router;
