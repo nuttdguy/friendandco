@@ -130,10 +130,10 @@ class App extends Component {
             {
                 label: 'Your Activities', icon: 'menu', command:()=>{window.location="#/activities"},
                 items: [
-                    {label: 'add new', icon: 'menu', command:()=>{window.location ="#/activities/activityform"}},
-                    {label: 'created', icon: 'menu'},
-                    {label: 'leading', icon: 'menu'},
-                    {label: 'participating', icon: 'menu'},
+                    {label: 'new', icon: 'menu', command:()=>{window.location ="#/activities/activityform"}},
+                    {label: 'list', icon: 'menu'},
+                    {label: 'lead', icon: 'menu'},
+                    {label: 'participate', icon: 'menu'},
                 ]
             },
             {
@@ -141,7 +141,7 @@ class App extends Component {
                 items: [
                     {label: 'identity', icon: 'label'},
                     {label: 'match preferences', icon: 'label'},
-                    {label: 'communication preferences', icon: 'label'},
+                    {label: 'social preferences', icon: 'label'},
                     {label: 'self identified personality tags', icon: 'label'},
                     {label: 'interested activity tags', icon: 'label-outline'},
                     {label: 'self identified values tags', icon: 'label'},
@@ -149,11 +149,11 @@ class App extends Component {
                 ]
             },
             {
-                label: 'friends', icon: 'person-pin',
+                label: 'social', icon: 'person-pin',
                 items: [
-                    {label: 'matched peers', icon: 'contacts'},
+                    {label: 'matches', icon: 'contacts'},
                     {label: 'friends', icon: 'contacts'},
-                    {label: 'peer messages', icon: 'menu'}
+                    {label: 'messages', icon: 'menu'}
                 ]
             }
         ]

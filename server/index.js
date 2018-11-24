@@ -9,6 +9,9 @@ const path = require('path');
 // locally created files
 const keys = require('./config/keys');
 const userAuth = require('./routes/userAuth');
+const profile = require('./routes/profile');
+const activity = require('./routes/activity');
+const social = require('./routes/social');
 
 console.log(keys);
 
@@ -38,6 +41,9 @@ require('./config/passport')(passport);
 
 // Use routes
 app.use('/api/user', userAuth);
+app.use('/api/profile', profile);
+app.use('/api/activity', activity);
+app.use('/api/social', social);
 
 
 // Serve static assets if in production
