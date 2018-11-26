@@ -13,8 +13,6 @@ const profile = require('./routes/profile');
 const activity = require('./routes/activity');
 const social = require('./routes/social');
 
-console.log(keys);
-
 
 // instance of express app
 const app = express();

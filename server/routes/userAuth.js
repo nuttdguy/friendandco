@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
 const passport = require('passport');
+const nodemailer = require('nodemailer');
 
 
 // Load input validation
@@ -16,10 +17,27 @@ const validateLoginInput = require('../validation/login');
 const User = require('../models/User');
 
 
-// @route   GET api/user/test
-// @desc    Tests user route
-// @access  Public
-router.get('/test', (req, res) => res.json({msg: 'User works'}));
+// TODO get user login through email to work
+// Create transporter object using default SMTP transport
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: keys.gmail,
+        pass: keys.gmailPassword
+    },
+    ttl: {
+        rejectUnauthorized: false
+    }
+});
+let message = {
+    from: 'enrollmii@gmail.com',
+    to: 'enrollmii@gmail.com',
+    subject: 'test node mailer',
+    text: 'Plaintext version of the message',
+    html: '<p> HTML version of message</p>'
+};
+
+
 
 // @route   POST api/user/register
 // @desc    Register user
@@ -29,7 +47,7 @@ router.post('/register', (req, res) => {
     const {errors, isValid} = validateRegisterInput(req.body);
 
     if (!isValid) {
-        return res.status(400).json(errors);
+        res.status(400).json(errors);
     }
 
     User.findOne({email: req.body.email})
@@ -38,7 +56,7 @@ router.post('/register', (req, res) => {
             if (user) {
                 // user exist, return message
                 errors.email = 'Email already exists';
-                return res.status(400).json(errors);
+                res.status(400).json(errors);
 
             } else {
                 // create an avatar
@@ -83,7 +101,7 @@ router.post('/login', (req, res) => {
 
     // Check validation
     if (!isValid) {
-        return res.status(400).json(errors)
+        res.status(400).json(errors)
     }
 
     const email = req.body.email;
@@ -94,7 +112,7 @@ router.post('/login', (req, res) => {
 
             if (!user) {
                 errors.email = 'User not found';
-                return res.status(400).json(errors);
+                res.status(400).json(errors);
             }
 
             bcrypt.compare(password, user.password)
@@ -122,7 +140,7 @@ router.post('/login', (req, res) => {
                         )
                     } else {
                         errors.password = 'Password or username is incorrect';
-                        return res.status(400).json(errors);
+                        res.status(400).json(errors);
                     }
                 });
         });
