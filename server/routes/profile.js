@@ -8,12 +8,60 @@ const passport = require('passport');
 
 
 // Load models
-let Profile = require('../models/Profile');
-let User = require('../models/User');
+const Profile = require('../models/Profile.schema');
+const User = require('../models/User.schema');
+const Interest = require('../models/Interest.schema');
+const Hobby = require('../models/Hobby.schema');
+const Demographic = require('../models/Location.schema');
+const City = require('../models/City.schema');
+const State = require('../models/State.schema');
+
 
 
 ////==== GET: ROUTES
 ////////////////////////////////////////
+
+router.get('/test', (req, res) => {
+    let userObject = new User({firstName: 'Sara', lastName: 'Flakes'});
+    const interestOne = new Interest({desc: 'swimming'});
+    const interestTwo = new Interest({desc: 'walking'});
+    const hobby1 = new Hobby({desc: 'learning'});
+    const city = new City({desc: 'Oakland'});
+    const state = new State({desc: 'CA', });
+    const demographic = new Demographic(
+        {
+            address1: '1111 some street',
+            address2: 'apt 210',
+            city: city,
+            state: state
+        });
+
+    let profileObject = new Profile(
+        {
+            user: userObject,
+            interests: [
+                interestOne,
+                interestTwo],
+            hobbies: [
+                hobby1
+            ],
+            demographic: [demographic]
+        }
+    );
+
+
+    return res.send(profileObject);
+});
+
+// router.get('/children', (req, res) => {
+//     let userObject = new User();
+//     const interestOne = new Interest({desc: 'swimming'});
+//     const interestTwo = new Interest({desc: 'walking'});
+//     let profileObject = new Profile({user: userObject, interest: [interestTwo, interestOne]});
+//
+//     return res.send(profileObject);
+// });
+
 
 // @route   GET api/profile
 // @desc    Get current user profile

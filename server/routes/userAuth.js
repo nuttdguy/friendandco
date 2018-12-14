@@ -14,10 +14,10 @@ const validateLoginInput = require('../validation/login');
 
 
 // Load User model
-const User = require('../models/User');
+const User = require('../models/User.schema');
 
 
-// TODO get user login through email to work
+// TODO send validation email after registration
 // Create transporter object using default SMTP transport
 let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -38,10 +38,6 @@ let message = {
 };
 
 
-
-// @route   POST api/user/register
-// @desc    Register user
-// @access  Public
 router.post('/register', (req, res) => {
 
     const {errors, isValid} = validateRegisterInput(req.body);
@@ -93,9 +89,6 @@ router.post('/register', (req, res) => {
 
 });
 
-// @route   GET api/users/login
-// @desc    Login user / return w-jwt token
-// @access  Public
 router.post('/login', (req, res) => {
     const {errors, isValid} = validateLoginInput(req.body);
 
@@ -146,9 +139,6 @@ router.post('/login', (req, res) => {
         });
 });
 
-// @route   GET api/users/current
-// @desc    Return current user
-// @access  Private
 router.get('/current', passport.authenticate('jwt', { session: false}), (req, res) => {
    res.json({
        id: req.user.id,
