@@ -24,7 +24,7 @@ const ActivityCalendarSchema = new Schema({
         min: { type: Number },
         period: { type: Number, minValue: 0, maxValue: 1 }
     },
-    createDate: {type: Boolean, default: Date.now()}
+    createDate: {type: Date, default: Date.now()}
 });
 
 

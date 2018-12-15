@@ -12,6 +12,7 @@ const userAuth = require('./routes/userAuth');
 const profile = require('./routes/profile');
 const activity = require('./routes/activity');
 const social = require('./routes/social');
+const modelRoute= require('./routes/__modelroute.test/modelroute.test');
 
 
 // instance of express app
@@ -42,6 +43,7 @@ app.use('/api/user', userAuth);
 app.use('/api/profile', profile);
 app.use('/api/activity', activity);
 app.use('/api/social', social);
+app.use('/api/model', modelRoute);
 
 
 // Serve static assets if in production

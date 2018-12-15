@@ -13,7 +13,7 @@ const ActivitySchema = new Schema({
     tags: [{type: Schema.Types.ObjectId, ref: 'activitytag'}],
     location: {type: Schema.Types.ObjectId, ref: 'location'},
     calendar: {type: Schema.Types.ObjectId, ref: 'activitycalendar'},
-    photo: [{type: Schema.Types.ObjectId}]
+    photos: [{type: Schema.Types.ObjectId}]
 });
 
 module.exports = mongoose.model('activity', ActivitySchema);
