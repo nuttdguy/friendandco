@@ -12,7 +12,8 @@ const ActivitySchema = new Schema({
     isActive: {type: Boolean, default: true},
     tags: [{type: Schema.Types.ObjectId, ref: 'activitytag'}],
     location: {type: Schema.Types.ObjectId, ref: 'location'},
-    calendar: {type: Schema.Types.ObjectId, ref: 'activitycalendar'}
+    calendar: {type: Schema.Types.ObjectId, ref: 'activitycalendar'},
+    photo: [{type: Schema.Types.ObjectId}]
 });
 
 module.exports = mongoose.model('activity', ActivitySchema);

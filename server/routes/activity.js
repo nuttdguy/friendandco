@@ -7,7 +7,7 @@ const passport = require('passport');
 // Load validation
 
 
-// Load Activity model
+// Load activity model
 
 
 ////==== GET: ROUTES

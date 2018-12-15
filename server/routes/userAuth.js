@@ -14,7 +14,7 @@ const validateLoginInput = require('../validation/login');
 
 
 // Load User model
-const User = require('../models/User.schema');
+const User = require('../models/profile/User.schema');
 
 
 // TODO send validation email after registration

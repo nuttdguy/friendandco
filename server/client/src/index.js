@@ -1,7 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'babel-polyfill';
-import App from './App';
+
+
+// import App from './App'; TODO use for development
+import App from './__testdir/App'; // use for testing server routes
+
+
 // import ScrollToTop from './ScrollToTop';
 import {HashRouter} from 'react-router-dom';
 import * as serviceWorker from './serviceWorker';

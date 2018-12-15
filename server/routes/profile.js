@@ -8,13 +8,13 @@ const passport = require('passport');
 
 
 // Load models
-const Profile = require('../models/Profile.schema');
-const User = require('../models/User.schema');
-const Interest = require('../models/Interest.schema');
-const Hobby = require('../models/Hobby.schema');
-const Demographic = require('../models/Location.schema');
-const City = require('../models/City.schema');
-const State = require('../models/State.schema');
+const Profile = require('../models/profile/Profile.schema');
+const User = require('../models/profile/User.schema');
+const Interest = require('../models/profile/Interest.schema');
+const Hobby = require('../models/profile/Hobby.schema');
+const Demographic = require('../models/location/Location.schema');
+const City = require('../models/location/City.schema');
+const State = require('../models/location/State.schema');
 
 
 
