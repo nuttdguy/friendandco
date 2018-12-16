@@ -8,10 +8,10 @@ const path = require('path');
 
 // locally created files
 const keys = require('./config/keys');
-const userAuth = require('./routes/userAuth');
-const profile = require('./routes/profile');
-const activity = require('./routes/activity');
-const social = require('./routes/social');
+const userAuth = require('./routes/userauth.routes');
+const profile = require('./routes/profile.routes');
+const activity = require('./routes/activity.routes');
+const social = require('./routes/social.routes');
 const modelRoute= require('./routes/__modelroute.test/modelroute.test');
 
 
