@@ -5,14 +5,8 @@ const passport = require('passport');
 const bodyParser = require('body-parser');
 const path = require('path');
 
-
 // locally created files
 const keys = require('./config/keys');
-const userAuth = require('./routes/userauth.routes');
-const profile = require('./routes/profile.routes');
-const activity = require('./routes/activity.routes');
-const social = require('./routes/social.routes');
-const modelRoute= require('./routes/__modelroute.test/modelroute.test');
 
 
 // instance of express app
@@ -38,12 +32,8 @@ app.use(passport.initialize());
 require('./config/passport')(passport);
 
 
-// Use routes
-app.use('/api/user', userAuth);
-app.use('/api/profile', profile);
-app.use('/api/activity', activity);
-app.use('/api/social', social);
-app.use('/api/model', modelRoute);
+// Routes: require routes
+require('./routes/index.routes')(app);
 
 
 // Serve static assets if in production

@@ -15,7 +15,7 @@ class LoginComponent extends Component {
     axios.post('api/user/login', {
         username: username.value, password: password.value})
       .then(res => {
-        console.log(res, 'user has been found');
+        console.log(res.data);
       })
       .catch(err => console.log(err, 'user not found'));
 

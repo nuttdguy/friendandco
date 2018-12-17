@@ -1,23 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const gravatar = require('gravatar');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const keys = require('../config/keys');
 const passport = require('passport');
-const nodemailer = require('nodemailer');
 
-// IMPORT SERVICES
+
+
+// IMPORT SERVICES :: URL: API/USER/
 const userService = require('../services/userauth.service');
 
 
-// Load input validation
-const validateRegisterInput = require('../validation/register');
+// VALIDATION
+const validateRegisterInput = require('../validation/register.validate');
 const validateLoginInput = require('../validation/login');
 
 
-// Load User model
-const {User} = require('../models/index.model');
+// UTILS
+const SUCCESS = require('../utils/SUCCESS.message');
+const ERROR = require('../utils/ERRORS.message');
+const message = require('../utils/message.utils');
+const shapeInput = require('../utils/shapeInput.utils');
+
+
+// LOAD MODELS
+const { User } = require('../models/index.model');
+
+
+// TEST ROUTES
+
+router.get('/test', (req, res) => {
+    console.log(req.body);
+    res.send('message');
+});
 
 router.post('/test', (req, res) => {
     console.log(req.body);
@@ -25,78 +37,81 @@ router.post('/test', (req, res) => {
 });
 
 
+// GET ROUTES
+////////////////////////////////////////////
 
+
+
+// POST ROUTES
+////////////////////////////////////////////
 router.post('/register', async (req, res, next) => {
     let userData, passwordHash = null;
     const payload = req.body;
 
-    let user = await userService.findUserByEmail(payload.email, next);
 
+    // trim, lowercase, validate data
+    const { errors, isValid } = validateRegisterInput(shapeInput(payload));
+
+
+    // return error if input values are invalid
+    if (!isValid) return res.send(errors);
+
+
+    // find user by email; returns null if not found
+    let user = await userService.findUserByEmail(payload.email, next);
     if (user === null) {
-        // TODO ADD FORM VALIDATION HELPER
-        userData = userService.registerUser(payload, next);
+
+        // create user
+        userData = userService.createUser(payload, next);
         passwordHash = await userService.bcryptPassword(userData, next);
+
+        // save user
         userData = await userService.saveUser(userData, passwordHash, next);
-        console.log(userData.id, "USER OF ID HAS BEEN SAVED...");
-        return res.send(userData);
+
+        // show & return result
+        message.show(SUCCESS.USER_OF_ID_SAVED, userData.id);
+        return res.send({result: SUCCESS.USER_OF_ID_SAVED, user: userData.id});
     }
 
-    return res.status(404).send({message: 'Email already exists'});
+    return res.send({email: payload.email, message: ERROR.EXISTS_EMAIL});
+});
+
+
+
+// TODO Send verify email, after verify, create profile and associate user to the profile
+router.post('/verify/:id', (req, res, next) => {
 
 });
 
 
 
+router.post('/login', async (req, res, next) => {
+    const {errors, isValid} = validateLoginInput(req.body);
+    const {username, password } = req.body;
 
-router.post('/login', (req, res) => {
-    // const {errors, isValid} = validateLoginInput(req.body);
-    //
-    // // Check validation
-    // if (!isValid) {
-    //     res.status(400).json(errors)
-    // }
-    console.log(req.body);
+    // check that user exists
+    const user = await userService.findUserBy('username', username, next);
 
-    const username = req.body.username;
-    const password = req.body.password;
+    // return error if user was not found
+    if (user.error) return res.send(user);
 
-    User.findOne({username})
-        .then(user => {
 
-            // if (!user) {
-            //     errors.email = 'User not found';
-            //     res.status(400).json(errors);
-            // }
+    // compare entered password with users existing password token
+    let tokenHash = null;
+    const isMatch = await userService.bcryptCompare(password, user.password.token);
 
-            bcrypt.compare(password, user.password.token)
-                .then(isMatch => {
 
-                    // User matched, create jwt payload
-                    if (isMatch) {
-                        const payload = {
-                            id: user.id,
-                            username: user.username,
-                        };
+    if (isMatch) {
+        tokenHash = await userService.signJwt({ id: user.id, username: user.username });
+        return res.send({success: true, token: 'Bearer ' + tokenHash });
+    } else {
+        errors.password = 'Password or username is incorrect';
+        return res.send(errors);
+    }
 
-                        // Sign Token
-                        jwt.sign(
-                            payload,
-                            keys.secretOrKey,
-                            {expiresIn: 3600},
-                            (err, token) => {
-                                res.json({
-                                    success: true,
-                                    token: 'Bearer ' + token,
-                                });
-                            }
-                        )
-                    } else {
-                        errors.password = 'Password or username is incorrect';
-                        res.status(400).json(errors);
-                    }
-                });
-        });
 });
+
+
 
 router.get('/current', passport.authenticate('jwt', { session: false}), (req, res) => {
    res.json({

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-// axios.defaults.baseURL = 'http://localhost:5000/'
+
 
 class RegisterComponent extends Component {
 
@@ -27,12 +27,13 @@ class RegisterComponent extends Component {
             firstName: this.state.firstName,
             lastName: this.state.lastName,
             email: this.state.email,
-            password: this.state.password
+            password: this.state.password,
+            passwordConfirm: this.state.passwordConfirm
         }
 
         axios.post('api/user/register', user)
             .then(res => {
-                console.log(res, 'User has been saved');
+                console.log(res.data);
             })
             .catch(error => console.log(error, 'could not save user'));
     }
