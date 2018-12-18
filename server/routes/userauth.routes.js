@@ -29,7 +29,7 @@ router.get('/test', async (req, res) => {
 
     const user = new User();
 
-    const result = await userService.createProfileAndAssociate(user);
+    const result = await userService.activateUserProfile(user);
 
     console.log(result);
     return res.send('message');
@@ -55,10 +55,10 @@ router.get('/verify/:id', async (req, res, next) => {
         console.log(verified, ' user is valid, verifying user now ...');
 
         // find user by id and then update
-        const updatedUser = await userService.findUserByIdAndUpdate(userId);
+        const updatedUser = await userService.activateUserAccount(userId);
 
         // user has been verified, create profile and associate user to the profile
-        const profile = await userService.createProfileAndAssociate(updatedUser);
+        const profile = await userService.activateUserProfile(updatedUser);
 
         // save the profile
         await userService.saveProfile(profile);
@@ -77,9 +77,9 @@ router.get('/verify/:id', async (req, res, next) => {
     return res.send(`Link ${req.protocol}://${req.host}${req.originalUrl} has already been verified.`);
 });
 
+// TODO forget password recovery
 //=====|| forget password route
 router.get('/recover/password ', async (req, res, next) => {
-    // TODO forget password recovery
 
 });
 

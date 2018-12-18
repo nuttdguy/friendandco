@@ -87,8 +87,8 @@ const saveProfile = async (profile) => {
 // MANIPULATION :: UPDATE
 ///////////////////////////////
 
-
-const findUserByIdAndUpdate = async (userId) => {
+// activate users account
+const activateUserAccount = async (userId) => {
 
     return await
         User.findOneAndUpdate(
@@ -178,7 +178,7 @@ function createNewVerifyUrl(userId, userEmail) {
 }
 
 // create new profile and associate user with it
-function createProfileAndAssociate(updatedUser) {
+function activateUserProfile(updatedUser) {
     return new Profile({
         user: updatedUser
     })
@@ -193,12 +193,12 @@ module.exports = {
     bcryptPassword,
     bcryptCompare,
     deleteVerifyEmailUrlBy,
-    createProfileAndAssociate,
+    activateUserProfile,
     createUser,
     findUserBy,
     findUserByEmail,
     findUserById,
-    findUserByIdAndUpdate,
+    activateUserAccount,
     findVerifyUrlBy,
     saveUserVerifyEmailUrl,
     saveUser,
