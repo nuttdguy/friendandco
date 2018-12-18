@@ -15,5 +15,6 @@ module.exports = {
     User: require('./profile/User.schema'),
     Work: require('./work/Work.schema'),
     WorkDetail: require('./work/WorkDetail.schema'),
-    Photo: require('./Photo.schema')
+    Photo: require('./Photo.schema'),
+    Verify: require('./Verify.schema'),
 };

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-
+// const mailService = require('../services/mail/mail.service');
 
 
 // IMPORT SERVICES :: URL: API/USER/
@@ -20,15 +20,15 @@ const message = require('../utils/message.utils');
 const shapeInput = require('../utils/shapeInput.utils');
 
 
-// LOAD MODELS
-const { User } = require('../models/index.model');
-
 
 // TEST ROUTES
 
-router.get('/test', (req, res) => {
-    console.log(req.body);
-    res.send('message');
+router.get('/test', async (req, res) => {
+
+    const result = await userService.sendMail('pygnasak@yahoo.com');
+
+    console.log(result);
+    return res.send('message');
 });
 
 router.post('/test', (req, res) => {
@@ -45,7 +45,7 @@ router.post('/test', (req, res) => {
 // POST ROUTES
 ////////////////////////////////////////////
 router.post('/register', async (req, res, next) => {
-    let userData, passwordHash = null;
+    let userData, passwordHash, verifyUrl = null;
     const payload = req.body;
 
 
@@ -65,8 +65,19 @@ router.post('/register', async (req, res, next) => {
         userData = userService.createUser(payload, next);
         passwordHash = await userService.bcryptPassword(userData, next);
 
+
+        // save verify email url
+        verifyUrl = await userService.saveUserVerifyEmailUrl(userData.id, userData.email, userData.createDate);
+        console.log(verifyUrl);
+
+
         // save user
         userData = await userService.saveUser(userData, passwordHash, next);
+
+
+        // send verification email
+        const sentResult = await userService.sendMail(userData, verifyUrl);
+        console.log(sentResult);
 
         // show & return result
         message.show(SUCCESS.USER_OF_ID_SAVED, userData.id);
@@ -79,10 +90,30 @@ router.post('/register', async (req, res, next) => {
 
 
 // TODO Send verify email, after verify, create profile and associate user to the profile
-router.post('/verify/:id', (req, res, next) => {
+router.get('/verify/:id', async (req, res, next) => {
 
+    // find userid in verify url document
+    const verified = await userService.findVerifyUrlBy(req.params.id, next);
+    console.log(verified, ' USER DOES NOT EXIST IN EMAIL VERIFY URL DOCUMENT');
+
+    if (verified !== null) {
+
+        // find user by id and then update
+        const updatedResult = await userService.findUserByIdAndUpdate(req.params.id);
+
+        // delete verify url document; after updating user
+        await userService.deleteVerifyEmailUrlBy(verified);
+
+        if (updatedResult !== null) {
+
+            // TODO send redirect url when working on front-end
+            return res.send('User has been activated');
+        }
+    }
+
+
+    return res.send('Verify url route is active');
 });
-
 
 
 router.post('/login', async (req, res, next) => {
@@ -101,10 +132,20 @@ router.post('/login', async (req, res, next) => {
     const isMatch = await userService.bcryptCompare(password, user.password.token);
 
 
-    if (isMatch) {
+    if (isMatch && user.isActive) {
+
+        // user is registered and active
         tokenHash = await userService.signJwt({ id: user.id, username: user.username });
         return res.send({success: true, token: 'Bearer ' + tokenHash });
+
+    } else if (isMatch && !user.isActive) {
+
+        // email has not been verified, send error
+        errors.verify = 'Your email has not been verified. Please verify by clicking the link and then try logging in again';
+        return res.send(errors);
     } else {
+
+        // password is incorrect, send error
         errors.password = 'Password or username is incorrect';
         return res.send(errors);
     }

@@ -2,11 +2,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
+const mailService = require('./mail/mail.service');
 
 
 // LOAD MODEL
 ///////////////////////////////
-const {User, Profile} = require('../models/index.model');
+const {User, Profile, Verify} = require('../models/index.model');
 
 
 // QUERY OPTIONS
@@ -49,6 +50,10 @@ const findUserBy = async (fieldName, value, next) => {
     return {error: 'Invalid field name: is not valid for User Schema'};
 };
 
+const findVerifyUrlBy = async (userId, next) => {
+    return await Verify.findOne({userId: userId});
+};
+
 
 // MANIPULATION :: SAVE
 ///////////////////////////////
@@ -64,17 +69,38 @@ const saveUser = async (userData, passwordHash, next) => {
 };
 
 
+const saveUserVerifyEmailUrl = async (userId, userEmail) => {
+    // create
+    const verifyUrlObj = createNewVerifyUrl(userId, userEmail);
+
+    // save
+    console.log('SAVING VERIFY URL OBJECT PROCESSING...');
+    return await verifyUrlObj.save();
+};
+
 
 // MANIPULATION :: UPDATE
 ///////////////////////////////
 
-
+const findUserByIdAndUpdate = async (id) => {
+    console.log(id);
+    return await
+        User.findOneAndUpdate(
+            {_id: id},
+            {$set: {
+                isActive: true,
+                isValidated: true,
+                validationUrl: ''}},
+            {new: true});
+};
 
 
 // MANIPULATION :: DELETE
 ///////////////////////////////
 
-
+const deleteVerifyEmailUrlBy = async (verifyObj) => {
+    return await Verify.deleteOne({userId: verifyObj.userId});
+};
 
 
 // SERVICES :: MISC
@@ -86,7 +112,6 @@ const createUser = (payload, next) => {
     console.log('CREATING NEW USER IS DONE...');
     return createNewUser(payload);
 };
-
 
 
 // SERVICES :: USING EXTERNAL LIBRARIES
@@ -115,20 +140,33 @@ const signJwt = async (payload) => {
 };
 
 
+const sendMail = async (userData, verifyUrl) => {
+    const transporter = mailService.createTransporter();
+    const mailOptions = mailService.setMailOptions(userData, verifyUrl);
+
+    return await transporter.sendMail(mailOptions);
+};
+
+
 // PRIVATE FUNCTIONS
 ///////////////////////////////
 
 // create new user
 function createNewUser(payload) {
-    const user = new User({
+    return new User({
         username: payload.username,
         firstName: payload.firstName,
         lastName: payload.lastName,
         email: payload.email,
         password: {token: payload.password, isActive: true}
     });
-    user.validationUrl = user.id;
-    return user;
+}
+
+function createNewVerifyUrl(userId, userEmail) {
+    return new Verify({
+        userId: userId,
+        userEmail: userEmail
+    });
 }
 
 // create new profile and associate user with it
@@ -142,15 +180,21 @@ function createProfileAndAssociate(user) {
 // EXPORT REFERENCES
 ///////////////////////////////
 
+// TODO clean up double declarations
 module.exports = {
     bcryptPassword: bcryptPassword,
     bcryptCompare: bcryptCompare,
+    deleteVerifyEmailUrlBy: deleteVerifyEmailUrlBy,
     createProfileAndAssociate: createProfileAndAssociate,
     createUser: createUser,
     findUserBy: findUserBy,
     findUserByEmail: findUserByEmail,
     findUserById: findUserById,
+    findUserByIdAndUpdate: findUserByIdAndUpdate,
+    findVerifyUrlBy: findVerifyUrlBy,
+    saveUserVerifyEmailUrl: saveUserVerifyEmailUrl,
     saveUser: saveUser,
-    signJwt: signJwt
+    signJwt: signJwt,
+    sendMail: sendMail,
 
 };

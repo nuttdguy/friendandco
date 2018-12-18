@@ -10,7 +10,6 @@ const UserSchema = new Schema({
     photos: [{type: Schema.Types.ObjectId, ref: 'photo'}],
     createDate: {type: Date, default: Date.now},
     isValidated: {type: Boolean, default: false},
-    validationUrl: {type: String},
     isActive: {type: Boolean, default: false},
     activeDate: {type: Date},
     inactiveDate: {type: Date, default: null},
