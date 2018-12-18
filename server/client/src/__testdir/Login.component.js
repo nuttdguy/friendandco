@@ -12,7 +12,7 @@ class LoginComponent extends Component {
     e.preventDefault();
     const {username, password} = e.target;
 
-    axios.post('api/user/login', {
+    axios.post('api/auth/user/login', {
         username: username.value, password: password.value})
       .then(res => {
         console.log(res.data);

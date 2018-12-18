@@ -31,7 +31,7 @@ class RegisterComponent extends Component {
             passwordConfirm: this.state.passwordConfirm
         }
 
-        axios.post('api/user/register', user)
+        axios.post('api/auth/user/register', user)
             .then(res => {
                 console.log(res.data);
             })

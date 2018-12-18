@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 
 
-// IMPORT SERVICES :: URL: API/USER/
+// IMPORT SERVICES :: URL: API/AUTH/USER/
 const userService = require('../services/userauth.service');
 
 
@@ -178,6 +178,8 @@ router.get('/current', passport.authenticate('jwt', { session: false}), (req, re
    })
 });
 
+
+//=====|| EXPORT ROUTER
 
 module.exports = router;
 

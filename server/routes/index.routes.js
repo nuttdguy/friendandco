@@ -2,20 +2,11 @@
 // NOTE: passing app into index, otherwise would have to define each route within index.js
 module.exports = (app) => {
 
-    app.use('/api/user', require('./userauth.routes'));
-    app.use('/api/profile', require('./profile.routes'));
     app.use('/api/activity', require('./activity.routes'));
-    app.use('/api/social', require('./social.routes'));
-    app.use('/api/model', require('./__modelroute.test/modelroute.test'));
+    app.use('/api/auth/activity', require('./activity.routes'));
+    app.use('/api/auth/user', require('./auth.user.routes'));
+    app.use('/api/auth/profile', require('./auth.profile.routes'));
+    app.use('/api/auth/social', require('./auth.social.routes'));
+    app.use('/api/auth/model', require('./__modelroute.test/modelroute.test'));
 
 };
-
-// module.exports = {
-//
-//     userAuth: require('./userauth.routes'),
-//     profile: require('./profile.routes'),
-//     activity: require('./activity.routes'),
-//     social: require('./social.routes'),
-//     modeltest: require('./__modelroute.test/modelroute.test')
-//
-// };
