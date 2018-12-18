@@ -11,6 +11,7 @@ const {User, Profile, Verify} = require('../models/index.model');
 
 
 // QUERY OPTIONS
+///////////////////////////////
 const userFieldOptions = {
     'username': true,
     'firstName': true,
@@ -30,17 +31,17 @@ const userFieldOptions = {
 // QUERIES :: GET
 ///////////////////////////////
 
-// queries for a single user by the users email
+// find a single user by the user email
 const findUserByEmail = async (email, next) => {
     return await User.findOne({email: email});
 };
 
-// queries for a single user by the user id
+// find a single user by the user id
 const findUserById = async (id, next) => {
     return await User.findById(id);
 };
 
-// queries for a single user by field name
+// find a single user by field name
 const findUserBy = async (fieldName, value, next) => {
 
     if (User.schema.tree.hasOwnProperty(fieldName)) {
@@ -50,6 +51,7 @@ const findUserBy = async (fieldName, value, next) => {
     return {error: 'Invalid field name: is not valid for User Schema'};
 };
 
+// finds userId in Verify doc
 const findVerifyUrlBy = async (userId, next) => {
     return await Verify.findOne({userId: userId});
 };
@@ -68,7 +70,7 @@ const saveUser = async (userData, passwordHash, next) => {
     return userData;
 };
 
-// save userId and email in verify email document
+// save userId and email in Verify doc
 const saveUserVerifyEmailUrl = async (userId, userEmail) => {
     // create
     const verifyUrlObj = createNewVerifyUrl(userId, userEmail);
@@ -87,7 +89,7 @@ const saveProfile = async (profile) => {
 // MANIPULATION :: UPDATE
 ///////////////////////////////
 
-// activate users account
+// activate the user account
 const activateUserAccount = async (userId) => {
 
     return await
@@ -103,7 +105,7 @@ const activateUserAccount = async (userId) => {
 // MANIPULATION :: DELETE
 ///////////////////////////////
 
-// delete the document entry of user id after being verified
+// delete userId from Verify doc; user has been verified
 const deleteVerifyEmailUrlBy = async (verifyObj) => {
     return await Verify.deleteOne({userId: verifyObj.userId});
 };
@@ -146,6 +148,7 @@ const signJwt = async (payload) => {
 };
 
 
+// send verify email
 const sendMail = async (userData, verifyUrl) => {
     const transporter = mailService.createTransporter();
     const mailOptions = mailService.setMailOptions(userData, verifyUrl);
@@ -157,7 +160,7 @@ const sendMail = async (userData, verifyUrl) => {
 // PRIVATE FUNCTIONS
 ///////////////////////////////
 
-// create new user
+// new user
 function createNewUser(payload) {
     return new User({
         username: payload.username,
@@ -168,6 +171,7 @@ function createNewUser(payload) {
     });
 }
 
+// new verify email url doc
 function createNewVerifyUrl(userId, userEmail) {
     return new Verify({
         userId: userId,
@@ -177,7 +181,7 @@ function createNewVerifyUrl(userId, userEmail) {
     });
 }
 
-// create new profile and associate user with it
+// associate user to new profile
 function activateUserProfile(updatedUser) {
     return new Profile({
         user: updatedUser
