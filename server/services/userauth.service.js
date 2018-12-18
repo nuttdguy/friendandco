@@ -68,7 +68,7 @@ const saveUser = async (userData, passwordHash, next) => {
     return userData;
 };
 
-
+// save userId and email in verify email document
 const saveUserVerifyEmailUrl = async (userId, userEmail) => {
     // create
     const verifyUrlObj = createNewVerifyUrl(userId, userEmail);
@@ -78,19 +78,24 @@ const saveUserVerifyEmailUrl = async (userId, userEmail) => {
     return await verifyUrlObj.save();
 };
 
+// save profile to database
+const saveProfile = async (profile) => {
+    return await profile.save();
+};
+
 
 // MANIPULATION :: UPDATE
 ///////////////////////////////
 
-const findUserByIdAndUpdate = async (id) => {
-    console.log(id);
+
+const findUserByIdAndUpdate = async (userId) => {
+
     return await
         User.findOneAndUpdate(
-            {_id: id},
+            {_id: userId},
             {$set: {
                 isActive: true,
-                isValidated: true,
-                validationUrl: ''}},
+                isValidated: true}},
             {new: true});
 };
 
@@ -98,6 +103,7 @@ const findUserByIdAndUpdate = async (id) => {
 // MANIPULATION :: DELETE
 ///////////////////////////////
 
+// delete the document entry of user id after being verified
 const deleteVerifyEmailUrlBy = async (verifyObj) => {
     return await Verify.deleteOne({userId: verifyObj.userId});
 };
@@ -165,14 +171,16 @@ function createNewUser(payload) {
 function createNewVerifyUrl(userId, userEmail) {
     return new Verify({
         userId: userId,
-        userEmail: userEmail
+        userEmail: userEmail,
+        isVerifyEmail: true,
+        isRecoverPassword: false
     });
 }
 
 // create new profile and associate user with it
-function createProfileAndAssociate(user) {
+function createProfileAndAssociate(updatedUser) {
     return new Profile({
-        user: user._id
+        user: updatedUser
     })
 }
 
@@ -180,21 +188,22 @@ function createProfileAndAssociate(user) {
 // EXPORT REFERENCES
 ///////////////////////////////
 
-// TODO clean up double declarations
+
 module.exports = {
-    bcryptPassword: bcryptPassword,
-    bcryptCompare: bcryptCompare,
-    deleteVerifyEmailUrlBy: deleteVerifyEmailUrlBy,
-    createProfileAndAssociate: createProfileAndAssociate,
-    createUser: createUser,
-    findUserBy: findUserBy,
-    findUserByEmail: findUserByEmail,
-    findUserById: findUserById,
-    findUserByIdAndUpdate: findUserByIdAndUpdate,
-    findVerifyUrlBy: findVerifyUrlBy,
-    saveUserVerifyEmailUrl: saveUserVerifyEmailUrl,
-    saveUser: saveUser,
-    signJwt: signJwt,
-    sendMail: sendMail,
+    bcryptPassword,
+    bcryptCompare,
+    deleteVerifyEmailUrlBy,
+    createProfileAndAssociate,
+    createUser,
+    findUserBy,
+    findUserByEmail,
+    findUserById,
+    findUserByIdAndUpdate,
+    findVerifyUrlBy,
+    saveUserVerifyEmailUrl,
+    saveUser,
+    saveProfile,
+    signJwt,
+    sendMail,
 
 };

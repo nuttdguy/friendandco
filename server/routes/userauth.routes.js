@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-// const mailService = require('../services/mail/mail.service');
 
 
 // IMPORT SERVICES :: URL: API/USER/
@@ -21,11 +20,16 @@ const shapeInput = require('../utils/shapeInput.utils');
 
 
 
+// MODEL for testing
+const {User} = require('../models/index.model');
+
 // TEST ROUTES
 
 router.get('/test', async (req, res) => {
 
-    const result = await userService.sendMail('pygnasak@yahoo.com');
+    const user = new User();
+
+    const result = await userService.createProfileAndAssociate(user);
 
     console.log(result);
     return res.send('message');
@@ -40,10 +44,49 @@ router.post('/test', (req, res) => {
 // GET ROUTES
 ////////////////////////////////////////////
 
+//=====|| verify the email url
+router.get('/verify/:id', async (req, res, next) => {
+    const userId = req.params.id;
 
+    // find userid in verify url document
+    const verified = await userService.findVerifyUrlBy(req.params.id, next);
+
+    if (verified !== null) {
+        console.log(verified, ' user is valid, verifying user now ...');
+
+        // find user by id and then update
+        const updatedUser = await userService.findUserByIdAndUpdate(userId);
+
+        // user has been verified, create profile and associate user to the profile
+        const profile = await userService.createProfileAndAssociate(updatedUser);
+
+        // save the profile
+        await userService.saveProfile(profile);
+
+        // delete verify url document; after updating user
+        await userService.deleteVerifyEmailUrlBy(verified);
+
+        if (updatedUser !== null) {
+
+            // TODO send redirect url when working on front-end
+            return res.send('User has been activated');
+        }
+    }
+
+
+    return res.send(`Link ${req.protocol}://${req.host}${req.originalUrl} has already been verified.`);
+});
+
+//=====|| forget password route
+router.get('/recover/password ', async (req, res, next) => {
+    // TODO forget password recovery
+
+});
 
 // POST ROUTES
 ////////////////////////////////////////////
+
+//=====|| register the user
 router.post('/register', async (req, res, next) => {
     let userData, passwordHash, verifyUrl = null;
     const payload = req.body;
@@ -88,34 +131,7 @@ router.post('/register', async (req, res, next) => {
 });
 
 
-
-// TODO Send verify email, after verify, create profile and associate user to the profile
-router.get('/verify/:id', async (req, res, next) => {
-
-    // find userid in verify url document
-    const verified = await userService.findVerifyUrlBy(req.params.id, next);
-    console.log(verified, ' USER DOES NOT EXIST IN EMAIL VERIFY URL DOCUMENT');
-
-    if (verified !== null) {
-
-        // find user by id and then update
-        const updatedResult = await userService.findUserByIdAndUpdate(req.params.id);
-
-        // delete verify url document; after updating user
-        await userService.deleteVerifyEmailUrlBy(verified);
-
-        if (updatedResult !== null) {
-
-            // TODO send redirect url when working on front-end
-            return res.send('User has been activated');
-        }
-    }
-
-
-    return res.send('Verify url route is active');
-});
-
-
+//=====|| login the user
 router.post('/login', async (req, res, next) => {
     const {errors, isValid} = validateLoginInput(req.body);
     const {username, password } = req.body;
