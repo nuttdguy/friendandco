@@ -12,6 +12,8 @@ const keys = require('./config/keys');
 // instance of express app
 const app = express();
 
+// add notes
+
 
 // Connecting DB
 mongoose
