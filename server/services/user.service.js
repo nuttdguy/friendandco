@@ -2,12 +2,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
-const mailService = require('./mail/mail.service');
+const { mailService } = require('./__index.service');
 
 
 // LOAD MODEL
 ///////////////////////////////
-const {User, Profile, Verify} = require('../models/index.model');
+const {User, Profile, Verify} = require('../models/__index.model');
 
 
 // QUERY OPTIONS

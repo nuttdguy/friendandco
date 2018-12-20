@@ -4,7 +4,7 @@ const passport = require('passport');
 
 
 // IMPORT SERVICES :: URL: API/AUTH/USER/
-const userService = require('../services/userauth.service');
+const { userService } = require('../services/__index.service');
 
 
 // VALIDATION
@@ -21,7 +21,7 @@ const shapeInput = require('../utils/shapeInput.utils');
 
 
 // MODEL for testing
-const {User} = require('../models/index.model');
+const {User} = require('../models/__index.model');
 
 // TEST ROUTES
 

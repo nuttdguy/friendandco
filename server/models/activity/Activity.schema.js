@@ -11,9 +11,17 @@ const ActivitySchema = new Schema({
     createBy: {type: Schema.Types.ObjectId, ref: 'user'},
     isActive: {type: Boolean, default: true},
     tags: [{type: Schema.Types.ObjectId, ref: 'activitytag'}],
-    location: {type: Schema.Types.ObjectId, ref: 'location'},
+    location: {
+        address1: {type: String},
+        address2: {type: String},
+        city: {type: String},
+        state: {type: String},
+        zip: {type: String},
+        type: {type: String}
+    },
+    place: {type: Schema.Types.ObjectId, ref: 'place'},
     calendar: {type: Schema.Types.ObjectId, ref: 'activitycalendar'},
-    photos: [{type: Schema.Types.ObjectId}]
+    photos: [{type: Schema.Types.ObjectId, ref: 'photo'}]
 });
 
 module.exports = mongoose.model('activity', ActivitySchema);

@@ -15,7 +15,7 @@ const app = express();
 
 // Connecting DB
 mongoose
-  .connect(keys.mongoURI)
+  .connect(keys.mongoURI, {useNewUrlParser: true})
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err, "Unable to connect"));
 
@@ -33,7 +33,7 @@ require('./config/passport')(passport);
 
 
 // Routes: require routes
-require('./routes/index.routes')(app);
+require('./routes/__index.routes')(app);
 
 
 // Serve static assets if in production

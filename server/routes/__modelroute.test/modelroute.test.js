@@ -10,7 +10,7 @@ const {
     ActivityKind,
     ActivityScene,
     ActivityTag,
-    Location,
+    Place,
     City,
     State,
     Profile,
@@ -21,7 +21,7 @@ const {
     Work,
     WorkDetail,
     Photo
-} = require('../../models/index.model');
+} = require('../../models/__index.model');
 
 
 // construct models
@@ -72,13 +72,19 @@ const state = new State({
     descLong: 'California'
 });
 
-const location = new Location({
+const place = new Place({
     // TODO add country object
-    address1: '123 some street',
-    address2: 'apt 210',
-    city: city,
-    state: state,
-    zipcode: 94777
+    country: 'usa',
+    place: {
+        name: 'some place',
+        lat: "829128",
+        long: '20980931',
+        address1: '123 some street',
+        address2: 'apt 210',
+        city: city,
+        state: state,
+        zip: 94777
+    }
 });
 
 const calendar = new ActivityCalendar({
@@ -112,7 +118,10 @@ const activity = new Activity({
     desc: 'its sunny, lets go hangout outdoors',
     createBy: user._id,
     tags: [actTag],
-    location: location,
+    location: {
+        address1: 'some addresss1'
+    },
+    place: place,
     calendar: calendar,
     photos: [photo]
 });
@@ -139,7 +148,6 @@ const profile = new Profile({
     educations: [education],
     interests: [interest],
     hobbies: [hobby],
-    locations: [location],
     createDate: Date.now()
 });
 
