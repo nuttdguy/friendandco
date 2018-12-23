@@ -143,7 +143,7 @@ class App extends Component {
                     {label: 'identity', icon: 'label'},
                     {label: 'match preferences', icon: 'label'},
                     {label: 'social preferences', icon: 'label'},
-                    {label: 'self identified personality tags', icon: 'label'},
+                    {label: 'self identified persona tags', icon: 'label'},
                     {label: 'interested activity tags', icon: 'label-outline'},
                     {label: 'self identified values tags', icon: 'label'},
                     {label: 'peer identified tags', icon: 'person-pin'}

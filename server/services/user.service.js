@@ -23,7 +23,12 @@ const findUserByEmail = async (email, next) => {
 ///////////////////////////////
 
 
+// save a single user
+const saveUser = async (userData, next) => {
 
+    const newUser = await UserRepository.createUser(UserData);
+    console.log(newUser);
+};
 
 
 
@@ -40,6 +45,14 @@ const findUserByEmail = async (email, next) => {
 
 
 // MANIPULATION :: DELETE
+///////////////////////////////
+
+
+
+
+
+
+// MANIPULATION ::
 ///////////////////////////////
 
 

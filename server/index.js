@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 
-// APP => ROUTES => SERVICE => REPOSITORY
+// APP => ROUTES => SERVICE => REPOSITORY + ENTITIES
 
 
 // instance of express app

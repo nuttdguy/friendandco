@@ -99,28 +99,29 @@ router.post('/register', async (req, res, next) => {
 
         // create user
         userData = userService.createUser(payload, next);
-        passwordHash = await userService.bcryptPassword(userData, next);
-
-
-        // save verify email url
-        verifyUrl = await userService.saveUserVerifyEmailUrl(userData.id, userData.email, userData.createDate);
-        console.log(verifyUrl);
-
-
-        // save user
-        userData = await userService.saveUser(userData, passwordHash, next);
-
-
-        // send verification email
-        const sentResult = await userService.sendMail(userData, verifyUrl);
-        console.log(sentResult);
-
-        // show & return result
-        message.show(SUCCESS.USER_OF_ID_SAVED, userData.id);
-        return res.send({result: SUCCESS.USER_OF_ID_SAVED, user: userData.id});
+        // passwordHash = await userService.bcryptPassword(userData, next);
+        //
+        //
+        // // save verify email url
+        // verifyUrl = await userService.saveUserVerifyEmailUrl(userData.id, userData.email, userData.createDate);
+        // console.log(verifyUrl);
+        //
+        //
+        // // save user
+        // userData = await userService.saveUser(userData, passwordHash, next);
+        //
+        //
+        // // send verification email
+        // const sentResult = await userService.sendMail(userData, verifyUrl);
+        // console.log(sentResult);
+        //
+        // // show & return result
+        // message.show(SUCCESS.USER_OF_ID_SAVED, userData.id);
+        // return res.send({result: SUCCESS.USER_OF_ID_SAVED, user: userData.id});
     }
 
-    return res.send({email: payload.email, message: ERROR.EXISTS_EMAIL});
+    // return res.send({email: payload.email, message: ERROR.EXISTS_EMAIL});
+    res.status(200).json(user);
 });
 
 

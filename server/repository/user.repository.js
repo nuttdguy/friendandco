@@ -1,7 +1,7 @@
 
-// LOAD MODEL
+// LOAD ENTITIES
 ///////////////////////////////
-const { User } = require('../models/__index.mysql.entity');
+const { Entity, UUID4 } = require('../models/__index.mysql.entity');
 
 
 // QUERIES :: FIND
@@ -9,7 +9,7 @@ const { User } = require('../models/__index.mysql.entity');
 
 // find a single user by the user email
 const findUserByEmail = async (email, next) => {
-    return await User.findAll({where: email});
+    return await Entity.User.findAll({where: email});
 };
 
 
@@ -32,6 +32,19 @@ const findUserByEmail = async (email, next) => {
 
 
 
+// MANIPULATION :: DELETE
+///////////////////////////////
+
+
+
+
+
+// ENTITIES :: CREATE NEW
+///////////////////////////////
+
+const createUser = function(userData) {
+    return new Entity.User(userData);
+};
 
 
 

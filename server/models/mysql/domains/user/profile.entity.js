@@ -1,17 +1,32 @@
 const { DataTypes } = require('sequelize');
-const uuid4 = require('uuid/v4');
 
+const Profile = {
 
-// TODO determine relationships with other entities
-module.exports = {
-
-    id: {type: DataTypes.UUID, primaryKey: true, defaultValue: uuid4()},
-    educationId: {type: DataTypes.UUID },
-    historyId: {type: DataTypes.UUID },
-    personaId: {type: DataTypes.UUID },
-    photoId: {type: DataTypes.UUID },
-    userId: {type: DataTypes.UUID },
-    workId: {type: DataTypes.UUID }
+    id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+    },
+    educationId: {
+        type: DataTypes.UUID,
+        allowNull: false
+    },
+    historyId: {
+        type: DataTypes.UUID,
+        allowNull: false
+    },
+    personaId: {
+        type: DataTypes.UUID,
+        allowNull: false
+    },
+    photoId: {
+        type: DataTypes.UUID,
+        allowNull: false
+    },
+    workId: {
+        type: DataTypes.UUID,
+        allowNull: false
+    }
 
 };
 
+module.exports = Profile;

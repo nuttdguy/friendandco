@@ -1,22 +1,32 @@
-
 const { DataTypes } = require('sequelize');
-const uuid4 = require('uuid/v4');
 
-module.exports = {
+const Verify = {
 
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
-        defaultValue: uuid4()
     },
-    email: {type: DataTypes.STRING, allowNull: false},
-    username: {type: DataTypes.STRING, allowNull: false},
-    userId: {
-        type: DataTypes.UUID,
-        references: {
-            model: 'user',
-            key: 'id'
-        }
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    username: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    hasActivated: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    isRecoverPassword: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 
 };
+
+module.exports = Verify;
