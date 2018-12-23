@@ -9,7 +9,12 @@ const pool = {max: 5, min: 0, acquire: 30000, idle: 10000};
 
 
 // CONNECT TO DB
-const sequelize = new Sequelize(KEYS.MYSQLURI, { pool: pool });
+const sequelize = new Sequelize(KEYS.MYSQLURI, {
+    pool: pool,
+    define: {
+        underscored: true
+    }
+});
 console.log('Done connecting to database ...');
 
 
@@ -20,7 +25,7 @@ const persona_domain = './mysql/domains/persona/';
 const db = {
     User: sequelize.define('user', require(user_domain  + 'user.entity')),
     Profile: sequelize.define('profile', require(user_domain  + 'profile.entity')),
-    Verify: sequelize.define('verify', require(user_domain  + 'verify.entity')),
+    VerifyEmail: sequelize.define('verifyEmail', require(user_domain  + 'verifyEmail.entity')),
     Secret: sequelize.define('secret', require(user_domain  + 'secret.entity'))
 };
 
@@ -36,9 +41,10 @@ console.log('Done loading entities ...');
 // DOMAIN :: USER
 db.Secret.belongsTo(db.User, {foreignKey: 'fk_user_secret', targetKey: 'id'});
 db.Profile.hasOne(db.User, {foreignKey: 'fk_user_profile', targetKey: 'id'});
-db.Verify.hasOne(db.User, {foreignKey: 'fk_user_verify', targetKey: 'id'});
+db.VerifyEmail.hasOne(db.User, {foreignKey: 'fk_user_verify', targetKey: 'id'});
 
 // DOMAIN :: HISTORY
+
 
 
 // DOMAIN :: PERSONA
@@ -47,11 +53,11 @@ db.Verify.hasOne(db.User, {foreignKey: 'fk_user_verify', targetKey: 'id'});
 console.log('Done associating entities ...');
 
 
+
 // SYNC DB AND ITS ENTITIES
 sequelize.sync( {force: true});
 
 
-module.exports = {
-    Entity: db,
-    UUID4: require('uuid/v4')
-};
+// EXPORT INSTANCE
+
+module.exports = db;

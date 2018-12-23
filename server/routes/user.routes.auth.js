@@ -81,47 +81,30 @@ router.get('/recover/password ', async (req, res, next) => {
 
 //=====|| register the user
 router.post('/register', async (req, res, next) => {
-    let userData, passwordHash, verifyUrl = null;
-    const payload = req.body;
+    let payload = req.body;
 
 
-    // // trim, lowercase, validate data
-    // const { errors, isValid } = validateRegisterInput(shapeInput(payload));
-    //
-    //
-    // // return error if input values are invalid
-    // if (!isValid) return res.send(errors);
+    // trim, lowercase, validate data
+    const { errors, isValid } = validateRegisterInput(shapeInput(payload));
+
+    // return error if input values are invalid
+    if (!isValid) return res.send(errors);
 
 
-    // find user by email; returns null if not found
+    // find user by email; returns [] if not found
     let user = await userService.findUserByEmail(payload.email, next);
-    if (user === null) {
+    if (user.length === 0) {
 
         // create user
-        userData = userService.createUser(payload, next);
-        // passwordHash = await userService.bcryptPassword(userData, next);
-        //
-        //
-        // // save verify email url
-        // verifyUrl = await userService.saveUserVerifyEmailUrl(userData.id, userData.email, userData.createDate);
-        // console.log(verifyUrl);
-        //
-        //
-        // // save user
-        // userData = await userService.saveUser(userData, passwordHash, next);
-        //
-        //
-        // // send verification email
-        // const sentResult = await userService.sendMail(userData, verifyUrl);
-        // console.log(sentResult);
-        //
-        // // show & return result
-        // message.show(SUCCESS.USER_OF_ID_SAVED, userData.id);
-        // return res.send({result: SUCCESS.USER_OF_ID_SAVED, user: userData.id});
+        payload = await userService.saveUser(payload);
+
+        // save verify email url
+        payload = await userService.saveVerifyEmail(payload);
+
+        return res.status(200).send(payload);
     }
 
-    // return res.send({email: payload.email, message: ERROR.EXISTS_EMAIL});
-    res.status(200).json(user);
+    return res.status(200).send({email: payload.email, message: ERROR.EXISTS_EMAIL});
 });
 
 

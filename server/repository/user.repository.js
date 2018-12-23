@@ -1,7 +1,7 @@
 
 // LOAD ENTITIES
 ///////////////////////////////
-const { Entity, UUID4 } = require('../models/__index.mysql.entity');
+const { User, VerifyEmail } = require('../models/__index.mysql.entity');
 
 
 // QUERIES :: FIND
@@ -9,7 +9,7 @@ const { Entity, UUID4 } = require('../models/__index.mysql.entity');
 
 // find a single user by the user email
 const findUserByEmail = async (email, next) => {
-    return await Entity.User.findAll({where: email});
+    return await User.findAll({where: email});
 };
 
 
@@ -20,14 +20,22 @@ const findUserByEmail = async (email, next) => {
 ///////////////////////////////
 
 
+// save user record
+const saveUser = async (entity) => {
+    return await entity.save();
+};
 
 
-
+// save verify email record
+const saveVerifyEmail = async (entity) => {
+    return await entity.save();
+};
 
 
 
 // MANIPULATION :: UPDATE
 ///////////////////////////////
+
 
 
 
@@ -39,30 +47,50 @@ const findUserByEmail = async (email, next) => {
 
 
 
-// ENTITIES :: CREATE NEW
+
+// ENTITIES :: BUILD ; CREATE NEW
 ///////////////////////////////
 
-const createUser = function(userData) {
-    return new Entity.User(userData);
+
+// builds new user object
+const createUser = function(payload) {
+    console.log('creating user ...', payload);
+    return User.build({
+        id: payload.id,
+        username: payload.username,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        password: payload.password,
+        email: payload.email
+    });
 };
 
 
-
+// create new verify email object
+const createVerifyEmail = function(payload) {
+    console.log('creating verify email ...', payload.email);
+    return VerifyEmail.build({
+        email: payload.email,
+        username: payload.username,
+        password: payload.password,
+        userId: payload.id
+    })
+};
 
 
 module.exports = {
-    // bcryptPassword,
-    // bcryptCompare,
+
     // deleteVerifyEmailUrlBy,
     // activateUserProfile,
-    // createUser,
+    createUser,
+    createVerifyEmail,
     // findUserBy,
     findUserByEmail,
     // findUserById,
     // activateUserAccount,
     // findVerifyUrlBy,
-    // saveUserVerifyEmailUrl,
-    // saveUser,
+    saveVerifyEmail,
+    saveUser,
     // saveProfile,
     // signJwt,
     // sendMail,

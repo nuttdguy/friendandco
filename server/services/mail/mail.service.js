@@ -21,24 +21,23 @@ const createTransporter = () => {
 
 
 // setup email data with unicode symbols
-const setMailOptions = (userData, verifyUrl) => {
+const setMailOptions = (payload) => {
 
-    // TODO will require users verification url
     return {
         from: KEYS.AUTH_USER_GMAIL,
-        to: verifyUrl.userEmail,
+        to: payload.email,
         subject: 'Please confirm registration',
-        html: htmlData(userData, verifyUrl)
+        html: htmlData(payload)
     }
 
 };
 
-const htmlData = (userData, verifyUrl) => {
+const htmlData = (payload) => {
     return `
      <html>
          <body>
             <p>Please confirm your registration by clicking this link</p> <br>
-            <a href="http://localhost:5000/api/user/verify/${verifyUrl.userId}">
+            <a href="http://localhost:5000/api/user/verify/${payload.id}">
             Verify email</a>
         </body>
     </html>`;
@@ -46,7 +45,7 @@ const htmlData = (userData, verifyUrl) => {
 
 
 module.exports = {
-    createTransporter: createTransporter,
-    setMailOptions: setMailOptions
+    createTransporter,
+    setMailOptions
 };
 

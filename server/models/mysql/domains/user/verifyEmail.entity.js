@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 
-const Verify = {
+const VerifyEmail = {
 
     id: {
         type: DataTypes.UUID,
@@ -18,6 +18,10 @@ const Verify = {
         type: DataTypes.STRING,
         allowNull: false
     },
+    userId: {
+        type: DataTypes.UUID,
+        allowNull: false
+    },
     hasActivated: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
@@ -29,4 +33,4 @@ const Verify = {
 
 };
 
-module.exports = Verify;
+module.exports = VerifyEmail;

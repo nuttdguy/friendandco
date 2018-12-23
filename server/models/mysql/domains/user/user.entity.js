@@ -31,6 +31,10 @@ const User = {
         type: DataTypes.STRING,
         allowNull: false
     },
+    isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    }
 };
 
 
