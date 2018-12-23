@@ -21,7 +21,7 @@ const {
     Work,
     WorkDetail,
     Photo
-} = require('../../models/__index.model');
+} = require('../../models/__mongo_models/__index.model');
 
 
 // construct models

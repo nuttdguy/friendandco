@@ -1,25 +1,15 @@
 // npm packages
 const express = require("express");
-const mongoose = require("mongoose");
 const passport = require('passport');
 const bodyParser = require('body-parser');
 const path = require('path');
 
-// locally created files
-const keys = require('./config/keys');
+
+// APP => ROUTES => SERVICE => REPOSITORY
 
 
 // instance of express app
 const app = express();
-
-// add notes
-
-
-// Connecting DB
-mongoose
-  .connect(keys.mongoURI, {useNewUrlParser: true})
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err, "Unable to connect"));
 
 
 // Parse incoming body into Json format
@@ -34,7 +24,7 @@ app.use(passport.initialize());
 require('./config/passport')(passport);
 
 
-// Routes: require routes
+// Load routes
 require('./routes/__index.routes')(app);
 
 

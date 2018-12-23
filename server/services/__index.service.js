@@ -1,5 +1,5 @@
 module.exports = {
     userService: require('./user.service'),
-    activityService: require('./activity.service'),
-    mailService: require('./mail/mail.service'),
+    // activityService: require('./services/activity.service'),
+    // mailService: require('./mail/mail.service'),
 };

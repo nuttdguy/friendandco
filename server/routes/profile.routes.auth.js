@@ -8,13 +8,13 @@ const passport = require('passport');
 
 
 // Load models
-const Profile = require('../models/profile/Profile.schema');
-const User = require('../models/profile/User.schema');
-const Interest = require('../models/profile/Interest.schema');
-const Hobby = require('../models/profile/Hobby.schema');
-const Location = require('../models/place/Place.schema');
-const City = require('../models/place/City.schema');
-const State = require('../models/place/State.schema');
+const Profile = require('../models/__mongo_models/profile/Profile.schema');
+const User = require('../models/__mongo_models/profile/User.schema');
+const Interest = require('../models/__mongo_models/profile/Interest.schema');
+const Hobby = require('../models/__mongo_models/profile/Hobby.schema');
+const Location = require('../models/__mongo_models/place/Place.schema');
+const City = require('../models/__mongo_models/place/City.schema');
+const State = require('../models/__mongo_models/place/State.schema');
 
 
 ////==== GET: TEST

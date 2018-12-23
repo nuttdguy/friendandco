@@ -1,10 +1,10 @@
-// FOR ROUTES THAT REQUIRE AUTHORIZED ACCESS; E.G. REGISTERED USER
+// IMPORT LIBRARIES
 const express = require('express');
 const router = express.Router();
 
 
 // IMPORT SERVICES :: URL: API/AUTH/ACTIVITY
-const activityService = require('../services/activity.service');
+const activityService = require('../services/__mongo.services/activity.service');
 
 
 // VALIDATION
@@ -17,7 +17,7 @@ const activityService = require('../services/activity.service');
 
 // MODEL :: FOR TESTING
 
-const { Activity } = require('../models/__index.model');
+const { Activity } = require('../models/__mongo_models/__index.model');
 
 
 // TEST ROUTES
@@ -128,7 +128,7 @@ router.delete('/:actId/delete', (req, res, next) => {
 
 });
 
-
+console.log('Done loading activity auth routes ... ');
 
 //=====|| EXPORT ROUTER
 

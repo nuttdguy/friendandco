@@ -1,5 +1,5 @@
 
-// NOTE: passing app into index, otherwise would have to define each route within index.js
+
 module.exports = (app) => {
 
     app.use('/api/activity', require('./activity.routes'));

@@ -1,10 +1,7 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const keys = require('../config/keys');
 
-
-// LOAD REPOSITORY
-const { UserRepository } = require('../repository/__index.repository');
+// LOAD MODEL
+///////////////////////////////
+const { User } = require('../models/__index.mysql.entity');
 
 
 // QUERIES :: FIND
@@ -12,7 +9,7 @@ const { UserRepository } = require('../repository/__index.repository');
 
 // find a single user by the user email
 const findUserByEmail = async (email, next) => {
-    return await UserRepository.findUserByEmail({email: email});
+    return await User.findAll({where: email});
 };
 
 
@@ -38,16 +35,6 @@ const findUserByEmail = async (email, next) => {
 
 
 
-
-// MANIPULATION :: DELETE
-///////////////////////////////
-
-
-
-
-
-// EXPORT REFERENCES
-///////////////////////////////
 
 
 module.exports = {

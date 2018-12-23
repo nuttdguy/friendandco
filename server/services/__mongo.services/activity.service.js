@@ -12,7 +12,7 @@ const {
     ActivityTag,
     ActivityCalendar,
     Place,
-    Photo } = require('../models/__index.model');
+    Photo } = require('../../models/__mongo_models/__index.model');
 
 
 // QUERY OPTIONS

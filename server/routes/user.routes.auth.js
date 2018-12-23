@@ -20,20 +20,13 @@ const shapeInput = require('../utils/shapeInput.utils');
 
 
 
-// MODEL for testing
-const {User} = require('../models/__index.model');
-
 // TEST ROUTES
-
+let counter = 0;
 router.get('/test', async (req, res) => {
 
-    const user = new User();
-
-    const result = await userService.activateUserProfile(user);
-
-    console.log(result);
-    return res.send('message');
+    return res.send('message:: ' + counter++);
 });
+
 
 router.post('/test', (req, res) => {
     console.log(req.body);
@@ -92,12 +85,12 @@ router.post('/register', async (req, res, next) => {
     const payload = req.body;
 
 
-    // trim, lowercase, validate data
-    const { errors, isValid } = validateRegisterInput(shapeInput(payload));
-
-
-    // return error if input values are invalid
-    if (!isValid) return res.send(errors);
+    // // trim, lowercase, validate data
+    // const { errors, isValid } = validateRegisterInput(shapeInput(payload));
+    //
+    //
+    // // return error if input values are invalid
+    // if (!isValid) return res.send(errors);
 
 
     // find user by email; returns null if not found
@@ -178,6 +171,8 @@ router.get('/current', passport.authenticate('jwt', { session: false}), (req, re
    })
 });
 
+
+console.log('Done loading user routes ... ');
 
 //=====|| EXPORT ROUTER
 
