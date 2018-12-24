@@ -10,6 +10,61 @@ const {
 const { UserRepository } = require('../repository/__index.repository');
 
 
+
+// LOAD VALIDATORS
+///////////////////////////////
+
+const validateRegisterInput = require('../validation/register.validate');
+const validateLoginInput = require('../validation/login');
+const shapeInput = require('../utils/shapeInput.utils');
+
+
+
+// UTILS
+const SUCCESS = require('../utils/SUCCESS.message');
+const ERROR = require('../utils/ERRORS.message');
+const message = require('../utils/message.utils');
+
+
+// register => sendmail => verify user
+// login => verify sendmail => redirect OR login if valid
+
+
+// FUNCTIONAL FEATURES
+///////////////////////////////
+
+
+// registers a new user
+const registerUser = async (payload) => {
+
+    // trim, lowercase, validate data
+    const { errors, isValid } = await validateRegisterInput(shapeInput(payload));
+
+    // return error if input values are invalid
+    if (!isValid) return errors;
+
+
+    // find user by email; returns [] if not found
+    let user = await findUserByEmail(payload.email);
+    if (user.length === 0) {
+
+        // create user
+        payload = await saveUser(payload);
+
+        // save verify email url
+        payload = await saveVerifyEmail(payload);
+
+        return payload;
+    }
+
+
+    payload.existError = ERROR.EXISTS_EMAIL;
+    return payload;
+};
+
+
+
+
 // QUERIES :: FIND
 ///////////////////////////////
 
@@ -26,10 +81,11 @@ const findUserByEmail = async (email, next) => {
 ///////////////////////////////
 
 
-// save a single user
-const saveUser = async (payload, next) => {
+// save a single user record
+const saveUser = async (payload) => {
 
     // TODO add service method, check that payload has all required fields
+
     // TODO add validators
 
     // GENERATE & ASSIGN UUID
@@ -46,6 +102,7 @@ const saveUser = async (payload, next) => {
 
 };
 
+// save single verify email record
 const saveVerifyEmail = async (payload) => {
 
 
@@ -96,6 +153,7 @@ const createVerifyEmail = function(payload) {
 };
 
 
+
 // EXPORT REFERENCES
 ///////////////////////////////
 
@@ -117,5 +175,5 @@ module.exports = {
     // saveProfile,
     // signJwt,
     // sendMail,
-
+    registerUser
 };

@@ -7,16 +7,12 @@ const passport = require('passport');
 const { userService } = require('../services/__index.service');
 
 
-// VALIDATION
-const validateRegisterInput = require('../validation/register.validate');
-const validateLoginInput = require('../validation/login');
-
 
 // UTILS
 const SUCCESS = require('../utils/SUCCESS.message');
 const ERROR = require('../utils/ERRORS.message');
 const message = require('../utils/message.utils');
-const shapeInput = require('../utils/shapeInput.utils');
+
 
 
 
@@ -83,28 +79,9 @@ router.get('/recover/password ', async (req, res, next) => {
 router.post('/register', async (req, res, next) => {
     let payload = req.body;
 
+    payload = await userService.registerUser(payload);
+    return res.status(200).send(payload);
 
-    // trim, lowercase, validate data
-    const { errors, isValid } = validateRegisterInput(shapeInput(payload));
-
-    // return error if input values are invalid
-    if (!isValid) return res.send(errors);
-
-
-    // find user by email; returns [] if not found
-    let user = await userService.findUserByEmail(payload.email, next);
-    if (user.length === 0) {
-
-        // create user
-        payload = await userService.saveUser(payload);
-
-        // save verify email url
-        payload = await userService.saveVerifyEmail(payload);
-
-        return res.status(200).send(payload);
-    }
-
-    return res.status(200).send({email: payload.email, message: ERROR.EXISTS_EMAIL});
 });
 
 
