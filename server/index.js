@@ -2,8 +2,6 @@
 const express = require("express");
 const passport = require('passport');
 const bodyParser = require('body-parser');
-const path = require('path');
-
 
 // APP => ROUTES => SERVICE => REPOSITORY + ENTITIES
 
@@ -28,19 +26,5 @@ require('./config/passport')(passport);
 require('./routes/__index.routes')(app);
 
 
-// Serve static assets if in production
-if (process.env.NODE_ENV === 'production') {
-    // set static folder
-    app.use(express.static('client/build'));
-
-    // serve index.html if route is not recognized
-    app.get('*', (req, res) => {
-      res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-    })
-}
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`)
-});
+// Load server
+require('./server')(app);

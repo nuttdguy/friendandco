@@ -65,25 +65,25 @@ const registerUser = async (payload) => {
 
         // console.log({user:user, email: email});
 
-        // VALIDATE CONSTRAINT; DEL USER THEN EMAIL
-        // const userDel = await UserRepository.deleteEntity(user);
-        // const emailDel = await UserRepository.deleteEntity(email);
+        // VALIDATE INVALID CONSTRAINT; DEL USER THEN EMAIL
+        const userDel = await UserRepository.deleteEntity(user);
+        const emailDel = await UserRepository.deleteEntity(email);
 
-        // VALIDATE CONSTRAINT IS VALID; DEL EMAIL THEN USER
+        // VALIDATE VALID CONSTRAINT IS VALID; DEL EMAIL THEN USER
         // const emailDel = await UserRepository.deleteEntity(email);
         // const userDel = await UserRepository.deleteEntity(user);
-        //
-        //
-        // return {user:userDel, email: emailDel};
-        // return {user: userDel};
+
+
+        return {user:userDel, email: emailDel};
+        return {user: userDel};
 
         // return {user:user, email: email};
-
-        // TESTING OUTPUT AND RELATIONSHIPS
-        payload = await UserRepository.findVerifyEmailUrl(payload);
-        console.log('Done sending email verification ...');
-
-        return payload.dataValues;
+        //
+        // // TESTING OUTPUT AND RELATIONSHIPS
+        // payload = await UserRepository.findVerifyEmailUrl(payload);
+        // console.log('Done sending email verification ...');
+        //
+        // return payload.dataValues;
     }
 
     // if email exists, return error response

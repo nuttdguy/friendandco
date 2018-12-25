@@ -63,7 +63,7 @@ db.User.hasOne(db.VerifyEmail);
 
 db.Secret.belongsTo(db.User);
 db.Profile.belongsTo(db.User);
-db.VerifyEmail.belongsTo(db.User, {foreignField: 'fkUserId'}, { targetKey: 'id' });
+db.VerifyEmail.belongsTo(db.User, {foreignKey: 'fkUserId'}, { targetKey: 'id' });
 
 
 // DOMAIN :: HISTORY
@@ -74,7 +74,8 @@ db.VerifyEmail.belongsTo(db.User, {foreignField: 'fkUserId'}, { targetKey: 'id' 
 
 console.log('Done associating entities ...');
 
-
+// const k = Object.keys(db.VerifyEmail.rawAttributes);
+// console.log(k);
 
 
 // ADD SEQUELIZE INSTANCE + SEQUELIZE OBJECT TO DB OBJECT
@@ -90,7 +91,7 @@ db.genUUID4 = require('uuid/v4');
 
 
 // SYNC SEQUELIZE + PERSIST DEFINED ENTITIES WITH DATABASE - DB-SERVER
-sequelize.sync( {force: false});
+// sequelize.sync( {force: false});
 
 
 // EXPORT DB INSTANCE; SERVER-SIDE

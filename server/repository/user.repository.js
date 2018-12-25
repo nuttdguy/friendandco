@@ -82,7 +82,9 @@ const activateUserAccount = (payload) => {
 
 const deleteEntity = async (payload) => {
     console.log('destroying entity ...');
-    return await payload.destroy();
+
+    return payload.destroy();
+    
 };
 
 
