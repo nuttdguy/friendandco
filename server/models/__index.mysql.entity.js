@@ -10,41 +10,63 @@ const pool = {max: 5, min: 0, acquire: 30000, idle: 10000};
 
 // CONNECT TO DB
 const sequelize = new Sequelize(KEYS.MYSQLURI, {
-    pool: pool,
-    define: {
-        underscored: true
-    }
+    pool: pool
 });
 console.log('Done connecting to database ...');
 
 
-// DEFINE ENTITIES
+// DEFINE ENTITY PATH
 const user_domain = './mysql/domains/user/';
 const history_domain = './mysql/domains/history/';
 const persona_domain = './mysql/domains/persona/';
+
+
+// IMPORT ENTITY + OPTIONS
+const { UserEntity, UserEntityOptions} = require(user_domain  + 'user.entity');
+const { VerifyEmailEntity, VerifyEntityOptions } = require(user_domain  + 'verifyEmail.entity');
+const { ProfileEntity, ProfileEntityOptions } = require(user_domain  + 'profile.entity');
+const { EducationEntity, EducationEntityOptions } = require(user_domain  + 'education.entity');
+const { HistoryEntity, HistoryEntityOptions } = require(user_domain  + 'history.entity');
+const { PersonaEntity, PersonaEntityOptions } = require(user_domain  + 'persona.entity');
+const { PhotoEntity, PhotoEntityOptions } = require(user_domain  + 'photo.entity');
+const { SecretEntity, SecretEntityOptions } = require(user_domain  + 'secret.entity');
+const { PersonalityEntity, PersonalityEntityOptions } = require(persona_domain  + 'personality.entity');
+const { WorkEntity, WorkEntityOptions } = require(user_domain + 'work.entity');
+
+
+// ADD ENTITIES TO SEQUELIZE - SERVER-SIDE
 const db = {
-    User: sequelize.define('user', require(user_domain  + 'user.entity')),
-    Profile: sequelize.define('profile', require(user_domain  + 'profile.entity')),
-    VerifyEmail: sequelize.define('verifyEmail', require(user_domain  + 'verifyEmail.entity')),
-    Secret: sequelize.define('secret', require(user_domain  + 'secret.entity'))
+    User: sequelize.define('user', UserEntity, UserEntityOptions),
+    VerifyEmail: sequelize.define('verifyEmail', VerifyEmailEntity, VerifyEntityOptions),
+    Profile: sequelize.define('profile', ProfileEntity, ProfileEntityOptions),
+    Secret: sequelize.define('secret',SecretEntity, SecretEntityOptions),
+
+
+    Education: sequelize.define('education', EducationEntity, EducationEntityOptions),
+    Photo: sequelize.define('photo', PhotoEntity, PhotoEntityOptions),
+    Work: sequelize.define('work', WorkEntity, WorkEntityOptions),
+
+    History: sequelize.define('history', HistoryEntity, HistoryEntityOptions),
+
+    Persona: sequelize.define('persona', PersonaEntity, PersonaEntityOptions),
+    Personality: sequelize.define('personality',PersonalityEntity, PersonalityEntityOptions),
 };
 
 
-// ADD SEQUELIZE OBJECT TO DB INSTANCE
-db.sequelize = Sequelize;
-console.log('Done loading entities ...');
 
-
-
-// ASSOCIATE ENTITIES
+// ASSOCIATE ENTITIES - SERVER-SIDE
 
 // DOMAIN :: USER
-db.Secret.belongsTo(db.User, {foreignKey: 'fk_user_secret', targetKey: 'id'});
-db.Profile.hasOne(db.User, {foreignKey: 'fk_user_profile', targetKey: 'id'});
-db.VerifyEmail.hasOne(db.User, {foreignKey: 'fk_user_verify', targetKey: 'id'});
+db.User.hasOne(db.Secret);
+db.User.hasOne(db.Profile);
+db.User.hasOne(db.VerifyEmail);
+
+db.Secret.belongsTo(db.User);
+db.Profile.belongsTo(db.User);
+db.VerifyEmail.belongsTo(db.User, {foreignField: 'fkUserId'}, { targetKey: 'id' });
+
 
 // DOMAIN :: HISTORY
-
 
 
 // DOMAIN :: PERSONA
@@ -54,10 +76,23 @@ console.log('Done associating entities ...');
 
 
 
-// SYNC DB AND ITS ENTITIES
-sequelize.sync( {force: true});
+
+// ADD SEQUELIZE INSTANCE + SEQUELIZE OBJECT TO DB OBJECT
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+console.log('Done loading entities ...');
 
 
-// EXPORT INSTANCE
+// ADD UUID GENERATOR TO DB OBJECT
+db.genUUID4 = require('uuid/v4');
+
+
+
+
+// SYNC SEQUELIZE + PERSIST DEFINED ENTITIES WITH DATABASE - DB-SERVER
+sequelize.sync( {force: false});
+
+
+// EXPORT DB INSTANCE; SERVER-SIDE
 
 module.exports = db;

@@ -30,47 +30,27 @@ router.post('/test', (req, res) => {
 });
 
 
+
 // GET ROUTES
 ////////////////////////////////////////////
 
 //=====|| verify the email url
 router.get('/verify/:id', async (req, res, next) => {
-    const userId = req.params.id;
+    let payload = {};
+    payload.id = req.params.id;
 
-    // find userid in verify url document
-    const verified = await userService.findVerifyUrlBy(req.params.id, next);
-
-    if (verified !== null) {
-        console.log(verified, ' user is valid, verifying user now ...');
-
-        // find user by id and then update
-        const updatedUser = await userService.activateUserAccount(userId);
-
-        // user has been verified, create profile and associate user to the profile
-        const profile = await userService.activateUserProfile(updatedUser);
-
-        // save the profile
-        await userService.saveProfile(profile);
-
-        // delete verify url document; after updating user
-        await userService.deleteVerifyEmailUrlBy(verified);
-
-        if (updatedUser !== null) {
-
-            // TODO send redirect url when working on front-end
-            return res.send('User has been activated');
-        }
-    }
-
-
-    return res.send(`Link ${req.protocol}://${req.host}${req.originalUrl} has already been verified.`);
+    payload = await userService.verifyEmail(payload);
+    return res.status(200).send(payload);
 });
+
 
 // TODO forget password recovery
 //=====|| forget password route
 router.get('/recover/password ', async (req, res, next) => {
 
 });
+
+
 
 // POST ROUTES
 ////////////////////////////////////////////
@@ -81,45 +61,15 @@ router.post('/register', async (req, res, next) => {
 
     payload = await userService.registerUser(payload);
     return res.status(200).send(payload);
-
 });
 
 
 //=====|| login the user
 router.post('/login', async (req, res, next) => {
-    const {errors, isValid} = validateLoginInput(req.body);
-    const {username, password } = req.body;
+    let payload = req.body;
 
-    // check that user exists
-    const user = await userService.findUserBy('username', username, next);
-
-    // return error if user was not found
-    if (user.error) return res.send(user);
-
-
-    // compare entered password with users existing password token
-    let tokenHash = null;
-    const isMatch = await userService.bcryptCompare(password, user.password.token);
-
-
-    if (isMatch && user.isActive) {
-
-        // user is registered and active
-        tokenHash = await userService.signJwt({ id: user.id, username: user.username });
-        return res.send({success: true, token: 'Bearer ' + tokenHash });
-
-    } else if (isMatch && !user.isActive) {
-
-        // email has not been verified, send error
-        errors.verify = 'Your email has not been verified. Please verify by clicking the link and then try logging in again';
-        return res.send(errors);
-    } else {
-
-        // password is incorrect, send error
-        errors.password = 'Password or username is incorrect';
-        return res.send(errors);
-    }
-
+    payload = await userService.loginUser(payload);
+    return res.status(200).send(payload);
 });
 
 

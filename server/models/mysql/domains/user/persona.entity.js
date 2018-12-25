@@ -1,16 +1,18 @@
-const { DataTypes } = require('persona.entity');
-const uuid4 = require('uuid/v4');
+const { DataTypes } = require('sequelize');
 
-const Persona = {
+const PersonaEntity = {
 
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
         allowNull: false,
-        defaultValue: uuid4()
     },
 
 };
 
+const PersonaOptions = {
 
-module.exports = Persona;
+};
+
+
+module.exports = { PersonaEntity, PersonaOptions };

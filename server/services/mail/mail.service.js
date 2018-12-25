@@ -37,7 +37,7 @@ const htmlData = (payload) => {
      <html>
          <body>
             <p>Please confirm your registration by clicking this link</p> <br>
-            <a href="http://localhost:5000/api/user/verify/${payload.id}">
+            <a href="http://localhost:5000/api/auth/user/verify/${payload.userId}">
             Verify email</a>
         </body>
     </html>`;

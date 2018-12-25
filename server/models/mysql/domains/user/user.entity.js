@@ -1,6 +1,7 @@
 const {DataTypes} = require('sequelize');
 
-const User = {
+
+const UserEntity = {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
@@ -10,7 +11,8 @@ const User = {
     },
     username: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     firstName: {
         type: DataTypes.STRING,
@@ -23,6 +25,8 @@ const User = {
     email: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
+        primaryKey: true,
         validate: {
             isEmail: true
         }
@@ -34,9 +38,14 @@ const User = {
     isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
-    }
+    },
+
+};
+
+const UserEntityOptions = {
+    // underscored: true
 };
 
 
-module.exports = User;
+module.exports = {UserEntity, UserEntityOptions};
 

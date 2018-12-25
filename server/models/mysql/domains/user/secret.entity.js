@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 
-const Secret = {
+const SecretEntity = {
     id: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -16,5 +16,9 @@ const Secret = {
     },
 };
 
+const SecretEntityOptions = {
 
-module.exports = Secret;
+};
+
+
+module.exports = { SecretEntity, SecretEntityOptions };

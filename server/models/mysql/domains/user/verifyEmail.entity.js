@@ -1,6 +1,8 @@
 const { DataTypes } = require('sequelize');
 
-const VerifyEmail = {
+
+
+const VerifyEmailEntity = {
 
     id: {
         type: DataTypes.UUID,
@@ -18,10 +20,6 @@ const VerifyEmail = {
         type: DataTypes.STRING,
         allowNull: false
     },
-    userId: {
-        type: DataTypes.UUID,
-        allowNull: false
-    },
     hasActivated: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
@@ -29,8 +27,23 @@ const VerifyEmail = {
     isRecoverPassword: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
-    }
-
+    },
+    fkUserId: {
+        type: DataTypes.UUID,
+        foreignKey: true,
+        references: {
+            model: 'users',
+            key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade'
+    },
 };
 
-module.exports = VerifyEmail;
+const VerifyEntityOptions = {
+    // underscored: true
+};
+
+
+
+module.exports = { VerifyEmailEntity, VerifyEntityOptions };
