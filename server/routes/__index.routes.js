@@ -7,6 +7,5 @@ module.exports = (app) => {
     app.use('/api/auth/user', require('./user.routes.auth'));
     app.use('/api/auth/profile', require('./profile.routes.auth'));
     app.use('/api/auth/social', require('./social.routes.auth'));
-    app.use('/api/auth/model', require('./__modelroute.test/modelroute.test'));
 
 };

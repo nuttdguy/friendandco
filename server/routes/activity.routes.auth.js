@@ -4,7 +4,6 @@ const router = express.Router();
 
 
 // IMPORT SERVICES :: URL: API/AUTH/ACTIVITY
-const activityService = require('../services/__mongo.services/activity.service');
 
 
 // VALIDATION
@@ -16,8 +15,6 @@ const activityService = require('../services/__mongo.services/activity.service')
 
 
 // MODEL :: FOR TESTING
-
-const { Activity } = require('../models/__mongo_models/__index.model');
 
 
 // TEST ROUTES
