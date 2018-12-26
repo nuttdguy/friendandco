@@ -1,10 +1,10 @@
 // LOAD MODULES
-const { bcryptCompare, signJwt } = require('./utils/common.service');
+const { bcryptCompare, signJwt } = require('./common/common.service');
 const { sendMail } = require('./mail/mail.service');
 
 
 // LOAD REPOSITORY
-const { UserRepository } = require('../repository/__index.repository');
+const { UserRepository } = require('../repository/index.repository');
 
 
 
@@ -13,14 +13,8 @@ const { UserRepository } = require('../repository/__index.repository');
 
 const validateRegisterInput = require('../validation/register.validate');
 const validateLoginInput = require('../validation/login');
-const shapeInput = require('../utils/shapeInput.utils');
+const shapeInput = require('../validation/shapeInput.utils');
 
-
-
-// UTILS
-const SUCCESS = require('../utils/SUCCESS.message');
-const ERROR = require('../utils/ERRORS.message');
-const message = require('../utils/message.utils');
 
 
 // register => sendmail => verify user
@@ -56,7 +50,7 @@ const registerUser = async (payload) => {
     }
 
     // if email exists, return error response
-    errors = ERROR.EXISTS_EMAIL;
+    errors.error = 'Email already exists';
     return errors;
 };
 
@@ -107,7 +101,7 @@ const loginUser = async (payload) => {
 const verifyEmail = async (payload) => {
 
     // find userid in verify url document, return verify obj
-    payload = await findVerifyEmailUrl(payload);
+    payload = findVerifyEmailUrl(payload);
 
     // if (payload !== null) {
 

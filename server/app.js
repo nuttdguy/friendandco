@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 
 // APP => ROUTES => SERVICE => REPOSITORY + ENTITIES
 
-
 // instance of express app
 const app = express();
 
@@ -19,14 +18,11 @@ app.use(passport.initialize());
 
 
 // Passport: configure
-require('../config/passport')(passport);
+require('./config/passport')(passport);
 
 
-// Load routes
-require('../routes/__index.routes')(app);
-
-
-const path = require('path');
+// Load controllers
+require('./controllers/index.controller')(app);
 
 
 // Serve static assets if in production
@@ -40,10 +36,9 @@ if (process.env.NODE_ENV === 'production') {
     })
 }
 
-const PORT = process.env.PORT || 5100;
+
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
 });
-
-module.exports = app;

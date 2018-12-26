@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'babel-polyfill';
-import App from './__testdir/App'; // use for testing server routes
+import App from './__testdir/App'; // use for testing server controllers
 
 // TODO use for development
 // import App from './App';

@@ -4,15 +4,7 @@ const passport = require('passport');
 
 
 // IMPORT SERVICES :: URL: API/AUTH/USER/
-const { userService } = require('../services/__index.service');
-
-
-
-// UTILS
-const SUCCESS = require('../utils/SUCCESS.message');
-const ERROR = require('../utils/ERRORS.message');
-const message = require('../utils/message.utils');
-
+const { userService } = require('../services/index.service');
 
 
 
@@ -35,17 +27,18 @@ router.post('/test', (req, res) => {
 ////////////////////////////////////////////
 
 //=====|| verify the email url
-router.get('/verify/:id', async (req, res, next) => {
+router.get('/verify/:userId', async (req, res, next) => {
     let payload = {};
-    payload.id = req.params.id;
+    payload.userId = req.params.userId;
 
     payload = await userService.verifyEmail(payload);
-    return res.status(200).send(payload);
+    res.status(200).send(payload);
+    next();
 });
 
 
 // TODO forget password recovery
-//=====|| forget password route
+// //=====|| forget password route
 router.get('/recover/password ', async (req, res, next) => {
 
 });
@@ -60,32 +53,24 @@ router.post('/register', async (req, res, next) => {
     let payload = req.body;
 
     payload = await userService.registerUser(payload);
-    return res.status(200).send(payload);
+    res.status(200).send(payload);
+    next();
 });
 
 
 //=====|| login the user
+
 router.post('/login', async (req, res, next) => {
     let payload = req.body;
 
     payload = await userService.loginUser(payload);
-    return res.status(200).send(payload);
+    res.status(200).send(payload);
+    next();
 });
 
 
-
-router.get('/current', passport.authenticate('jwt', { session: false}), (req, res) => {
-   res.json({
-       id: req.user.id,
-       name: req.user.name,
-       email: req.user.email
-   })
-});
-
-
-console.log('Done loading user routes ... ');
+console.log('Done loading user controllers ... ');
 
 //=====|| EXPORT ROUTER
 
 module.exports = router;
-

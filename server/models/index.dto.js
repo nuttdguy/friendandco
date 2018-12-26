@@ -1,9 +1,11 @@
 // IMPORT LIBRARIES
 const Sequelize = require('sequelize');
 
+
 // CONFIG
 const KEYS = require('../config/keys');
 const pool = {max: 5, min: 0, acquire: 30000, idle: 10000};
+
 
 // CONNECT TO DB
 const sequelize = new Sequelize(KEYS.MYSQLURI, {
@@ -54,19 +56,14 @@ const db = {
 
 db.User.hasOne(db.VerifyEmail);
 
+db.VerifyEmail.belongsTo(db.User, {foreignKey: 'fkUserId', target: 'id', constraints: true});
 db.Secret.belongsTo(db.User);
 db.Profile.belongsTo(db.User);
-// db.VerifyEmail.belongsTo(db.User, {foreignKey: 'fkUserId', target: 'id', constraints: true});
+
 
 
 
 console.log('Done associating entities ...');
-
-// const k = Object.keys(db.VerifyEmail.rawAttributes);
-// const u = Object.keys(db.User.rawAttributes);
-// console.log(k);
-// console.log(u);
-
 
 
 // ADD SEQUELIZE INSTANCE + SEQUELIZE OBJECT TO DB OBJECT

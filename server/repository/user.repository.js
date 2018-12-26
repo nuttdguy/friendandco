@@ -2,7 +2,7 @@
 const {
     generateUUID4,
     bcryptPassword
-} = require('../services/utils/common.service');
+} = require('../services/common/common.service');
 
 
 // LOAD ENTITIES
@@ -18,7 +18,7 @@ const {
     Photo,
     Work,
     genUUID4,
-} = require('../models/__index.mysql.entity');
+} = require('../models/index.dto');
 
 
 // QUERIES :: FIND
@@ -37,17 +37,9 @@ const findUserByUsername = (payload) => {
 };
 
 const findVerifyEmailUrl = async (payload) => {
-    const test = await User.findOne(
-        {include: [
-                {model: VerifyEmail},
-                ]},
-        {where: { email: payload.email}});
-
-
-    // console.log(test);
-    console.log('finding verify email by user id ...');
-    // console.log(payload);
-    return VerifyEmail.findOne({}, {where: {userId: payload.userId}})
+    console.log('finding verify email url by user id  ...', payload);
+    return await VerifyEmail.findOne(
+        {where: { userId: payload.userId}});
 };
 
 // MANIPULATION :: SAVE
@@ -105,9 +97,10 @@ const activateUserAccount = (payload) => {
 
 const deleteRecord = (payload) => {
     console.log('destroying entity ...');
-
-    return payload.destroy();
-    
+    if (payload !== null) {
+        return payload.destroy();
+    }
+    return {error: 'nothing to delete, payload is null ...'}
 };
 
 
