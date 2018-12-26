@@ -16,7 +16,7 @@ console.log('Done connecting to database ...');
 
 
 // DEFINE ENTITY PATH
-const _ = './mysql/domains';
+const _ = './domains';
 
 // IMPORT ENTITY + OPTIONS
 const {UserEntity, UserEntityOptions} = require(_ + '/user/user.entity');

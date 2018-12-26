@@ -18,7 +18,7 @@ const {
     Photo,
     Work,
     genUUID4,
-} = require('../models/index.dto');
+} = require('../dto/index.dto');
 
 
 // QUERIES :: FIND

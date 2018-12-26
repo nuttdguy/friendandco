@@ -7,7 +7,7 @@ const { mailService } = require('../index.service');
 
 // LOAD MODEL
 ///////////////////////////////
-const {User, Profile, Verify} = require('../../models/index.dto');
+const {User, Profile, Verify} = require('../../dto/index.dto');
 
 
 // QUERY OPTIONS
