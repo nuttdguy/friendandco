@@ -1,11 +1,6 @@
 // LOAD MODULES
-const {
-    generateUUID4,
-    bcryptPassword,
-    bcryptCompare,
-    sendMail,
-    signJwt
-} = require('./utils/common.service');
+const { bcryptCompare, signJwt } = require('./utils/common.service');
+const { sendMail } = require('./mail/mail.service');
 
 
 // LOAD REPOSITORY
@@ -49,41 +44,15 @@ const registerUser = async (payload) => {
     let user = await findUserByEmail(payload);
     if (user === null) {
 
-        // save user
-        const user = await saveUser(payload);
+        // build user + verify email; then save
+        payload = await UserRepository.saveUser(payload);
 
-        // save verify email url
-        const email = await saveVerifyEmail(payload);
-        // console.log(payload);
+        payload = payload.user.dataValues;
 
-        // SET FOREIGN KEY VALUE
-        email.set({fkUserId: user.id});
+        return payload;
+        // send verify email
+        // return sendMail(payload);
 
-        // PERSIST OBJECTS
-        user.save();
-        email.save();
-
-        // console.log({user:user, email: email});
-
-        // VALIDATE INVALID CONSTRAINT; DEL USER THEN EMAIL
-        const userDel = await UserRepository.deleteEntity(user);
-        const emailDel = await UserRepository.deleteEntity(email);
-
-        // VALIDATE VALID CONSTRAINT IS VALID; DEL EMAIL THEN USER
-        // const emailDel = await UserRepository.deleteEntity(email);
-        // const userDel = await UserRepository.deleteEntity(user);
-
-
-        return {user:userDel, email: emailDel};
-        return {user: userDel};
-
-        // return {user:user, email: email};
-        //
-        // // TESTING OUTPUT AND RELATIONSHIPS
-        // payload = await UserRepository.findVerifyEmailUrl(payload);
-        // console.log('Done sending email verification ...');
-        //
-        // return payload.dataValues;
     }
 
     // if email exists, return error response
@@ -146,7 +115,7 @@ const verifyEmail = async (payload) => {
         // payload.profileId = generateUUID4();
 
         // verified user, create profile and associate user to the profile
-        payload = await createUserProfile(payload);
+        // payload = await createUserProfile(payload);
         // console.log(payload, ' done building user profile');
 
         // // save the profile
@@ -197,42 +166,27 @@ const findVerifyEmailUrl = async (payload) => {
 ///////////////////////////////
 
 
-// save a single user record
-const saveUser = async (payload) => {
-
-
-    // GENERATE & ASSIGN UUID
-    payload.id = await generateUUID4();
-
-    // GENERATE & ASSIGN TOKENIZED PASSWORD
-    payload.password = await bcryptPassword(payload);
-
-    // CREATE USER
-    payload = await buildUser(payload);
-
-    // SAVE THE USER - IF DONE
-    return await UserRepository.saveUser(payload);
-
-};
 
 // save single verify email record
-const saveVerifyEmail = async (payload) => {
+// const buildVerifyEmail = async (payload) => {
 
 
-    // ADD TO VERIFY EMAIL DB
-    payload = await createVerifyEmail(payload);
+    // // ADD TO VERIFY EMAIL DB
+    // payload = await createVerifyEmail(payload);
+    //
+    // // GENERATE & ASSIGN UUID
+    // payload.id = await generateUUID4();
+    //
+    // return payload;
 
-    // GENERATE & ASSIGN UUID
-    payload.id = await generateUUID4();
+    // // SAVE VERIFY EMAIL - IF DONE
+    // payload = await UserRepository.saveVerifyEmail(payload);
+    //
+    // // SEND VERIFY ACCOUNT EMAIL :: IF ALL OPS ARE SUCCESSFUL
+    // return payload;
+    // return await sendMail(payload);
 
-    // SAVE VERIFY EMAIL - IF DONE
-    payload = await UserRepository.saveVerifyEmail(payload);
-
-    // SEND VERIFY ACCOUNT EMAIL :: IF ALL OPS ARE SUCCESSFUL
-    return payload;
-    return await sendMail(payload);
-
-};
+// };
 
 
 // update isActive of user account
@@ -247,34 +201,10 @@ const activateUserAccount = async (payload) => {
 
 
 
-
-
-
-
 // DELETE
 ///////////////////////////////
 
 
-
-
-
-
-// CREATE NEW
-///////////////////////////////
-
-const buildUser = function(payload) {
-    return UserRepository.buildUser(payload);
-};
-
-
-const createVerifyEmail = function(payload) {
-    return UserRepository.createVerifyEmail(payload);
-};
-
-
-const createUserProfile = function(payload) {
-    return UserRepository.createUserProfile(payload);
-}
 
 
 // EXPORT REFERENCES
@@ -282,21 +212,14 @@ const createUserProfile = function(payload) {
 
 
 module.exports = {
-    // bcryptPassword,
-    // bcryptCompare,
     // deleteVerifyEmailUrlBy,
     // activateUserProfile,
-    buildUser: buildUser,
-    createUserProfile,
-    createVerifyEmail,
     // findUserBy,
     findUserByEmail,
     // findUserById,
     // activateUserAccount,
     // findVerifyUrlBy,
     loginUser,
-    saveVerifyEmail,
-    saveUser,
     // saveProfile,
     // signJwt,
     // sendMail,

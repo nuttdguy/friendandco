@@ -33,19 +33,33 @@ const setMailOptions = (payload) => {
 };
 
 const htmlData = (payload) => {
+    console.log(payload);
     return `
      <html>
          <body>
             <p>Please confirm your registration by clicking this link</p> <br>
-            <a href="http://localhost:5000/api/auth/user/verify/${payload.userId}">
+            <a href="http://localhost:5000/api/auth/user/verify/${payload.id}">
             Verify email</a>
         </body>
     </html>`;
 };
 
 
+// send verify email
+const sendMail = async (payload) => {
+    const transporter = await createTransporter();
+    const mailOptions = await setMailOptions(payload);
+    payload = await transporter.sendMail(mailOptions);
+
+    console.log('Done sending email verification ...');
+    return payload;
+};
+
+
+
 module.exports = {
     createTransporter,
-    setMailOptions
+    setMailOptions,
+    sendMail
 };
 

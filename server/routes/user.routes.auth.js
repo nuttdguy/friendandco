@@ -20,7 +20,7 @@ const message = require('../utils/message.utils');
 let counter = 0;
 router.get('/test', async (req, res) => {
 
-    return res.send('message:: ' + counter++);
+    return res.send('message: ' + counter++);
 });
 
 

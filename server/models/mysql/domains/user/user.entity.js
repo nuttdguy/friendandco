@@ -5,9 +5,12 @@ const UserEntity = {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
+        field: 'id',
         validate: {
             isUUID: 4
         },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
     },
     username: {
         type: DataTypes.STRING,

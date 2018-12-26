@@ -13,8 +13,11 @@ describe('GET /api/auth/user/test', function() {
 
     it('should have number ', function(done) {
         agent.get('/api/auth/user/test')
-            .expect('Content-Type', /test\/html/)
-            .expect(200, done)
+            .expect('Content-Type', /text\/html/)
+            .expect(200)
+            .then(res => {
+                assert(res.body.message, 1)
+            });
     })
 
 });

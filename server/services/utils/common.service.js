@@ -3,9 +3,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const uuidV4 = require('uuid/v4');
 const KEYS = require('../../config/keys');
-const {
-    createTransporter,
-    setMailOptions } = require('../mail/mail.service');
 
 
 
@@ -50,13 +47,6 @@ const signJwt = async (payload) => {
 };
 
 
-// send verify email
-const sendMail = async (payload) => {
-    const transporter = await createTransporter();
-    const mailOptions = await setMailOptions(payload);
-
-    return await transporter.sendMail(mailOptions);
-};
 
 
 
@@ -66,5 +56,4 @@ module.exports = {
     bcryptPassword,
     bcryptCompare,
     signJwt,
-    sendMail
 };

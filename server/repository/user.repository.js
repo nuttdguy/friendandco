@@ -1,3 +1,9 @@
+// LOAD MODULES
+const {
+    generateUUID4,
+    bcryptPassword
+} = require('../services/utils/common.service');
+
 
 // LOAD ENTITIES
 ///////////////////////////////
@@ -10,7 +16,8 @@ const {
     History,
     Persona,
     Photo,
-    Work
+    Work,
+    genUUID4,
 } = require('../models/__index.mysql.entity');
 
 
@@ -33,7 +40,6 @@ const findVerifyEmailUrl = async (payload) => {
     const test = await User.findOne(
         {include: [
                 {model: VerifyEmail},
-                {model: Secret}
                 ]},
         {where: { email: payload.email}});
 
@@ -49,14 +55,31 @@ const findVerifyEmailUrl = async (payload) => {
 
 
 // save user record
-const saveUser = (entity) => {
-    return entity.save()
-};
+const saveUser = async (payload) => {
 
+    // generate & assign token as password
+    payload.password = await bcryptPassword(payload);
 
-// save verify email record
-const saveVerifyEmail = (entity) => {
-    return entity.save()
+    try {
+        // save user
+        let user = await buildUser(payload);
+
+        // save verify email url
+        let email = await buildVerifyEmail(user);
+        // console.log(payload);
+
+        // SET FOREIGN KEY VALUE
+        email.set({fkUserId: user.id});
+
+        // PERSIST OBJECTS
+        user.save();
+        email.save();
+
+        return {user: user, email: email};
+    } catch (e) {
+        return e;
+    }
+
 };
 
 
@@ -80,7 +103,7 @@ const activateUserAccount = (payload) => {
 // MANIPULATION :: DELETE
 ///////////////////////////////
 
-const deleteEntity = async (payload) => {
+const deleteRecord = (payload) => {
     console.log('destroying entity ...');
 
     return payload.destroy();
@@ -98,70 +121,67 @@ const deleteEntity = async (payload) => {
 const buildUser = function(payload) {
     console.log('building user ...');
     return User.build({
-        id: payload.id,
+        id: genUUID4(),
         username: payload.username,
         firstName: payload.firstName,
         lastName: payload.lastName,
         password: payload.password,
-        email: payload.email
+        email: payload.email,
     })
 };
 
-
 // build new verify email object
-const createVerifyEmail = function(payload) {
-    console.log('creating verify email ...', payload.email);
+const buildVerifyEmail = function(payload) {
+    console.log('building verify email ...', payload.email);
     return VerifyEmail.build({
+        id: genUUID4(),
         email: payload.email,
         username: payload.username,
         password: payload.password,
         userId: payload.id
-    },
-        {
-            include: [{ model: User } ]
-        })
+    })
 };
 
 
-const createUserProfile = function(payload) {
+const buildUserProfile = function(payload) {
     console.log('creating user profile');
-    const education = createEducation(),
-        history = createHistory(),
-        persona = createPersona(),
-        photo = createPhoto(),
-        work = createWork();
+    const education = buildEducation(),
+        history = buildHistory(),
+        persona = buildPersona(),
+        photo = buildPhoto(),
+        work = buildWork();
 
     return Profile.build({
         id: this.genUUID4,
     });
 };
 
-const createEducation = function(){
+const buildEducation = function(){
     return Education.build({
         id: this.genUUID4,
 
     })
 };
 
-const createHistory = function() {
+const buildHistory = function() {
     return History.build({
         id: this.genUUID4,
     })
 };
 
-const createPersona = function() {
+const buildPersona = function() {
     return Persona.build({
         id: this.genUUID4,
     })
 };
 
-const createPhoto = function() {
+const buildPhoto = function() {
     return Photo.build({
         id: this.genUUID4,
     })
 };
 
-const createWork = function() {
+const buildWork = function() {
     return Work.build({
         id: this.genUUID4,
     })
@@ -173,16 +193,14 @@ module.exports = {
     // deleteVerifyEmailUrlBy,
     activateUserAccount,
     buildUser,
-    createVerifyEmail,
-    createUserProfile,
-    deleteEntity,
+    buildVerifyEmail,
+    buildUserProfile,
     findUserByEmail,
     findUserByUsername,
     findVerifyEmailUrl,
     // findUserById,
     // activateUserAccount,
     // findVerifyUrlBy,
-    saveVerifyEmail,
     saveUser,
     // saveProfile,
     // signJwt,

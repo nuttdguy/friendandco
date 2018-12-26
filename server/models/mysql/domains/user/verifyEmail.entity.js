@@ -8,6 +8,10 @@ const VerifyEmailEntity = {
         type: DataTypes.UUID,
         primaryKey: true,
     },
+    userId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+    },
     email: {
         type: DataTypes.STRING,
         allowNull: false
@@ -31,6 +35,7 @@ const VerifyEmailEntity = {
     fkUserId: {
         type: DataTypes.UUID,
         foreignKey: true,
+        allowNull: false,
         references: {
             model: 'users',
             key: 'id'
