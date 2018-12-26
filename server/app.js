@@ -18,11 +18,12 @@ app.use(passport.initialize());
 
 
 // Passport: configure
-require('./config/passport')(passport);
+// require('./config/passport')(passport);
 
 
-// Load controllers
-require('./controllers/index.controller')(app);
+// Load routes
+require('./controllers/index.routes')(app);
+
 
 
 // Serve static assets if in production

@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
 
 
 // IMPORT SERVICES :: URL: API/AUTH/USER/
@@ -29,11 +28,15 @@ router.post('/test', (req, res) => {
 //=====|| verify the email url
 router.get('/verify/:userId', async (req, res, next) => {
     let payload = {};
-    payload.userId = req.params.userId;
 
-    payload = await userService.verifyEmail(payload);
-    res.status(200).send(payload);
-    next();
+    try {
+        payload.userId = req.params.userId;
+
+        payload = await userService.verifyEmail(payload);
+        res.status(200).send(payload);
+    } catch (e) {
+        next(e);
+    }
 });
 
 
@@ -52,9 +55,13 @@ router.get('/recover/password ', async (req, res, next) => {
 router.post('/register', async (req, res, next) => {
     let payload = req.body;
 
-    payload = await userService.registerUser(payload);
-    res.status(200).send(payload);
-    next();
+    try {
+        payload = await userService.registerUser(payload);
+        res.status(200).send(payload);
+    } catch (e) {
+        next(e);
+    }
+
 });
 
 
@@ -63,13 +70,18 @@ router.post('/register', async (req, res, next) => {
 router.post('/login', async (req, res, next) => {
     let payload = req.body;
 
-    payload = await userService.loginUser(payload);
-    res.status(200).send(payload);
-    next();
+    try {
+        payload = await userService.loginUser(payload);
+        res.status(200).send(payload);
+    } catch (e) {
+        next(e);
+    }
+
 });
 
 
 console.log('Done loading user controllers ... ');
+
 
 //=====|| EXPORT ROUTER
 
