@@ -55,7 +55,9 @@
  * */
 
 
-const api = '/api/auth';
+
+const api_user = '/api/user';
+const userController = require('./user.controller');
 module.exports = (app) => {
 
     /*****
@@ -64,9 +66,11 @@ module.exports = (app) => {
      * add one user
      * update one user info
      * activate a users account
-     * delete a users account
+     * delete a users accounts
      * ****/
-    app.use(api+'/user', require('./user.controller'));
+    app.post(api_user+'/register', userController.registerUser);
+    app.post(api_user+'/login', userController.loginUser);
+    app.get(api_user+'/activate/:userId', userController.activateUser); // direct link
 
 
     /*****

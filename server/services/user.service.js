@@ -4,7 +4,7 @@ const { sendMail } = require('./mail/mail.service');
 
 
 // LOAD REPOSITORY
-const { UserRepository } = require('../repository/index.repository');
+const { userRepository } = require('../repository/index.repository');
 
 
 
@@ -25,8 +25,8 @@ const shapeInput = require('../validation/shapeInput.utils');
 ///////////////////////////////
 
 
-// registers a new user
-const registerUser = async (payload) => {
+// registers new user
+async function registerUser(payload) {
 
     // trim, lowercase, validate data
     let { errors, isValid } = await validateRegisterInput(shapeInput(payload));
@@ -35,11 +35,11 @@ const registerUser = async (payload) => {
     if (!isValid) return errors;
 
     // find user by email; returns null if not found
-    let user = await findUserByEmail(payload);
+    let user = await userRepository.findUserByEmail(payload);
     if (user === null) {
 
         // build user + verify email; then save
-        payload = await UserRepository.saveUser(payload);
+        payload = await userRepository.saveUser(payload);
 
         payload = payload.user.dataValues;
 
@@ -52,56 +52,72 @@ const registerUser = async (payload) => {
     // if email exists, return error response
     errors.error = 'Email already exists';
     return errors;
-};
+}
 
 
 // login user
 // TODO Refactor Login
-const loginUser = async (payload) => {
+async function loginUser(user) {
 
-    // validate login input
-    const {errors, isValid} = validateLoginInput(payload);
-
-    // return if errors
+    // validate login input; // return if errors
+    let {errors, isValid} = validateLoginInput(user);
     if (!isValid) return errors;
 
-    // check that user exists
-    let foundUser = await findUserByUsername(payload);
+    try {
 
-    // return error if user was not found
-    if (foundUser === null) return errors.error = 'Username does not exist ...';
-
-    // compare entered password with users existing password token
-    let tokenHash = null;
-    const isMatch = await bcryptCompare(payload, foundUser);
+        // check that user exists; // return error if user was not found
+        let foundUser = await userRepository.findUserByUsername(user);
+        if (foundUser === null) return errors.error = 'Username does not exist ...';
 
 
-    if (isMatch && foundUser.isActive) {
+        const isMatch = await isPasswordMatch(user, foundUser);
+        if (isMatch && foundUser.isActive) {
 
-        // user is registered and active; sign token
-        tokenHash = await signJwt(foundUser);
-        return payload.success = {token: 'Bearer ' + tokenHash };
+            // user is registered and active; sign token
+            return {token: 'Bearer ' + await signJwt(foundUser) };
 
-    } else if (isMatch && !foundUser.isActive) {
+        } else if (isMatch && !foundUser.isActive) {
 
-        // email has not been verified, send error
-        errors.error = 'Your email has not been verified. Please verify by clicking the link in verify email and then try logging in again';
-        return errors;
-    } else {
+            // email has not been verified, send error
+            errors.error = 'Your email has not been verified. Please verify by clicking the link in verify email and then try logging in again';
+            return errors;
+        } else {
 
-        // password is incorrect, send error
-        errors.error = 'Password or username is incorrect';
-        return errors;
+            // password is incorrect, send error
+            errors.error = 'Password or username is incorrect';
+            return errors;
+        }
+    } catch (e) {
+        return e;
     }
 
-};
+    // compare entered password with users existing password token
+    function isPasswordMatch(user, foundUser) {
+        return bcryptCompare(user, foundUser);
+    }
+
+}
+
+
+// activate user account
+async function activateUser(userId) {
+    try {
+        return await userRepository.activateUserAccount(userId);
+    } catch (e) {
+        return e;
+    }
+}
+
+async function verify(user) {
+    return await userRepository.verify(user);
+}
 
 
 // verify email
 const verifyEmail = async (payload) => {
 
     // find userid in verify url document, return verify obj
-    payload = findVerifyEmailUrl(payload);
+    // payload = findVerifyEmailUrl(payload);
 
     // if (payload !== null) {
 
@@ -140,20 +156,20 @@ const verifyEmail = async (payload) => {
 ///////////////////////////////
 
 // find a single user by the user email
-const findUserByEmail = async (email) => {
-    return await UserRepository.findUserByEmail({email: email});
-};
+// function findUserByEmail(email) {
+//     return userRepository.findUserByEmail({email: email});
+// }
 
 
-const findUserByUsername = async (payload) => {
-    return await UserRepository.findUserByUsername(payload);
-};
+// const findUserByUsername = async (payload) => {
+//     return await userRepository.findUserByUsername(payload);
+// };
 
 
 // finds userId in Verify doc
-const findVerifyEmailUrl = async (payload) => {
-    return await UserRepository.findVerifyEmailUrl(payload);
-};
+// const findVerifyEmailUrl = async (payload) => {
+//     return await userRepository.findVerifyEmailUrl(payload);
+// };
 
 
 // SAVE
@@ -174,7 +190,7 @@ const findVerifyEmailUrl = async (payload) => {
     // return payload;
 
     // // SAVE VERIFY EMAIL - IF DONE
-    // payload = await UserRepository.saveVerifyEmail(payload);
+    // payload = await userRepository.saveVerifyEmail(payload);
     //
     // // SEND VERIFY ACCOUNT EMAIL :: IF ALL OPS ARE SUCCESSFUL
     // return payload;
@@ -184,9 +200,9 @@ const findVerifyEmailUrl = async (payload) => {
 
 
 // update isActive of user account
-const activateUserAccount = async (payload) => {
-    return UserRepository.activateUserAccount(payload);
-};
+// const activateUserAccount = async (payload) => {
+//     return userRepository.activateUserAccount(payload);
+// };
 
 
 //  UPDATE
@@ -206,17 +222,8 @@ const activateUserAccount = async (payload) => {
 
 
 module.exports = {
-    // deleteVerifyEmailUrlBy,
-    // activateUserProfile,
-    // findUserBy,
-    findUserByEmail,
-    // findUserById,
-    // activateUserAccount,
-    // findVerifyUrlBy,
     loginUser,
-    // saveProfile,
-    // signJwt,
-    // sendMail,
     verifyEmail,
-    registerUser
+    registerUser,
+    activateUser
 };

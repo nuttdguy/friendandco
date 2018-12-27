@@ -24,23 +24,23 @@ const {
 // QUERIES :: FIND
 ///////////////////////////////
 
-// find a single user by the user email
-const findUserByEmail = (payload) => {
+// find one user by the user email
+async function findUserByEmail(payload) {
     console.log('finding user by email ...');
-    return User.findOne({}, {where: {email: payload.email}})
-};
+    return User.findOne({where: {email: payload.email}})
+}
 
-// find a single user by username
-const findUserByUsername = (payload) => {
+// find one user by username
+async function findUserByUsername(user) {
     console.log('finding user by username ...');
-    return User.findOne({}, {where: {username: payload.username}})
+    return User.findOne({where: {username: user.username}})
 };
 
-const findVerifyEmailUrl = async (payload) => {
-    console.log('finding verify email url by user id  ...', payload);
+async function findVerifyEmailUrl(user) {
+    console.log('finding verify email url by user id  ...', user);
     return await VerifyEmail.findOne(
-        {where: { userId: payload.userId}});
-};
+        {where: { userId: user.userId}});
+}
 
 // MANIPULATION :: SAVE
 ///////////////////////////////
@@ -77,17 +77,32 @@ const saveUser = async (payload) => {
 
 
 // MANIPULATION :: UPDATE
-///////////////////////////////
 
-// activate user isActive field
-const activateUserAccount = (payload) => {
-    console.log('activating user account ... ');
-    return User.update(
-        { isActive: true },
-        { where: {
-            id: payload.userId}
-        })
-};
+// activate user account
+async function activateUserAccount(userId) {
+
+    try {
+        console.log('activating user account ... ');
+
+        // update field of user record
+        const res = await User.update(
+            {isActive: true},
+            {
+                where: {
+                    id: userId
+                }
+            });
+        console.log(res);
+
+        // if success, delete record in verify email
+        if (res) {
+            return await deleteActivateUserAccount(userId);
+        }
+    } catch (e) {
+        return e;
+    }
+
+}
 
 
 
@@ -95,7 +110,14 @@ const activateUserAccount = (payload) => {
 // MANIPULATION :: DELETE
 ///////////////////////////////
 
-const deleteRecord = (payload) => {
+function deleteActivateUserAccount(userId) {
+    return VerifyEmail.destroy({
+        where: {userId: userId}
+    })
+}
+
+
+function deleteRecord(payload) {
     console.log('destroying entity ...');
     if (payload !== null) {
         return payload.destroy();

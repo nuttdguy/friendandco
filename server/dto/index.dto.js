@@ -1,13 +1,13 @@
-// IMPORT LIBRARIES
+// import libraries
 const Sequelize = require('sequelize');
 
 
-// CONFIG
+// config connection
 const KEYS = require('../config/keys');
 const pool = {max: 5, min: 0, acquire: 30000, idle: 10000};
 
 
-// CONNECT TO DB
+// connect to db
 const sequelize = new Sequelize(KEYS.MYSQLURI, {
     pool: pool,
     logging: false
@@ -15,7 +15,7 @@ const sequelize = new Sequelize(KEYS.MYSQLURI, {
 console.log('Done connecting to database ...');
 
 
-// DEFINE ENTITY PATH
+// entity path
 const _ = './domains';
 
 // IMPORT ENTITY + OPTIONS
@@ -31,7 +31,7 @@ const {PersonalityEntity, PersonalityEntityOptions} = require(_ + '/persona/pers
 const {WorkEntity, WorkEntityOptions} = require(_ + '/user/work.entity');
 
 
-// ADD ENTITIES TO SEQUELIZE - SERVER-SIDE
+// add entities to sequelize - app server-side
 const db = {
     User: sequelize.define('user', UserEntity, UserEntityOptions),
     VerifyEmail: sequelize.define('verifyEmail', VerifyEmailEntity, VerifyEntityOptions),
@@ -50,9 +50,9 @@ const db = {
 };
 
 
-// ASSOCIATE ENTITIES - SERVER-SIDE
+// associate entities :: app server-side
 
-// DOMAIN :: USER
+// domain :: user
 
 db.User.hasOne(db.VerifyEmail);
 
@@ -60,26 +60,24 @@ db.VerifyEmail.belongsTo(db.User, {foreignKey: 'fkUserId', target: 'id', constra
 db.Secret.belongsTo(db.User);
 db.Profile.belongsTo(db.User);
 
-
-
-
 console.log('Done associating entities ...');
 
 
-// ADD SEQUELIZE INSTANCE + SEQUELIZE OBJECT TO DB OBJECT
+// add sequelize instance + sequelize object to db object
 db.sequelize = sequelize;
 console.log('Done loading entities ...');
 
 
-// ADD UUID GENERATOR TO DB OBJECT
+// add uuid generator to db object
 db.genUUID4 = require('uuid/v4');
 
 
-// SYNC SEQUELIZE + PERSIST DEFINED ENTITIES WITH DATABASE - DB-SERVER
+// sync sequelize + persist defined entities with database - db server-side
 sequelize.sync( {force: true});
 
-// EXPORT DB INSTANCE; SERVER-SIDE
 
+
+// export db instance; app server-side
 module.exports = db;
 
 
