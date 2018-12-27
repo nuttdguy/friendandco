@@ -16,6 +16,17 @@
  * delete an activity
  *
  *
+ * [profile ops]
+ * get one profile info, {options} : questions, hobbies, interest, photos, work, education
+ * get one profile activity
+ * add one activity, redirect to activity controller (ac)
+ * update one activity, redirect to ac
+ * delete one activity, redirect to ac
+ * disband one activity, redirect to ac
+ * get connections, redirect to connection controller, (cc)
+ * get reputation, redirect to reputation controller, (rc)
+ *
+ *
  * [persona ops]
  * get one persona info, {options}
  * get many persona info, {options}
@@ -63,6 +74,18 @@ const activityController = require('./activity.controller');
 module.exports = (app) => {
 
     /*****
+     * [activity ops]
+     * get one activity info, {options}
+     * get many activity info, {options}
+     * add one activity, {options}
+     * update status of an activity, {options}
+     * delete an activity
+     * ****/
+    const api_activity = '/api/activity';
+    app.post(api_activity+'/new', activityController.registerActivity);
+
+
+    /*****
      * [user ops]
      * get one users info -- (pending test)
      * add one user -- (pending test)
@@ -76,22 +99,12 @@ module.exports = (app) => {
     app.post(api_user+'/register', userController.registerUser);
     app.post(api_user+'/login', userController.loginUser);
     app.post(api_user+'/reset-password', userController.resetPassword); // TODO finish
-    app.get(api_user+'/activate/:userId', userController.activateUser);
+    app.get(api_user+'/activate/:userId', userController.activateUser); // TODO create + link user to profile
     app.get(api_user+'/:userId', userController.getUser);
     app.delete(api_user+'/:userId', userController.deleteUser);
     app.put(api_user+'/update', userController.updateUser);
 
 
-    /*****
-     * [activity ops]
-     * get one activity info, {options}
-     * get many activity info, {options}
-     * add one activity, {options}
-     * update status of an activity, {options}
-     * delete an activity
-     * ****/
-    const api_activity = '/api/activity';
-    app.post(api_activity+'/new', activityController.registerActivity);
 
 
 };
