@@ -21,18 +21,56 @@ const {
 } = require('../dto/index.dto');
 
 
-// QUERIES :: FIND
-///////////////////////////////
+// activate user account
+async function activateAccount(userId) {
 
-// find one user by the user email
-async function findUserByEmail(email) {
-    console.log('finding user by email ...');
+    try {
+        console.log('activating user account ... ', userId);
+
+        // update field of user record
+        return await User.update(
+            {isActive: true},
+            {where: { id: userId }});
+
+    } catch (e) {
+        return e;
+    }
+
+}
+
+// delete verify email
+function deleteVerifyEmail(userId) {
+    console.log('deleting verify email record ...', userId);
+    return VerifyEmail.destroy({
+        where: {userId: userId}
+    })
+}
+
+// delete user
+async function deleteUser(userId) {
+    try {
+        console.log('deleting the user...', userId);
+        return await User.destroy({where: {id: userId}})
+    } catch (e) {
+        return e;
+    }
+}
+
+// find user by email
+async function findByEmail(email) {
+    console.log('finding user by email ... ', email);
     return await User.findOne({where: {email: email}})
 }
 
+// find user by id
+async function findById(userId) {
+    console.log('finding user by id ...');
+    return await User.findByPk(userId)
+}
+
 // find user by username
-async function findUserByUsername(username) {
-    console.log('finding user by username ...');
+async function findByUsername(username) {
+    console.log('finding user by username ... ', username);
     return await User.findOne({where: {username: username}})
 }
 
@@ -43,16 +81,7 @@ async function findVerifyEmail(userId) {
         {where: { userId: userId}});
 }
 
-async function findUserById(userId) {
-    console.log('finding user by id ...');
-    return await User.findById(userId)
-}
-
-// MANIPULATION :: SAVE
-///////////////////////////////
-
-
-// save user record
+// save user
 async function saveUser(user) {
 
     // generate & assign token as password
@@ -70,7 +99,10 @@ async function saveUser(user) {
         email.set({fkUserId: user.id});
 
         // PERSIST OBJECTS
+        console.log('saving user ... ', user.userId);
         user.save();
+
+        console.log('saving verify email ... ', email.userId);
         email.save();
 
         return {user: user, email: email};
@@ -80,49 +112,28 @@ async function saveUser(user) {
 
 }
 
-
-// MANIPULATION :: UPDATE
-
-// activate user account
-async function activateUserAccount(userId) {
-
+// update user
+async function updateUser(dataToUpdate) {
     try {
-        console.log('activating user account ...');
+        const user = await User.findByPk(dataToUpdate.id);
 
-        // update field of user record
-        return await User.update(
-            {isActive: true},
-            {where: { id: userId }});
+        if (user !== null) {
 
+            console.log('updating user ... ', dataToUpdate.id);
+            return user.update(
+                {
+                    username: dataToUpdate.username,
+                    firstName: dataToUpdate.firstName,
+                    lastName: dataToUpdate.lastName,
+                    email: dataToUpdate.email
+                },
+                {where: {userId: dataToUpdate.id}})
+        }
+        return 'user was not found ... ' + dataToUpdate.id;
     } catch (e) {
         return e;
     }
-
 }
-
-
-
-
-// MANIPULATION :: DELETE
-///////////////////////////////
-
-function destroyVerifyEmail(userId) {
-    console.log('deleting verify email record ...');
-    return VerifyEmail.destroy({
-        where: {userId: userId}
-    })
-}
-
-
-function deleteRecord(payload) {
-    console.log('destroying entity ...');
-    if (payload !== null) {
-        return payload.destroy();
-    }
-    return {error: 'nothing to delete, payload is null ...'}
-};
-
-
 
 
 // ENTITIES :: BUILD ; CREATE NEW
@@ -203,22 +214,13 @@ const buildWork = function() {
 
 module.exports = {
 
-    // deleteVerifyEmailUrlBy,
-    activateUserAccount,
-    buildUser,
-    buildVerifyEmail,
-    buildUserProfile,
-    destroyVerifyEmail,
-    findUserByEmail,
-    findUserById,
-    findUserByUsername,
+    activateAccount,
+    deleteUser,
+    deleteVerifyEmail,
+    findByEmail,
+    findById,
+    findByUsername,
     findVerifyEmail,
-    // findUserById,
-    // activateUserAccount,
-    // findVerifyUrlBy,
     saveUser,
-    // saveProfile,
-    // signJwt,
-    // sendMail,
-
+    updateUser
 };

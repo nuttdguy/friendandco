@@ -27,8 +27,8 @@ async function activateUser(userId) {
 
         if (hasVerified !== null) {
 
-            const user =  await userRepository.activateUserAccount(userId);
-            userRepository.destroyVerifyEmail(userId);
+            const user =  await userRepository.activateAccount(userId);
+            userRepository.deleteVerifyEmail(userId);
             return user;
         }
 
@@ -38,16 +38,23 @@ async function activateUser(userId) {
     }
 }
 
+// delete user
+async function deleteUser(userId) {
+    try {
+        return await userRepository.deleteUser(userId);
+    } catch (e) {
+
+    }
+}
 
 // get user
 async function getUser(userId) {
     try {
-        return await userRepository.findUserById(userId);
+        return await userRepository.findById(userId);
     } catch (e) {
         return e;
     }
 }
-
 
 // login user
 async function loginUser(user) {
@@ -59,7 +66,7 @@ async function loginUser(user) {
     try {
 
         // check that user exists; // return error if user was not found
-        let foundUser = await userRepository.findUserByUsername(user.username);
+        let foundUser = await userRepository.findByUsername(user.username);
         if (foundUser === null) return errors.error = 'Username does not exist ...';
 
 
@@ -91,7 +98,6 @@ async function loginUser(user) {
 
 }
 
-
 // registers new user
 async function registerUser(user) {
 
@@ -102,7 +108,7 @@ async function registerUser(user) {
     try {
 
         // find user by email; returns null if not found
-        const foundUser = await userRepository.findUserByEmail(user.email);
+        const foundUser = await userRepository.findByEmail(user.email);
         if (foundUser === null) {
 
             // build user + verify email; then save
@@ -124,12 +130,11 @@ async function registerUser(user) {
 
 }
 
-
 // reset password
 async function resetPassword(username) {
 
     try {
-        const user = await userRepository.findUserByUsername(username);
+        const user = await userRepository.findByUsername(username);
 
         if (user !== null) {
 
@@ -140,6 +145,15 @@ async function resetPassword(username) {
     }
 }
 
+// update user
+async function updateUser(dataToUpdate) {
+
+    try {
+        return await userRepository.updateUser(dataToUpdate);
+    } catch (e) {
+        return e;
+    }
+}
 
 
 // EXPORT REFERENCES
@@ -148,8 +162,10 @@ async function resetPassword(username) {
 
 module.exports = {
     activateUser,
+    deleteUser,
     getUser,
     loginUser,
     registerUser,
     resetPassword,
+    updateUser
 };

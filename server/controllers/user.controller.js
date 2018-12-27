@@ -6,22 +6,6 @@ const { userService } = require('../services/index.service');
 
 
 
-// TEST ROUTES
-let counter = 0;
-// router.get('/test', async (req, res) => {
-//
-//     return res.send('message: ' + counter++);
-// });
-//
-//
-// router.post('/test', (req, res) => {
-//     console.log(req.body);
-//     res.send(req.body);
-// });
-
-
-
-
 // activate user account
 async function activateUser(req, res, next) {
     const userId = req.params.userId;
@@ -34,6 +18,17 @@ async function activateUser(req, res, next) {
     }
 }
 
+// delete user
+async function deleteUser(req, res, next) {
+    const userId = req.params.userId;
+
+    try {
+        const result = await userService.deleteUser(userId);
+        res.status(200).json(result);
+    } catch (e) {
+        return e;
+    }
+}
 
 // get user
 async function getUser(req, res, next) {
@@ -53,8 +48,6 @@ async function getUser(req, res, next) {
     }
 }
 
-
-
 // login user
 async function loginUser(req, res, next) {
     let user = req.body;
@@ -66,7 +59,6 @@ async function loginUser(req, res, next) {
         next(e);
     }
 }
-
 
 // register new user
 async function registerUser(req, res, next) {
@@ -93,6 +85,18 @@ async function resetPassword(req, res, next) {
 }
 
 
+// update user
+async function updateUser(req, res, next) {
+    const dataToUpdate = req.body;
+
+    try {
+
+        const result = await userService.updateUser(dataToUpdate);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e);
+    }
+}
 
 console.log('Done loading user controllers ...');
 
@@ -103,9 +107,10 @@ console.log('Done loading user controllers ...');
 
 module.exports = {
     activateUser,
+    deleteUser,
     getUser,
     loginUser,
     registerUser,
     resetPassword,
-
+    updateUser,
 };

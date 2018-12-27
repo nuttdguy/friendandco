@@ -73,7 +73,8 @@ module.exports = (app) => {
     app.post(api_user+'/reset-password', userController.resetPassword); // TODO finish
     app.get(api_user+'/activate/:userId', userController.activateUser);
     app.get(api_user+'/:userId', userController.getUser);
-
+    app.delete(api_user+'/:userId', userController.deleteUser);
+    app.put(api_user+'/update', userController.updateUser);
 
 
     /*****
