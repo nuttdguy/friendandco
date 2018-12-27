@@ -1,9 +1,5 @@
-const express = require('express');
-
-
-// IMPORT SERVICES :: URL: API/AUTH/USER/
+// import services
 const { userService } = require('../services/index.service');
-
 
 
 // activate user account
@@ -36,7 +32,6 @@ async function getUser(req, res, next) {
 
     try {
         const result = await userService.getUser(userId);
-        console.log(result);
 
         if (result !== null) {
             return res.status(200).json(result);
@@ -73,7 +68,6 @@ async function registerUser(req, res, next) {
 
 }
 
-
 // TODO forget password recovery
 // //=====|| forget password route
 async function resetPassword(req, res, next) {
@@ -84,13 +78,11 @@ async function resetPassword(req, res, next) {
     next();
 }
 
-
 // update user
 async function updateUser(req, res, next) {
     const dataToUpdate = req.body;
 
     try {
-
         const result = await userService.updateUser(dataToUpdate);
         res.status(200).json(result);
     } catch (e) {
@@ -98,7 +90,8 @@ async function updateUser(req, res, next) {
     }
 }
 
-console.log('Done loading user controllers ...');
+
+console.log('done loading user controllers ...');
 
 
 

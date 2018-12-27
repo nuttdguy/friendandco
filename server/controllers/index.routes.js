@@ -55,18 +55,21 @@
  * */
 
 
-
 const api_user = '/api/user';
+const api_activity = '/api/activity';
 const userController = require('./user.controller');
+
 module.exports = (app) => {
 
     /*****
      * [user ops]
-     * get one users info, {options}
-     * add one user
-     * update one user info
-     * activate a users account
-     * delete a users accounts
+     * get one users info -- (pending test)
+     * add one user -- (pending test)
+     * update one user info -- (pending test)
+     * activate a users account -- (pending test)
+     * login user -- (pending test)
+     * register user -- (pending test)
+     * delete a users account -- (pending test)
      * ****/
     app.post(api_user+'/register', userController.registerUser);
     app.post(api_user+'/login', userController.loginUser);
@@ -85,6 +88,7 @@ module.exports = (app) => {
      * update status of an activity, {options}
      * delete an activity
      * ****/
+    app.post(api_activity+'/new', activityController.registerActivity);
 
 
 };

@@ -64,7 +64,7 @@ async function findByEmail(email) {
 
 // find user by id
 async function findById(userId) {
-    console.log('finding user by id ...');
+    console.log('finding user by id ... ', userId);
     return await User.findByPk(userId)
 }
 

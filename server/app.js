@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 
 // instance of express app
 const app = express();
-const router = express.Router();
+
 
 // Parse incoming body into Json format
 app.use(bodyParser.json());

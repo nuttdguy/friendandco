@@ -1,18 +1,5 @@
-// import libraries
-const Sequelize = require('sequelize');
-
-
-// config connection
-const KEYS = require('../config/keys');
-const pool = {max: 5, min: 0, acquire: 30000, idle: 10000};
-
-
 // connect to db
-const sequelize = new Sequelize(KEYS.MYSQLURI, {
-    pool: pool,
-    logging: false
-});
-console.log('Done connecting to database ...');
+const sequelize = require('./db.connection');
 
 
 // entity path
@@ -60,12 +47,12 @@ db.VerifyEmail.belongsTo(db.User, {foreignKey: 'fkUserId', target: 'id', constra
 db.Secret.belongsTo(db.User);
 db.Profile.belongsTo(db.User);
 
-console.log('Done associating entities ...');
+console.log('done associating entities ...');
 
 
 // add sequelize instance + sequelize object to db object
 db.sequelize = sequelize;
-console.log('Done loading entities ...');
+console.log('done loading entities ...');
 
 
 // add uuid generator to db object
@@ -74,7 +61,6 @@ db.genUUID4 = require('uuid/v4');
 
 // sync sequelize + persist defined entities with database - db server-side
 sequelize.sync( {force: false});
-
 
 
 // export db instance; app server-side
