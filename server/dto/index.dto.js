@@ -73,7 +73,7 @@ db.genUUID4 = require('uuid/v4');
 
 
 // sync sequelize + persist defined entities with database - db server-side
-sequelize.sync( {force: true});
+sequelize.sync( {force: false});
 
 
 

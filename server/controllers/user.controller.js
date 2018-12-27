@@ -21,15 +21,6 @@ let counter = 0;
 
 
 
-// GET ROUTES
-////////////////////////////////////////////
-
-
-// TODO forget password recovery
-// //=====|| forget password route
-// router.get('/recover/password ', async (req, res, next) => {
-//
-// });
 
 // activate user account
 async function activateUser(req, res, next) {
@@ -43,23 +34,28 @@ async function activateUser(req, res, next) {
     }
 }
 
-// POST ROUTES
-////////////////////////////////////////////
 
-// register new user
-async function registerUser(req, res, next) {
-    let payload = req.body;
+// get user
+async function getUser(req, res, next) {
+    const userId = req.params.userId;
 
     try {
-        const result = await userService.registerUser(payload);
-        res.status(200).json(result);
+        const result = await userService.getUser(userId);
+        console.log(result);
+
+        if (result !== null) {
+            return res.status(200).json(result);
+        }
+
+        return res.status(200).json({result: 'user was not found ...'});
     } catch (e) {
         next(e);
     }
-
 }
 
-// login the user
+
+
+// login user
 async function loginUser(req, res, next) {
     let user = req.body;
 
@@ -72,13 +68,44 @@ async function loginUser(req, res, next) {
 }
 
 
-console.log('Done loading user controllers ... ');
+// register new user
+async function registerUser(req, res, next) {
+    let user = req.body;
+
+    try {
+        const result = await userService.registerUser(user);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e);
+    }
+
+}
 
 
-//=====|| EXPORT ROUTER
+// TODO forget password recovery
+// //=====|| forget password route
+async function resetPassword(req, res, next) {
+    const username = req.body.username;
+
+
+    res.status(200).json(username);
+    next();
+}
+
+
+
+console.log('Done loading user controllers ...');
+
+
+
+// EXPORT REFERENCES
+///////////////////////////////
 
 module.exports = {
-    registerUser,
+    activateUser,
+    getUser,
     loginUser,
-    activateUser
+    registerUser,
+    resetPassword,
+
 };

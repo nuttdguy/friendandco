@@ -70,7 +70,10 @@ module.exports = (app) => {
      * ****/
     app.post(api_user+'/register', userController.registerUser);
     app.post(api_user+'/login', userController.loginUser);
-    app.get(api_user+'/activate/:userId', userController.activateUser); // direct link
+    app.post(api_user+'/reset-password', userController.resetPassword); // TODO finish
+    app.get(api_user+'/activate/:userId', userController.activateUser);
+    app.get(api_user+'/:userId', userController.getUser);
+
 
 
     /*****

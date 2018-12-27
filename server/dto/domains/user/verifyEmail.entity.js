@@ -24,13 +24,11 @@ const VerifyEmailEntity = {
         type: DataTypes.STRING,
         allowNull: false
     },
-    hasActivated: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
+    isVerifyEmail: {
+        type: DataTypes.BOOLEAN
     },
     isRecoverPassword: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
+        type: DataTypes.BOOLEAN
     },
     fkUserId: {
         type: DataTypes.UUID,

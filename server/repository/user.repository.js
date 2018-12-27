@@ -25,21 +25,27 @@ const {
 ///////////////////////////////
 
 // find one user by the user email
-async function findUserByEmail(payload) {
+async function findUserByEmail(email) {
     console.log('finding user by email ...');
-    return User.findOne({where: {email: payload.email}})
+    return await User.findOne({where: {email: email}})
 }
 
-// find one user by username
-async function findUserByUsername(user) {
+// find user by username
+async function findUserByUsername(username) {
     console.log('finding user by username ...');
-    return User.findOne({where: {username: user.username}})
-};
+    return await User.findOne({where: {username: username}})
+}
 
-async function findVerifyEmailUrl(user) {
-    console.log('finding verify email url by user id  ...', user);
+// find user by id
+async function findVerifyEmail(userId) {
+    console.log('finding verify email url by user id  ...', userId);
     return await VerifyEmail.findOne(
-        {where: { userId: user.userId}});
+        {where: { userId: userId}});
+}
+
+async function findUserById(userId) {
+    console.log('finding user by id ...');
+    return await User.findById(userId)
 }
 
 // MANIPULATION :: SAVE
@@ -47,14 +53,14 @@ async function findVerifyEmailUrl(user) {
 
 
 // save user record
-const saveUser = async (payload) => {
+async function saveUser(user) {
 
     // generate & assign token as password
-    payload.password = await bcryptPassword(payload);
+    user.password = await bcryptPassword(user);
 
     try {
         // save user
-        let user = await buildUser(payload);
+        user = await buildUser(user);
 
         // save verify email url
         let email = await buildVerifyEmail(user);
@@ -72,8 +78,7 @@ const saveUser = async (payload) => {
         return e;
     }
 
-};
-
+}
 
 
 // MANIPULATION :: UPDATE
@@ -82,22 +87,13 @@ const saveUser = async (payload) => {
 async function activateUserAccount(userId) {
 
     try {
-        console.log('activating user account ... ');
+        console.log('activating user account ...');
 
         // update field of user record
-        const res = await User.update(
+        return await User.update(
             {isActive: true},
-            {
-                where: {
-                    id: userId
-                }
-            });
-        console.log(res);
+            {where: { id: userId }});
 
-        // if success, delete record in verify email
-        if (res) {
-            return await deleteActivateUserAccount(userId);
-        }
     } catch (e) {
         return e;
     }
@@ -110,7 +106,8 @@ async function activateUserAccount(userId) {
 // MANIPULATION :: DELETE
 ///////////////////////////////
 
-function deleteActivateUserAccount(userId) {
+function destroyVerifyEmail(userId) {
+    console.log('deleting verify email record ...');
     return VerifyEmail.destroy({
         where: {userId: userId}
     })
@@ -148,12 +145,13 @@ const buildUser = function(payload) {
 // build new verify email object
 const buildVerifyEmail = function(payload) {
     console.log('building verify email ...', payload.email);
+
     return VerifyEmail.build({
         id: genUUID4(),
         email: payload.email,
         username: payload.username,
         password: payload.password,
-        userId: payload.id
+        userId: payload.id,
     })
 };
 
@@ -210,9 +208,11 @@ module.exports = {
     buildUser,
     buildVerifyEmail,
     buildUserProfile,
+    destroyVerifyEmail,
     findUserByEmail,
+    findUserById,
     findUserByUsername,
-    findVerifyEmailUrl,
+    findVerifyEmail,
     // findUserById,
     // activateUserAccount,
     // findVerifyUrlBy,
