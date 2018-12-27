@@ -55,9 +55,10 @@
  * */
 
 
-const api_user = '/api/user';
-const api_activity = '/api/activity';
+// import controllers
 const userController = require('./user.controller');
+const activityController = require('./activity.controller');
+
 
 module.exports = (app) => {
 
@@ -71,6 +72,7 @@ module.exports = (app) => {
      * register user -- (pending test)
      * delete a users account -- (pending test)
      * ****/
+    const api_user = '/api/user';
     app.post(api_user+'/register', userController.registerUser);
     app.post(api_user+'/login', userController.loginUser);
     app.post(api_user+'/reset-password', userController.resetPassword); // TODO finish
@@ -88,6 +90,7 @@ module.exports = (app) => {
      * update status of an activity, {options}
      * delete an activity
      * ****/
+    const api_activity = '/api/activity';
     app.post(api_activity+'/new', activityController.registerActivity);
 
 
