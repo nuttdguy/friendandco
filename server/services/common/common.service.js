@@ -29,7 +29,7 @@ const bcryptPassword = async (payload, next) => {
         // TODO add errors instance, object to handle error messages
         console.log('BCRYPT ERROR: ');
         console.log(e);
-        throw e;
+        return e;
     }
 
 };

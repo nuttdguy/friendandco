@@ -24,6 +24,10 @@ app.use(passport.initialize());
 // Load routes
 require('./controllers/index.routes')(app);
 
+// console.log(Object.keys(global.process.mainModule.children));
+// view loaded routes
+// console.log(global.process.mainModule.children[3].children[0].exports);
+console.log(global.process.mainModule.children[3].children[1].exports);
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {

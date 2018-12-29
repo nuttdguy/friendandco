@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 
-const HistoryEntity = {
+const Entity = {
 
     id: {
         type: DataTypes.UUID,
@@ -29,9 +29,9 @@ const HistoryEntity = {
 
 };
 
-const HistoryEntityOptions = {
+const Options = {
     underscored: true
 };
 
 
-module.exports = {HistoryEntity, HistoryEntityOptions};
+module.exports = {Entity, Options};

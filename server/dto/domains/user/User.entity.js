@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 
 
-const UserEntity = {
+const Entity = {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
@@ -14,8 +14,8 @@ const UserEntity = {
     },
     username: {
         type: DataTypes.STRING,
+        unique: true,
         allowNull: false,
-        unique: true
     },
     firstName: {
         type: DataTypes.STRING,
@@ -45,10 +45,11 @@ const UserEntity = {
 
 };
 
-const UserEntityOptions = {
+const Options = {
     // underscored: true
 };
 
 
-module.exports = {UserEntity, UserEntityOptions};
+exports.Entity = Entity;
+exports.Options = Options;
 

@@ -1,8 +1,14 @@
+// import service
+const { activityService } = require('../services/index.service');
 
 
-async function registerActivity(req, res, next) {
+// add new activity
+async function newActivity(req, res, next) {
+    const activityData = req.body;
+
     try {
-
+        const result = await activityService.newActivity(activityData);
+        res.status(200).json(result);
     } catch (e) {
         next(e);
     }
@@ -10,5 +16,5 @@ async function registerActivity(req, res, next) {
 
 
 module.exports = {
-    registerActivity,
+    newActivity,
 };

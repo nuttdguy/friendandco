@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 
-const WorkEntity = {
+const Entity = {
 
     id: {
         type: DataTypes.UUID,
@@ -29,9 +29,9 @@ const WorkEntity = {
 
 };
 
-const WorkEntityOptions = {
+const Options = {
     underscored: true
 };
 
 
-module.exports = {WorkEntity, WorkEntityOptions};
+module.exports = {Entity, Options};

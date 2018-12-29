@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 
-const ProfileEntity = {
+const Entity = {
 
     id: {
         type: DataTypes.UUID,
@@ -29,9 +29,9 @@ const ProfileEntity = {
 
 };
 
-const ProfileEntityOptions = {
+const Options = {
     underscored: true
 };
 
 
-module.exports = {ProfileEntity, ProfileEntityOptions};
+module.exports = {Entity, Options};

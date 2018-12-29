@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 
-const PhotoEntity = {
+const Entity = {
 
     id: {
         type: DataTypes.UUID,
@@ -29,9 +29,9 @@ const PhotoEntity = {
 
 };
 
-const PhotoEntityOptions = {
+const Options = {
     underscored: true
 };
 
 
-module.exports = {PhotoEntity, PhotoEntityOptions};
+module.exports = {Entity, Options};

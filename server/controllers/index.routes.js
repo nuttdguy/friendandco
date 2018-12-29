@@ -82,7 +82,7 @@ module.exports = (app) => {
      * delete an activity
      * ****/
     const api_activity = '/api/activity';
-    app.post(api_activity+'/new', activityController.registerActivity);
+    app.post(api_activity+'/new', activityController.newActivity);
 
 
     /*****

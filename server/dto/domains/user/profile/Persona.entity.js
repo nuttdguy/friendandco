@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 
-const PersonaEntity = {
+const Entity = {
 
     id: {
         type: DataTypes.UUID,
@@ -10,9 +10,9 @@ const PersonaEntity = {
 
 };
 
-const PersonaOptions = {
+const Options = {
 
 };
 
 
-module.exports = { PersonaEntity, PersonaOptions };
+module.exports = { Entity, Options };

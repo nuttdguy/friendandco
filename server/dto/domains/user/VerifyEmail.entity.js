@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 
 
 
-const VerifyEmailEntity = {
+const Entity = {
 
     id: {
         type: DataTypes.UUID,
@@ -43,10 +43,10 @@ const VerifyEmailEntity = {
     },
 };
 
-const VerifyEntityOptions = {
+const Options = {
     // underscored: true
 };
 
 
 
-module.exports = { VerifyEmailEntity, VerifyEntityOptions };
+module.exports = { Entity, Options };

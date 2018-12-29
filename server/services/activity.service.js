@@ -1,8 +1,13 @@
+// import repository
+const { activityRepository } = require('../repository/activity.repository');
 
 
-async function registerActivity() {
+// add new activity
+async function newActivity(activityData) {
+
+    // TODO validate data
     try {
-
+        return await activityRepository.newActivity(activityData)
     } catch (e) {
         return e;
     }
@@ -10,5 +15,5 @@ async function registerActivity() {
 
 
 module.exports = {
-    registerActivity
+    newActivity
 };
