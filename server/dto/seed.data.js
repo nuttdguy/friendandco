@@ -78,30 +78,8 @@ const activity = (ids, scene, kind, userIds) => [
             beginDate: Date.now(), endDate: Date.now(), beginTime: 930, endTime: 1700, minActor: 4,
             maxActor: 12, isActive: true, location: 'lake George',  createdBy: userIds[3] }
 
-]
+];
 
-// const activity = (ids, scene, kind, userIds) => [
-//     {id: ids[0], scene: scene[0].id, kind: kind[0].id, title: 'swim at lake Navato',
-//         beginDate: Date.now(), endDate: Date.now(), beginTime: 930, endTime: 1700, minActor: 4,
-//         maxActor: 12, isActive: true, location: 'lake Navato',  createBy: userIds[0] },
-//
-//     {id: ids[1], scene: scene[0].id, kind: kind[0].id, title: 'swim at lake Joseph',
-//         beginDate: Date.now(), endDate: Date.now(), beginTime: 930, endTime: 1700, minActor: 4,
-//         maxActor: 12, isActive: true, location: 'lake Joseph',  createBy: userIds[1] },
-//
-//     {id: ids[2], scene: scene[0].id, kind: kind[0].id, title: 'swim at lake Mnnetonka',
-//         beginDate: Date.now(), endDate: Date.now(), beginTime: 930, endTime: 1700, minActor: 4,
-//         maxActor: 12, isActive: true, location: 'lake Mnnetonka',  createBy: userIds[2] },
-//
-//     {id: ids[3], scene: scene[0].id, kind: kind[0].id, title: 'swim at lake Winetka',
-//         beginDate: Date.now(), endDate: Date.now(), beginTime: 930, endTime: 1700, minActor: 4,
-//         maxActor: 12, isActive: true, location: 'lake Winetka',  createBy: userIds[0] },
-//
-//     {id: ids[4], scene: scene[0].id, kind: kind[0].id, title: 'swim at lake George',
-//         beginDate: Date.now(), endDate: Date.now(), beginTime: 930, endTime: 1700, minActor: 4,
-//         maxActor: 12, isActive: true, location: 'lake George',  createBy: userIds[3] },
-//
-// ];
 
 module.exports = {
     users,

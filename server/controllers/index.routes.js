@@ -81,8 +81,21 @@ module.exports = (app) => {
      * update status of an activity, {options}
      * delete an activity
      * ****/
-    const api_activity = '/api/activity';
-    app.post(api_activity+'/new', activityController.newActivity);
+    const api_activity = '/api/activities';
+    app.get(api_activity+'/', activityController.getActivities);
+    app.get(api_activity+'/kinds', activityController.getKinds);
+    app.get(api_activity+'/scenes', activityController.getScenes);
+    app.get(api_activity+'/tags', activityController.getTags);
+
+    app.get(api_activity+'/q=:id', activityController.getActivity);
+    app.get(api_activity+'/kinds/q=:id', activityController.getKind);
+    app.get(api_activity+'/scenes/q=:id', activityController.getScene);
+    app.get(api_activity+'/tags/q=:id', activityController.getTag);
+
+    app.post(api_activity+'/', activityController.newActivity);
+    app.post(api_activity+'/kinds', activityController.newKind);
+    app.post(api_activity+'/scenes', activityController.newScene);
+    app.post(api_activity+'/tags', activityController.newTag);
 
 
     /*****
@@ -95,7 +108,7 @@ module.exports = (app) => {
      * register user -- (pending test)
      * delete a users account -- (pending test)
      * ****/
-    const api_user = '/api/user';
+    const api_user = '/api/users';
     app.post(api_user+'/register', userController.registerUser);
     app.post(api_user+'/login', userController.loginUser);
     app.post(api_user+'/reset-password', userController.resetPassword); // TODO finish

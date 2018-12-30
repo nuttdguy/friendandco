@@ -21,7 +21,10 @@ const Entity = {
     },
     createdBy: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
+        validate: {
+            isUUID: 4
+        }
     }
 };
 
