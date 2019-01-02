@@ -7,17 +7,22 @@ const user_domain = './domains/user';
 const persona_domain = './domains/persona';
 const activity_domain = './domains/activity';
 
-// IMPORT ENTITY + OPTIONS
+// import entities + options
 const User = require(user_domain + '/User.entity');
 const VerifyEmail = require(user_domain + '/VerifyEmail.entity');
 const Secret = require(user_domain + '/Secret.entity');
 
 const Profile = require(user_domain + '/profile/Profile.entity');
 const Education = require(user_domain + '/profile/Education.entity');
-const History = require(user_domain + '/profile/History.entity');
-const Persona = require(user_domain + '/profile/Persona.entity');
+const Hobby = require(user_domain + '/profile/Hobby.entity');
+const Interest = require(user_domain + '/profile/Interest.entity');
+const Location = require(user_domain + '/profile/Location.entity');
 const Photo = require(user_domain + '/profile/Photo.entity');
 const Work = require(user_domain + '/profile/Work.entity');
+
+const History = require(user_domain + '/profile/History.entity');
+
+const Persona = require(user_domain + '/profile/Persona.entity');
 
 const Personality = require(persona_domain + '/Personality.entity');
 
@@ -31,11 +36,13 @@ const Tag = require(activity_domain + '/Tag.entity');
 const db = {
     User: sequelize.define('user', User.Entity, User.Options),
     VerifyEmail: sequelize.define('verifyEmail', VerifyEmail.Entity, VerifyEmail.Options),
-    Profile: sequelize.define('profile', Profile.Entity, Profile.Options),
     Secret: sequelize.define('secret', Secret.Entity, Secret.Options),
 
-
+    Profile: sequelize.define('profile', Profile.Entity, Profile.Options),
     Education: sequelize.define('education', Education.Entity, Education.Options),
+    Hobby: sequelize.define('hobby', Hobby.Entity, Hobby.Options),
+    Interest: sequelize.define('interest', Interest.Entity, Interest.Options),
+    Location: sequelize.define('location', Location.Entity, Location.Options),
     Photo: sequelize.define('photo', Photo.Entity, Photo.Options),
     Work: sequelize.define('work', Work.Entity, Work.Options),
 

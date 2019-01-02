@@ -145,14 +145,14 @@ module.exports = (app) => {
      * get reputation, redirect to reputation controller, (rc)
      * ****/
     const api_profile = '/api/profiles';
-    // app.get(api_profile+'/questions', profileController);
-    // app.get(api_profile+'/hobbies', profileController);
-    // app.get(api_profile+'/interests', profileController);
-    // app.get(api_profile+'/photos', profileController);
-    // app.get(api_profile+'/work', profileController);
-    // app.get(api_profile+'/education', profileController);
-    // app.get(api_profile+'/activities', profileController);
-    //
+    app.get(api_profile+'/education', profileController.getEducations);
+    app.get(api_profile+'/hobbies', profileController.getHobbies);
+    app.get(api_profile+'/interests', profileController.getInterests);
+    app.get(api_profile+'/location', profileController.getLocations);
+    app.get(api_profile+'/photos', profileController.getPhotos);
+    app.get(api_profile+'/work', profileController.getWorks);
+
+
     // app.get(api_profile+'/q=:id', profileController);
     // app.get(api_profile+'/activities/q=:id', profileController);
     //
@@ -162,5 +162,11 @@ module.exports = (app) => {
     //
     // app.delete(api_profile+'/activities/q=:id', profileController);
 
+
+    /*****
+     * [history ops]
+     * get one user + many history info; of joined, matched, leave
+     * get one user + one history info; of joined, matched, leave
+     * ****/
 
 };
