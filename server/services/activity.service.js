@@ -122,6 +122,47 @@ function newTag(newTagData) {
     }
 }
 
+// update activity
+function updateActivity(activityData) {
+
+    try {
+        return activityRepository.updateActivity(activityData)
+    } catch (e) {
+        return e;
+    }
+}
+
+// update kind
+function updateKind(newKindData) {
+
+    try {
+        return activityRepository.updateKind(newKindData);
+    } catch (e) {
+        return e;
+    }
+}
+
+// update scene
+function updateScene(newSceneData) {
+
+    try {
+        return activityRepository.updateScene(newSceneData);
+    } catch (e) {
+        return e;
+    }
+}
+
+// update tag
+function updateTag(newTagData) {
+
+    try {
+        return activityRepository.updateTag(newTagData);
+    } catch (e) {
+        return e;
+    }
+}
+
+
 
 module.exports = {
     getActivity,
@@ -136,4 +177,8 @@ module.exports = {
     newKind,
     newScene,
     newTag,
+    updateActivity,
+    updateKind,
+    updateScene,
+    updateTag,
 };

@@ -104,6 +104,58 @@ async function newTag(newTagData) {
     }
 }
 
+// update activity; one
+async function updateActivity(activityData) {
+    try {
+        console.log('updating activity ... ', activityData.id);
+        return Activity.update(
+            { ...activityData },
+            { where: {id: activityData.id}
+        });
+    } catch (e) {
+        return e;
+    }
+}
+
+// update kind; one
+async function updateKind(kindData) {
+    try {
+        console.log('updating kind ... ', kindData.id);
+        return Kind.update(
+            { ...kindData },
+            { where: {id: kindData.id}
+        });
+    } catch (e) {
+        return e;
+    }
+}
+
+// update scene; one
+async function updateScene(sceneData) {
+    try {
+        console.log('updating scene ... ', sceneData.id);
+        return Scene.update(
+            { ...sceneData },
+            { where: {id: sceneData.id}
+        });
+    } catch (e) {
+        return e;
+    }
+}
+
+// update tag; one
+async function updateTag(tagData) {
+    try {
+        console.log('updating tag ... ', tagData.id);
+        return Tag.update(
+            { ...tagData },
+            { where: {id: tagData.id}
+        });
+    } catch (e) {
+        return e;
+    }
+}
+
 
 
 //=========================\\
@@ -181,4 +233,8 @@ module.exports = {
     newKind,
     newScene,
     newTag,
+    updateActivity,
+    updateKind,
+    updateScene,
+    updateTag,
 };

@@ -4,7 +4,7 @@ const { activityService } = require('../services/index.service');
 
 // get activity; one
 async function getActivity(req, res, next) {
-    const activityId = req.params.actId;
+    const activityId = req.params.id;
     console.log(req.params);
 
     try {
@@ -143,6 +143,52 @@ async function newTag(req, res, next) {
     }
 }
 
+// update activity; one
+async function updateActivity(req, res, next) {
+    const dataToUpdate = req.body;
+    try {
+        const result = await activityService.updateActivity(dataToUpdate);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e)
+    }
+}
+
+// update kind; one
+async function updateKind(req, res, next) {
+    const dataToUpdate = req.body;
+    try {
+        const result = await activityService.updateKind(dataToUpdate);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e)
+    }
+}
+
+// update scene; one
+async function updateScene(req, res, next) {
+    const dataToUpdate = req.body;
+    try {
+        const result = await activityService.updateScene(dataToUpdate);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e)
+    }
+}
+
+// update tag; one
+async function updateTag(req, res, next) {
+    const dataToUpdate = req.body;
+    try {
+        const result = await activityService.updateTag(dataToUpdate);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e)
+    }
+}
+
+
+
 // export functions
 module.exports = {
     getActivity,
@@ -157,4 +203,8 @@ module.exports = {
     newKind,
     newScene,
     newTag,
+    updateActivity,
+    updateKind,
+    updateScene,
+    updateTag,
 };

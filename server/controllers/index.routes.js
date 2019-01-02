@@ -92,6 +92,12 @@ module.exports = (app) => {
     app.get(api_activity+'/scenes/q=:id', activityController.getScene);
     app.get(api_activity+'/tags/q=:id', activityController.getTag);
 
+    // note: update payloads will have id and original data
+    app.put(api_activity+'/update', activityController.updateActivity);
+    app.put(api_activity+'/kinds/update', activityController.updateKind);
+    app.put(api_activity+'/scenes/update', activityController.updateScene);
+    app.put(api_activity+'/tags/update', activityController.updateTag);
+
     app.post(api_activity+'/', activityController.newActivity);
     app.post(api_activity+'/kinds', activityController.newKind);
     app.post(api_activity+'/scenes', activityController.newScene);
