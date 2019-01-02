@@ -1,11 +1,57 @@
 // import service
 const { activityService } = require('../services/index.service');
 
+// delete activity; one
+async function deleteActivity(req, res, next) {
+    const activityId = req.params.id;
+
+    try {
+        const result = await activityService.deleteActivity(activityId);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e);
+    }
+}
+
+// delete kind; one
+async function deleteKind(req, res, next) {
+    const kindId = req.params.id;
+
+    try {
+        const result = await activityService.deleteKind(kindId);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e);
+    }
+}
+
+// delete scene; one
+async function deleteScene(req, res, next) {
+    const sceneId = req.params.id;
+
+    try {
+        const result = await activityService.deleteScene(sceneId);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e);
+    }
+}
+
+// delete tag; one
+async function deleteTag(req, res, next) {
+    const tagId = req.params.id;
+
+    try {
+        const result = await activityService.deleteTag(tagId);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e);
+    }
+}
 
 // get activity; one
 async function getActivity(req, res, next) {
     const activityId = req.params.id;
-    console.log(req.params);
 
     try {
         const result = await activityService.getActivity(activityId);
@@ -191,6 +237,10 @@ async function updateTag(req, res, next) {
 
 // export functions
 module.exports = {
+    deleteActivity,
+    deleteKind,
+    deleteScene,
+    deleteTag,
     getActivity,
     getActivities,
     getKind,

@@ -8,6 +8,31 @@ const {
     genUUID4
 } = require('../dto/index.dto');
 
+
+// delete activity; one
+function deleteActivity(activityId) {
+    console.log('deleting activity by id ... ', activityId);
+    return Activity.destroy({where: {id: activityId}});
+}
+
+// delete kind; one
+function deleteKind(kindId) {
+    console.log('deleting kind by id ... ', kindId);
+    return Kind.destroy({where: {id: kindId}});
+}
+
+// delete scene; one
+function deleteScene(sceneId) {
+    console.log('deleting scene by id ... ', sceneId);
+    return Scene.destroy({where: {id: sceneId}});
+}
+
+// delete tag; one
+function deleteTag(tagId) {
+    console.log('deleting tag by id ... ', tagId);
+    return Tag.destroy({where: {id: tagId}});
+}
+
 // get activity; one
 function getActivity(activityId) {
     console.log('getting activity by id ... ');
@@ -221,6 +246,10 @@ function buildTag(tagData) {
 
 
 module.exports = {
+    deleteActivity,
+    deleteKind,
+    deleteScene,
+    deleteTag,
     getActivity,
     getActivities,
     getKind,

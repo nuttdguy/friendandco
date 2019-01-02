@@ -37,18 +37,20 @@
  *
  * [match ops]
  * get matches for one user, {options} : activity only, activity + persona, etc
+ * join, lead, leave a matched activity
  *
  *
- * [peer ops]
+ * [peer + connection ops]
  * get activity peers, {options}
  * add activity peers, {options}
  * update activity peers, {options}
- * delete activity peers, {options}
+ * delete activity peers, {options},
+ * rate activity peers
  *
  *
  * [history ops]
- * get one user + many history info
- * get one user + one history info
+ * get one user + many history info; of joined, matched, leave
+ * get one user + one history info; of joined, matched, leave
  *
  *
  * [system ops]
@@ -69,8 +71,9 @@
 // import controllers
 const userController = require('./user.controller');
 const activityController = require('./activity.controller');
+const profileController = require('./profile.controller');
 
-
+// TODO refactor all routes; use url to reduce redundant routes + operations
 module.exports = (app) => {
 
     /*****
@@ -92,16 +95,22 @@ module.exports = (app) => {
     app.get(api_activity+'/scenes/q=:id', activityController.getScene);
     app.get(api_activity+'/tags/q=:id', activityController.getTag);
 
-    // note: update payloads will have id and original data
-    app.put(api_activity+'/update', activityController.updateActivity);
-    app.put(api_activity+'/kinds/update', activityController.updateKind);
-    app.put(api_activity+'/scenes/update', activityController.updateScene);
-    app.put(api_activity+'/tags/update', activityController.updateTag);
-
     app.post(api_activity+'/', activityController.newActivity);
     app.post(api_activity+'/kinds', activityController.newKind);
     app.post(api_activity+'/scenes', activityController.newScene);
     app.post(api_activity+'/tags', activityController.newTag);
+
+    // note: update payloads will have id and original data
+    app.put(api_activity+'/', activityController.updateActivity);
+    app.put(api_activity+'/kinds', activityController.updateKind);
+    app.put(api_activity+'/scenes', activityController.updateScene);
+    app.put(api_activity+'/tags', activityController.updateTag);
+
+    app.delete(api_activity+'/q=:id', activityController.deleteActivity);
+    app.delete(api_activity+'/kinds/q=:id', activityController.deleteKind);
+    app.delete(api_activity+'/scenes/q=:id', activityController.deleteScene);
+    app.delete(api_activity+'/tags/q=:id', activityController.deleteTag);
+
 
 
     /*****
@@ -124,6 +133,34 @@ module.exports = (app) => {
     app.put(api_user+'/update', userController.updateUser);
 
 
+    /*****
+     * [profile ops]
+     * get one profile info, {options} : questions, hobbies, interest, photos, work, education
+     * get one profile activity
+     * add one activity, redirect to activity controller (ac)
+     * update one activity, redirect to ac
+     * delete one activity, redirect to ac
+     * disband one activity, redirect to ac
+     * get connections, redirect to connection controller, (cc)
+     * get reputation, redirect to reputation controller, (rc)
+     * ****/
+    const api_profile = '/api/profiles';
+    // app.get(api_profile+'/questions', profileController);
+    // app.get(api_profile+'/hobbies', profileController);
+    // app.get(api_profile+'/interests', profileController);
+    // app.get(api_profile+'/photos', profileController);
+    // app.get(api_profile+'/work', profileController);
+    // app.get(api_profile+'/education', profileController);
+    // app.get(api_profile+'/activities', profileController);
+    //
+    // app.get(api_profile+'/q=:id', profileController);
+    // app.get(api_profile+'/activities/q=:id', profileController);
+    //
+    // app.post(api_profile+'/activities', profileController);
+    //
+    // app.put(api_profile+'/activities', profileController);
+    //
+    // app.delete(api_profile+'/activities/q=:id', profileController);
 
 
 };

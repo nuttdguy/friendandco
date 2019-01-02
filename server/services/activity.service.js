@@ -1,6 +1,47 @@
 // import repository
 const { activityRepository } = require('../repository/index.repository');
 
+// delete activity; one
+function deleteActivity(activityId) {
+
+    try {
+        return activityRepository.deleteActivity(activityId);
+    } catch (e) {
+        return e;
+    }
+}
+
+// delete kind; one
+function deleteKind(kindId) {
+
+    try {
+        return activityRepository.deleteKind(kindId);
+    } catch (e) {
+        return e;
+    }
+}
+
+// delete scene; one
+function deleteScene(sceneId) {
+
+    try {
+        return activityRepository.deleteScene(sceneId);
+    } catch (e) {
+        return e;
+    }
+}
+
+// delete tag; one
+function deleteTag(tagId) {
+
+    try {
+        return activityRepository.deleteTag(tagId);
+    } catch (e) {
+        return e;
+    }
+}
+
+
 // get activity; one
 function getActivity(activityId) {
 
@@ -162,9 +203,12 @@ function updateTag(newTagData) {
     }
 }
 
-
-
+// export functions
 module.exports = {
+    deleteActivity,
+    deleteKind,
+    deleteScene,
+    deleteTag,
     getActivity,
     getActivities,
     getKind,
