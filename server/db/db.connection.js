@@ -18,7 +18,6 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 
-
 // export db
 console.log('done connecting to database ... ', '00001');
 module.exports = db;
