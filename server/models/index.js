@@ -3,11 +3,39 @@ const {DataTypes} = db.Sequelize;
 
 
 // Activity Models
-require('./activity');
+require('./activity/Activity.model')(db, DataTypes);
+require('./activity/Kind.model')(db, DataTypes);
+require('./activity/Scene.model')(db, DataTypes);
+require('./activity/Tag.model')(db, DataTypes);
 
 
+// Profile Models
+require('./profile/Education.model')(db, DataTypes);
+require('./profile/History.model')(db, DataTypes);
+require('./profile/Hobby.model')(db, DataTypes);
+require('./profile/Interest.model')(db, DataTypes);
+require('./profile/Location.model')(db, DataTypes);
+require('./profile/Persona.model')(db, DataTypes);
+require('./profile/Photo.model')(db, DataTypes);
+require('./profile/Profile.model')(db, DataTypes);
+require('./profile/ProfileCategory.model')(db, DataTypes);
+require('./profile/Work.model')(db, DataTypes);
 
 
+// Persona Models
+require('./persona/Personality.model')(db, DataTypes);
+
+
+// User Models
+require('./user/User.model')(db, DataTypes);
+require('./user/VerifyEmail.model')(db, DataTypes);
+
+
+// sync db
+db.sync();
+
+
+module.exports = db;
 
 
 
@@ -43,7 +71,3 @@ require('./activity');
 //     db[modelName].associate(db);
 //   }
 // });
-
-
-
-// module.exports = db;
