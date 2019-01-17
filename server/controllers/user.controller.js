@@ -2,7 +2,7 @@
 const { userService } = require('../services/index.service');
 
 
-// activate user account
+// activate profile account
 async function activateUser(req, res, next) {
     const userId = req.params.userId;
 
@@ -14,7 +14,7 @@ async function activateUser(req, res, next) {
     }
 }
 
-// delete user
+// delete profile
 async function deleteUser(req, res, next) {
     const userId = req.params.userId;
 
@@ -26,7 +26,7 @@ async function deleteUser(req, res, next) {
     }
 }
 
-// get user
+// get profile
 async function getUser(req, res, next) {
     const userId = req.params.userId;
 
@@ -37,13 +37,13 @@ async function getUser(req, res, next) {
             return res.status(200).json(result);
         }
 
-        return res.status(200).json({result: 'user was not found ...'});
+        return res.status(200).json({result: 'profile was not found ...'});
     } catch (e) {
         next(e);
     }
 }
 
-// login user
+// login profile
 async function loginUser(req, res, next) {
     let user = req.body;
 
@@ -55,7 +55,7 @@ async function loginUser(req, res, next) {
     }
 }
 
-// register new user
+// register new profile
 async function registerUser(req, res, next) {
     let user = req.body;
 
@@ -78,7 +78,7 @@ async function resetPassword(req, res, next) {
     next();
 }
 
-// update user
+// update profile
 async function updateUser(req, res, next) {
     const dataToUpdate = req.body;
 
@@ -91,7 +91,7 @@ async function updateUser(req, res, next) {
 }
 
 
-console.log('done loading user controllers ...');
+console.log('done loading profile controllers ...');
 
 
 

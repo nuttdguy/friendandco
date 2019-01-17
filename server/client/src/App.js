@@ -30,13 +30,13 @@ import './App.css';
 //     setAuthToken(localStorage.jwtToken);
 //     // Set auth token header auth
 //     const decoded = jwt_decode(localStorage.jwtToken);
-//     // Set user and isAuthenticated
+//     // Set profile and isAuthenticated
 //     store.dispatch(setCurrentUser(decoded));
 //
 //     // Check for expired token
 //     const currentTime = Date.now() / 1000;
 //     if (decoded.exp < currentTime) {
-//         // Logout user
+//         // Logout profile
 //         store.dispatch(logoutUser());
 //         // Clear current profile
 //         store.dispatch(clearCurrentProfile());
@@ -115,7 +115,7 @@ class App extends Component {
 
     createMenu() {
         this.menu = [
-            //===> TODO add user and peer rating
+            //===> TODO add profile and peer rating
             {
                 label: 'Dashboard', icon: 'dashboard', command: () => {
                     window.location = "#/"

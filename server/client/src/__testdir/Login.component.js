@@ -12,12 +12,12 @@ class LoginComponent extends Component {
     e.preventDefault();
     const {username, password} = e.target;
 
-    axios.post('api/user/login', {
+    axios.post('api/profile/login', {
         username: username.value, password: password.value})
       .then(res => {
         console.log(res.data);
       })
-      .catch(err => console.log(err, 'user not found'));
+      .catch(err => console.log(err, 'profile not found'));
 
   }
 

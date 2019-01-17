@@ -10,11 +10,11 @@ const expect = chai.expect;
 // Load routes
 require('../controllers/index.routes')(app);
 
-const { User, genUUID4 } = require('../dto/index.dto');
+const { User, genUUID4 } = require('../dto-to-delete/index.dto');
 
 // setup db connection
 before((done) => {
-    global.client = require('../dto/db.connection');
+    global.client = require('../dto-to-delete/db.connection');
     done();
 });
 
@@ -49,7 +49,7 @@ afterEach(done => {
 
 
 describe('POST', () => {
-    it('/api/user/register creates a user', done => {
+    it('/api/profile/register creates a profile', done => {
         const userA = {
             username: 'username',
             firstName: 'firstname',
@@ -59,11 +59,11 @@ describe('POST', () => {
             password: 'password'
         };
         request(app)
-            .post('/api/user/register')
+            .post('/api/profile/register')
             .send(userA)
             .end( (err, res) => {
                 if (err) {
-                    console.log('/api/user/register ', err)
+                    console.log('/api/profile/register ', err)
                 }
                 expect(res.statusCode).to.equal(200);
                 expect(res.body.firstName).to.equal(userA.firstName);

@@ -1,12 +1,15 @@
-// import entities
+// Require db connection
+const db = require('../db/db.connection');
 
+
+// Load models
 const {
     Activity,
     Kind,
     Scene,
     Tag,
     genUUID4
-} = require('../dto/index.dto');
+} = db.sequelize.models;
 
 
 // delete activity; one

@@ -1,12 +1,13 @@
-// LOAD MODULES
+// Require db connection
+const db = require('../db/db.connection');
+
 const {
     generateUUID4,
     bcryptPassword
 } = require('../services/common/common.service');
 
 
-// LOAD ENTITIES
-///////////////////////////////
+// Load models
 const {
     User,
     VerifyEmail,
@@ -17,16 +18,16 @@ const {
     Photo,
     Work,
     genUUID4,
-} = require('../dto/index.dto');
+} = db.sequelize.models;
 
 
-// activate user account
+// activate profile account
 async function activateAccount(userId) {
 
     try {
-        console.log('activating user account ... ', userId);
+        console.log('activating profile account ... ', userId);
 
-        // update field of user record
+        // update field of profile record
         return await User.update(
             {isActive: true},
             {where: { id: userId }});
@@ -45,49 +46,49 @@ function deleteVerifyEmail(userId) {
     })
 }
 
-// delete user
+// delete profile
 async function deleteUser(userId) {
     try {
-        console.log('deleting the user...', userId);
+        console.log('deleting the profile...', userId);
         return await User.destroy({where: {id: userId}})
     } catch (e) {
         return e;
     }
 }
 
-// find user by email
+// find profile by email
 async function findByEmail(email) {
-    console.log('finding user by email ... ', email);
+    console.log('finding profile by email ... ', email);
     return await User.findOne({where: {email: email}})
 }
 
-// find user by id
+// find profile by id
 async function findById(userId) {
-    console.log('finding user by id ... ', userId);
+    console.log('finding profile by id ... ', userId);
     return await User.findByPk(userId)
 }
 
-// find user by username
+// find profile by username
 async function findByUsername(username) {
-    console.log('finding user by username ... ', username);
+    console.log('finding profile by username ... ', username);
     return await User.findOne({where: {username: username}})
 }
 
-// find user by id
+// find profile by id
 async function findVerifyEmail(userId) {
-    console.log('finding verify email url by user id  ...', userId);
+    console.log('finding verify email url by profile id  ...', userId);
     return await VerifyEmail.findOne(
         {where: { userId: userId}});
 }
 
-// save user
+// save profile
 async function saveUser(user) {
 
     // generate & assign token as password
     user.password = await bcryptPassword(user);
 
     try {
-        // save user
+        // save profile
         user = await buildUser(user);
 
         // save verify email url
@@ -98,7 +99,7 @@ async function saveUser(user) {
         email.set({fkUserId: user.id});
 
         // PERSIST OBJECTS
-        console.log('saving user ... ', user.userId);
+        console.log('saving profile ... ', user.userId);
         user.save();
 
         console.log('saving verify email ... ', email.userId);
@@ -111,14 +112,14 @@ async function saveUser(user) {
 
 }
 
-// update user
+// update profile
 async function updateUser(dataToUpdate) {
     try {
         const user = await User.findByPk(dataToUpdate.id);
 
         if (user !== null) {
 
-            console.log('updating user ... ', dataToUpdate.id);
+            console.log('updating profile ... ', dataToUpdate.id);
             return user.update(
                 {
                     username: dataToUpdate.username,
@@ -128,7 +129,7 @@ async function updateUser(dataToUpdate) {
                 },
                 {where: {userId: dataToUpdate.id}})
         }
-        return 'user was not found ... ' + dataToUpdate.id;
+        return 'profile was not found ... ' + dataToUpdate.id;
     } catch (e) {
         return e;
     }
@@ -139,9 +140,9 @@ async function updateUser(dataToUpdate) {
 ///////////////////////////////
 
 
-// builds new user object
+// builds new profile object
 const buildUser = function(payload) {
-    console.log('building user ...');
+    console.log('building profile ...');
     return User.build({
         id: genUUID4(),
         username: payload.username,
