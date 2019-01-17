@@ -16,7 +16,6 @@ const sequelize = new Sequelize(KEYS.MYSQLURI, {
 // add Sequelize and sequelize connection instance to db
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-let count = 0;
 
 
 

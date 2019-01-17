@@ -1,6 +1,6 @@
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const { User } = require('../dto/index.dto');
+const { User } = require('../dto-to-delete/index.dto');
 const KEYS = require('./keys');
 
 

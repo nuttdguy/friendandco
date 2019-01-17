@@ -10,11 +10,11 @@ const expect = chai.expect;
 // Load routes
 require('../controllers/index.routes')(app);
 
-const { User, genUUID4 } = require('../dto/index.dto');
+const { User, genUUID4 } = require('../dto-to-delete/index.dto');
 
 // setup db connection
 before((done) => {
-    global.client = require('../dto/db.connection');
+    global.client = require('../dto-to-delete/db.connection');
     done();
 });
 
