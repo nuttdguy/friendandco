@@ -30,7 +30,7 @@ require('./persona/Personality.model')(db, DataTypes);
 require('./user/User.model')(db, DataTypes);
 require('./user/VerifyEmail.model')(db, DataTypes);
 
-
+console.log('done syncing database models ...');
 // sync db
 db.sync();
 

@@ -1,4 +1,7 @@
-// import entities
+// Require db connection
+const db = require('../db/db.connection');
+
+// Load models
 const {
     Education,
     Hobby,
@@ -7,8 +10,7 @@ const {
     Photo,
     Profile,
     Work
-} = require('../dto/index.dto');
-
+} = db.sequelize.models;
 
 
 // get education; all

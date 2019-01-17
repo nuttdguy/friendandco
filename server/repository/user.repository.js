@@ -1,12 +1,13 @@
-// LOAD MODULES
+// Require db connection
+const db = require('../db/db.connection');
+
 const {
     generateUUID4,
     bcryptPassword
 } = require('../services/common/common.service');
 
 
-// LOAD ENTITIES
-///////////////////////////////
+// Load models
 const {
     User,
     VerifyEmail,
@@ -17,7 +18,7 @@ const {
     Photo,
     Work,
     genUUID4,
-} = require('../dto/index.dto');
+} = db.sequelize.models;
 
 
 // activate profile account
