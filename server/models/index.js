@@ -35,6 +35,7 @@ require('./user/VerifyEmail.model')(db, DataTypes);
 db.sync();
 
 
+// export db
 module.exports = db;
 
 
