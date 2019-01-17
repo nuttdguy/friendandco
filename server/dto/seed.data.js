@@ -40,6 +40,21 @@ const users = (ids, passwords) => [
 
 ];
 
+const profileCategory = (ids, userIds) => [
+    {id: ids[0], label: 'Education', desc: 'an education type', isActive: true, createdBy: userIds[0], fkProfileId: userIds[0] },
+    {id: ids[1], label: 'hobby', desc: 'a hobby type', isActive: true, createdBy: userIds[1], fkProfileId: userIds[1] },
+    {id: ids[2], label: 'interest', desc: 'a interest type', isActive: true, createdBy: userIds[2], fkProfileId: userIds[2] },
+    {id: ids[3], label: 'Location', desc: 'a location type', isActive: true, createdBy: userIds[3], fkProfileId: userIds[3] },
+    {id: ids[4], label: 'Photo', desc: 'a photo type', isActive: true, createdBy: userIds[4], fkProfileId: userIds[4] },
+];
+
+const profile = (ids, userIds) => [
+    {id: ids[0], fkUserId: userIds[0] },
+    {id: ids[1], fkUserId: userIds[1] },
+    {id: ids[2], fkUserId: userIds[2] },
+    {id: ids[3], fkUserId: userIds[3] },
+];
+
 const scene = (ids, userIds) => [
     {id: ids[0], label: 'outdoor', desc: 'something that takes place outdoors', isActive: true, createdBy: userIds[0] },
     {id: ids[1], label: 'indoor', desc: 'something that takes place indoors', isActive: true, createdBy: userIds[0] },
@@ -57,26 +72,51 @@ const tag = (ids, userIds) =>  [
     {id: ids[1], label: 'swim', isActive: true, createdBy: userIds[3] },
 ];
 
-const activity = (ids, scene, kind, userIds) => [
-        {id: ids[0], scene: scene[0], kind: kind[0], title: 'swim at lake Navato',
-        beginDate: Date.now(), endDate: Date.now(), beginTime: 930, endTime: 1700, minActor: 4,
-        maxActor: 12, isActive: true, location: 'lake Navato',  createdBy: userIds[0] },
+const activity = (ids, userIds) => [
+        {id: ids[0], title: 'swim at lake Navato',
+            city: 'Oakland', state: 'California', zip: '55111',
+            address1: 'navato lake', address2: 'na',
+            latitude: 111.9990, longitude: 120.9001,
+            beginDate: Date.now(), endDate: Date.now(),
+            beginTime: 930, endTime: 1700,
+            isActive: true,
+            createdBy: userIds[0] },
 
-        {id: ids[1], scene: scene[1], kind: kind[1], title: 'swim at lake Joseph',
-            beginDate: Date.now(), endDate: Date.now(), beginTime: 930, endTime: 1700, minActor: 4,
-            maxActor: 12, isActive: true, location: 'lake Joseph',  createdBy: userIds[1] },
+        {id: ids[1],  title: 'swim at lake Joseph',
+            city: 'Oakland', state: 'California', zip: '55111',
+            address1: 'navato lake', address2: 'na',
+            latitude: 111.9990, longitude: 120.9001,
+            beginDate: Date.now(), endDate: Date.now(),
+            beginTime: 930, endTime: 1700,
+            isActive: true,
+            createdBy: userIds[1] },
 
-        {id: ids[2], scene: scene[0], kind: kind[1], title: 'swim at lake Mnnetonka',
-            beginDate: Date.now(), endDate: Date.now(), beginTime: 930, endTime: 1700, minActor: 4,
-            maxActor: 12, isActive: true, location: 'lake Mnnetonka',  createdBy: userIds[2] },
+        {id: ids[2],title: 'swim at lake Mnnetonka',
+            city: 'Oakland', state: 'California', zip: '55111',
+            address1: 'navato lake', address2: 'na',
+            latitude: 111.9990, longitude: 120.9001,
+            beginDate: Date.now(), endDate: Date.now(),
+            beginTime: 930, endTime: 1700,
+            isActive: true,
+            createdBy: userIds[2] },
 
-        {id: ids[3], scene: scene[1], kind: kind[1], title: 'swim at lake Winetka',
-            beginDate: Date.now(), endDate: Date.now(), beginTime: 930, endTime: 1700, minActor: 4,
-            maxActor: 12, isActive: true, location: 'lake Winetka',  createdBy: userIds[0] },
+        {id: ids[3], title: 'swim at lake Winetka',
+            city: 'Oakland', state: 'California', zip: '55111',
+            address1: 'navato lake', address2: 'na',
+            latitude: 111.9990, longitude: 120.9001,
+            beginDate: Date.now(), endDate: Date.now(),
+            beginTime: 930, endTime: 1700,
+            isActive: true,
+            createdBy: userIds[0] },
 
-        {id: ids[4], scene: scene[2], kind: kind[0], title: 'swim at lake George',
-            beginDate: Date.now(), endDate: Date.now(), beginTime: 930, endTime: 1700, minActor: 4,
-            maxActor: 12, isActive: true, location: 'lake George',  createdBy: userIds[3] }
+        {id: ids[4], title: 'swim at lake George',
+            city: 'Oakland', state: 'California', zip: '55111',
+            address1: 'navato lake', address2: 'na',
+            latitude: 111.9990, longitude: 120.9001,
+            beginDate: Date.now(), endDate: Date.now(),
+            beginTime: 930, endTime: 1700,
+            isActive: true,
+            createdBy: userIds[3] }
 
 ];
 
@@ -85,6 +125,8 @@ module.exports = {
     users,
     genId,
     genPassword,
+    profile,
+    profileCategory,
     scene,
     kind,
     tag,

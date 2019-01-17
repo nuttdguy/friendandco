@@ -41,7 +41,6 @@ function deleteTag(tagId) {
     }
 }
 
-
 // get activity; one
 function getActivity(activityId) {
 

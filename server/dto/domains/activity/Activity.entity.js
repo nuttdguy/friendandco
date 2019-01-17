@@ -12,39 +12,53 @@ const Entity = {
         onDelete: 'cascade',
         onUpdate: 'cascade'
     },
-    scene: {
-        type: DataTypes.STRING,
-    },
-    kind: {
-        type: DataTypes.STRING,
-    },
     title: {
         type: DataTypes.STRING,
+        allowNull: false,
+        unique: 'CK_Activity'
+    },
+    city: {
+        type: DataTypes.STRING,
+        unique: 'CK_Activity'
+    },
+    state: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: 'CK_Activity'
+    },
+    zip: {
+        type: DataTypes.STRING,
+    },
+    address1: {
+        type: DataTypes.STRING,
+    },
+    address2: {
+        type: DataTypes.STRING,
+    },
+    latitude: {
+        type: DataTypes.FLOAT,
+    },
+    longitude: {
+        type: DataTypes.FLOAT,
     },
     beginDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
     },
     endDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
     },
     beginTime: {
-        type: DataTypes.INTEGER
+        type: DataTypes.TIME,
     },
     endTime: {
-        type: DataTypes.INTEGER
+        type: DataTypes.TIME,
     },
-    minActor: {
-        type: DataTypes.INTEGER,
-    },
-    maxActor: {
-        type: DataTypes.INTEGER,
+    url: {
+        type: DataTypes.STRING,
     },
     isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
-    },
-    location: {
-        type: DataTypes.STRING
     },
     createdBy: {
         type: DataTypes.UUID,

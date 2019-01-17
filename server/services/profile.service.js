@@ -49,6 +49,15 @@ function getPhotos(userId) {
     }
 }
 
+// get profile; all
+function getProfile(userId) {
+    try {
+        return profileRepository.getProfile(userId);
+    } catch (e) {
+        return e;
+    }
+}
+
 // get work; all
 function getWorks(userId) {
     try {
@@ -67,5 +76,6 @@ module.exports = {
     getInterests,
     getLocations,
     getPhotos,
+    getProfile,
     getWorks,
 };

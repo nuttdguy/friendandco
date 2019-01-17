@@ -27,7 +27,10 @@ async function activateUser(userId) {
 
         if (hasVerified !== null) {
 
+            // activate user account
             const user =  await userRepository.activateAccount(userId);
+
+            // delete verify email record
             userRepository.deleteVerifyEmail(userId);
             return user;
         }

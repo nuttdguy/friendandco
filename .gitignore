@@ -1,11 +1,10 @@
 
 // server ignores
-keys.js
+dev.js
 
 
-
-// client ingnores
-
+// client ignores
+server/client/public/assets/
 
 
 // misc

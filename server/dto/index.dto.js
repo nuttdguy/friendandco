@@ -13,12 +13,8 @@ const VerifyEmail = require(user_domain + '/VerifyEmail.entity');
 const Secret = require(user_domain + '/Secret.entity');
 
 const Profile = require(user_domain + '/profile/Profile.entity');
-const Education = require(user_domain + '/profile/Education.entity');
-const Hobby = require(user_domain + '/profile/Hobby.entity');
-const Interest = require(user_domain + '/profile/Interest.entity');
-const Location = require(user_domain + '/profile/Location.entity');
-const Photo = require(user_domain + '/profile/Photo.entity');
-const Work = require(user_domain + '/profile/Work.entity');
+const ProfileCategory = require(user_domain + '/profile/ProfileCategory.entity');
+
 
 const History = require(user_domain + '/profile/History.entity');
 
@@ -39,12 +35,7 @@ const db = {
     Secret: sequelize.define('secret', Secret.Entity, Secret.Options),
 
     Profile: sequelize.define('profile', Profile.Entity, Profile.Options),
-    Education: sequelize.define('education', Education.Entity, Education.Options),
-    Hobby: sequelize.define('hobby', Hobby.Entity, Hobby.Options),
-    Interest: sequelize.define('interest', Interest.Entity, Interest.Options),
-    Location: sequelize.define('location', Location.Entity, Location.Options),
-    Photo: sequelize.define('photo', Photo.Entity, Photo.Options),
-    Work: sequelize.define('work', Work.Entity, Work.Options),
+    ProfileCategory: sequelize.define('profileCategory', ProfileCategory.Entity, ProfileCategory.Options),
 
     History: sequelize.define('history', History.Entity, History.Options),
 
@@ -64,7 +55,10 @@ db.User.hasOne(db.VerifyEmail);     // domain :: user
 
 db.VerifyEmail.belongsTo(db.User, {foreignKey: 'fkUserId', target: 'id', constraints: true});
 db.Secret.belongsTo(db.User);
-db.Profile.belongsTo(db.User);
+db.Profile.belongsTo(db.User, {foreignKey: 'fkUserId', target: 'id', constraints: true});
+
+
+db.ProfileCategory.belongsTo(db.Profile);
 
 // domain :: activity
 
@@ -93,19 +87,26 @@ async function seedDb() {
         const userIds = await require ('./seed.data').genId(5);
         const passwords = await require('./seed.data').genPassword(5);
 
-        db.User.bulkCreate(require('./seed.data').users(userIds, passwords));
+        await db.User.bulkCreate(require('./seed.data').users(userIds, passwords));
+
+
+        const profileCatIds = await require ('./seed.data').genId(5);
+        await db.ProfileCategory.bulkCreate(require('./seed.data').profileCategory(profileCatIds, userIds));
+
+        const profile = await require ('./seed.data').genId(5);
+        await db.Profile.bulkCreate(require('./seed.data').profile(profile, userIds));
 
         const kind = await require ('./seed.data').genId(5);
-        db.Kind.bulkCreate(require('./seed.data').kind(kind, userIds));
+        await db.Kind.bulkCreate(require('./seed.data').kind(kind, userIds));
 
         const scene = await require ('./seed.data').genId(5);
-        db.Scene.bulkCreate(require('./seed.data').scene(scene, userIds));
+        await db.Scene.bulkCreate(require('./seed.data').scene(scene, userIds));
 
         const tag = await require ('./seed.data').genId(5);
-        db.Tag.bulkCreate(require('./seed.data').tag(tag, userIds));
+        await db.Tag.bulkCreate(require('./seed.data').tag(tag, userIds));
 
         const actIds= await require ('./seed.data').genId(5);
-        db.Activity.bulkCreate(require('./seed.data').activity(actIds, scene, kind, userIds));
+        await db.Activity.bulkCreate(require('./seed.data').activity(actIds, scene, kind, userIds));
 
 
         console.log('done seeding data ... ');

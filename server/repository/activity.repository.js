@@ -191,15 +191,21 @@ async function updateTag(tagData) {
 function buildActivity(activityData) {
     return Activity.build({
         id: Activity.genUUID4(),
-        scene: activityData.scene,
-        kind: activityData.kind,
         title: activityData.title,
+        city: activityData.city,
+        state: activityData.state,
+        zip: activityData.zip,
+        address1: activityData.address1,
+        address2: activityData.address2,
+        latitude: activityData.latitude,
+        longitude: activityData.longitude,
         beginDate: activityData.beginDate,
         endDate: activityData.endDate,
         beginTime: activityData.beginTime,
         endTime: activityData.endTime,
-        minActor: activityData.minActor,
-        maxActor: activityData.maxActor
+        url: activityData.url,
+        isActive: activityData.isActive,
+        createdBy: activityData.createdBy
     })
 }
 

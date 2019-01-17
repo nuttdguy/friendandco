@@ -57,6 +57,17 @@ async function getPhotos(req, res, next) {
     }
 }
 
+// get profile; all
+async function getProfile(req, res, next) {
+    const userId = req.id;
+    try {
+        const result = await profileService.getProfile(userId);
+        res.status(200).json(result);
+    } catch (e) {
+        next(e);
+    }
+}
+
 // get work; all
 async function getWorks(req, res, next) {
     const userId = req.id;
@@ -76,5 +87,6 @@ module.exports = {
     getInterests,
     getLocations,
     getPhotos,
+    getProfile,
     getWorks,
 };

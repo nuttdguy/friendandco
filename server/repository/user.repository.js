@@ -9,7 +9,6 @@ const {
 ///////////////////////////////
 const {
     User,
-    Secret,
     VerifyEmail,
     Profile,
     Education,
@@ -167,16 +166,12 @@ const buildVerifyEmail = function(payload) {
 };
 
 
-const buildUserProfile = function(payload) {
-    console.log('creating user profile');
-    const education = buildEducation(),
-        history = buildHistory(),
-        persona = buildPersona(),
-        photo = buildPhoto(),
-        work = buildWork();
-
+const buildProfile = function(payload) {
+    console.log('building profile ... ');
     return Profile.build({
         id: this.genUUID4,
+        type: payload.id,
+        fkUserId: payload.id
     });
 };
 
@@ -215,6 +210,7 @@ const buildWork = function() {
 module.exports = {
 
     activateAccount,
+    buildProfile,
     deleteUser,
     deleteVerifyEmail,
     findByEmail,

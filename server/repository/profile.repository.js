@@ -5,6 +5,7 @@ const {
     Interest,
     Location,
     Photo,
+    Profile,
     Work
 } = require('../dto/index.dto');
 
@@ -60,6 +61,17 @@ async function getPhotos(userId) {
     }
 }
 
+// get profile; all
+async function getProfile(userId) {
+    try {
+        return await Profile.findOne(
+            {where: {id: userId}});
+    } catch (e) {
+        return e;
+    }
+}
+
+
 
 // get work; all
 async function getWorks(userId) {
@@ -79,5 +91,6 @@ module.exports = {
     getInterests,
     getLocations,
     getPhotos,
+    getProfile,
     getWorks,
 };
