@@ -80,7 +80,7 @@ module.exports = (app) => {
      * [activity ops]
      * get one activity info, {options}
      * get many activity info, {options}
-     * add one activity, {options}
+     * add one activity, {options}git branch
      * update status of an activity, {options}
      * delete an activity
      * ****/
