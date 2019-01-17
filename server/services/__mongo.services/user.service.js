@@ -31,17 +31,17 @@ const userFieldOptions = {
 // QUERIES :: GET
 ///////////////////////////////
 
-// find a single user by the user email
+// find a single profile by the profile email
 const findUserByEmail = async (email, next) => {
     return await User.findOne({email: email});
 };
 
-// find a single user by the user id
+// find a single profile by the profile id
 const findUserById = async (id, next) => {
     return await User.findById(id);
 };
 
-// find a single user by field name
+// find a single profile by field name
 const findUserBy = async (fieldName, value, next) => {
 
     if (User.schema.tree.hasOwnProperty(fieldName)) {
@@ -60,7 +60,7 @@ const findVerifyUrlBy = async (userId, next) => {
 // MANIPULATION :: SAVE
 ///////////////////////////////
 
-// save user to database
+// save profile to database
 const saveUser = async (userData, passwordHash, next) => {
 
     userData.password.token = passwordHash;
@@ -89,7 +89,7 @@ const saveProfile = async (profile) => {
 // MANIPULATION :: UPDATE
 ///////////////////////////////
 
-// activate the user account
+// activate the profile account
 const activateUserAccount = async (userId) => {
 
     return await
@@ -105,7 +105,7 @@ const activateUserAccount = async (userId) => {
 // MANIPULATION :: DELETE
 ///////////////////////////////
 
-// delete userId from Verify doc; user has been verified
+// delete userId from Verify doc; profile has been verified
 const deleteVerifyEmailUrlBy = async (verifyObj) => {
     return await Verify.deleteOne({userId: verifyObj.userId});
 };
@@ -114,7 +114,7 @@ const deleteVerifyEmailUrlBy = async (verifyObj) => {
 // SERVICES :: MISC
 ///////////////////////////////
 
-// create a new user object
+// create a new profile object
 const createUser = (payload, next) => {
 
     console.log('CREATING NEW USER IS DONE...');
@@ -160,7 +160,7 @@ const sendMail = async (userData, verifyUrl) => {
 // PRIVATE FUNCTIONS
 ///////////////////////////////
 
-// new user
+// new profile
 function createNewUser(payload) {
     return new User({
         username: payload.username,
@@ -181,7 +181,7 @@ function createNewVerifyUrl(userId, userEmail) {
     });
 }
 
-// associate user to new profile
+// associate profile to new profile
 function activateUserProfile(updatedUser) {
     return new Profile({
         user: updatedUser

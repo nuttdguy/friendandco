@@ -18,7 +18,7 @@ const shapeInput = require('../validation/shapeInput.utils');
 
 
 
-// activate user account
+// activate profile account
 async function activateUser(userId) {
     try {
         // find record in verify email
@@ -27,7 +27,7 @@ async function activateUser(userId) {
 
         if (hasVerified !== null) {
 
-            // activate user account
+            // activate profile account
             const user =  await userRepository.activateAccount(userId);
 
             // delete verify email record
@@ -41,7 +41,7 @@ async function activateUser(userId) {
     }
 }
 
-// delete user
+// delete profile
 async function deleteUser(userId) {
     try {
         return await userRepository.deleteUser(userId);
@@ -50,7 +50,7 @@ async function deleteUser(userId) {
     }
 }
 
-// get user
+// get profile
 async function getUser(userId) {
     try {
         return await userRepository.findById(userId);
@@ -59,7 +59,7 @@ async function getUser(userId) {
     }
 }
 
-// login user
+// login profile
 async function loginUser(user) {
 
     // validate login input; // return if errors
@@ -68,7 +68,7 @@ async function loginUser(user) {
 
     try {
 
-        // check that user exists; // return error if user was not found
+        // check that profile exists; // return error if profile was not found
         let foundUser = await userRepository.findByUsername(user.username);
         if (foundUser === null) return errors.error = 'Username does not exist ...';
 
@@ -76,7 +76,7 @@ async function loginUser(user) {
         const isMatch = await isPasswordMatch(user, foundUser);
         if (isMatch && foundUser.isActive) {
 
-            // user is registered and active; sign token
+            // profile is registered and active; sign token
             return {token: 'Bearer ' + await signJwt(foundUser) };
 
         } else if (isMatch && !foundUser.isActive) {
@@ -101,7 +101,7 @@ async function loginUser(user) {
 
 }
 
-// registers new user
+// registers new profile
 async function registerUser(user) {
 
     // trim, lowercase, validate data; // return if errors
@@ -110,18 +110,18 @@ async function registerUser(user) {
 
     try {
 
-        // find user by email; returns null if not found
+        // find profile by email; returns null if not found
         const foundUser = await userRepository.findByEmail(user.email);
         if (foundUser === null) {
 
-            // build user + verify email; then save
+            // build profile + verify email; then save
             user = await userRepository.saveUser(user);
 
             user = user.user.dataValues;
 
             return user;
             // send verify email
-            // return sendMail(user);
+            // return sendMail(profile);
 
         }
         // if email exists, return error response
@@ -148,7 +148,7 @@ async function resetPassword(username) {
     }
 }
 
-// update user
+// update profile
 async function updateUser(dataToUpdate) {
 
     try {

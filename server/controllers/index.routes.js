@@ -1,9 +1,9 @@
 
 /*****
- * [user ops]
+ * [profile ops]
  * get one users info, {options}
- * add one user
- * update one user info
+ * add one profile
+ * update one profile info
  * activate a users account
  * delete a users account
  *
@@ -36,7 +36,7 @@
  *
  *
  * [match ops]
- * get matches for one user, {options} : activity only, activity + persona, etc
+ * get matches for one profile, {options} : activity only, activity + persona, etc
  * join, lead, leave a matched activity
  *
  *
@@ -49,12 +49,12 @@
  *
  *
  * [history ops]
- * get one user + many history info; of joined, matched, leave
- * get one user + one history info; of joined, matched, leave
+ * get one profile + many history info; of joined, matched, leave
+ * get one profile + one history info; of joined, matched, leave
  *
  *
  * [system ops]
- * grade user, {options}
+ * grade profile, {options}
  * match users, {options}
  *
  *
@@ -114,20 +114,20 @@ module.exports = (app) => {
 
 
     /*****
-     * [user ops]
+     * [profile ops]
      * get one users info -- (pending test)
-     * add one user -- (pending test)
-     * update one user info -- (pending test)
+     * add one profile -- (pending test)
+     * update one profile info -- (pending test)
      * activate a users account -- (pending test)
-     * login user -- (pending test)
-     * register user -- (pending test)
+     * login profile -- (pending test)
+     * register profile -- (pending test)
      * delete a users account -- (pending test)
      * ****/
     const api_user = '/api/users';
     app.post(api_user+'/register', userController.registerUser);
     app.post(api_user+'/login', userController.loginUser);
     app.post(api_user+'/reset-password', userController.resetPassword); // TODO finish
-    app.get(api_user+'/activate/:userId', userController.activateUser); // TODO create + link user to profile
+    app.get(api_user+'/activate/:userId', userController.activateUser); // TODO create + link profile to profile
     app.get(api_user+'/:userId', userController.getUser);
     app.delete(api_user+'/:userId', userController.deleteUser);
     app.put(api_user+'/update', userController.updateUser);
@@ -138,13 +138,13 @@ module.exports = (app) => {
      * get one profile info, {options} : questions, hobbies, interest, photos, work, education
      * ****/
     const api_profile = '/api/profiles';
-    app.get(api_profile+'/user=:id', profileController.getProfile);
-    app.get(api_profile+'/user=:id/education', profileController.getEducations);
-    app.get(api_profile+'/user=:id/hobbies', profileController.getHobbies);
-    app.get(api_profile+'/user=:id/interests', profileController.getInterests);
-    app.get(api_profile+'/user=:id/location', profileController.getLocations);
-    app.get(api_profile+'/user=:id/photos', profileController.getPhotos);
-    app.get(api_profile+'/user=:id/work', profileController.getWorks);
+    app.get(api_profile+'/profile=:id', profileController.getProfile);
+    app.get(api_profile+'/profile=:id/education', profileController.getEducations);
+    app.get(api_profile+'/profile=:id/hobbies', profileController.getHobbies);
+    app.get(api_profile+'/profile=:id/interests', profileController.getInterests);
+    app.get(api_profile+'/profile=:id/location', profileController.getLocations);
+    app.get(api_profile+'/profile=:id/photos', profileController.getPhotos);
+    app.get(api_profile+'/profile=:id/work', profileController.getWorks);
 
 
     // app.get(api_profile+'/q=:id', profileController);
@@ -159,8 +159,8 @@ module.exports = (app) => {
 
     /*****
      * [history ops]
-     * get one user + many history info; of joined, matched, leave
-     * get one user + one history info; of joined, matched, leave
+     * get one profile + many history info; of joined, matched, leave
+     * get one profile + one history info; of joined, matched, leave
      * get one profile activity
      * add one activity, redirect to activity controller (ac)
      * update one activity, redirect to ac

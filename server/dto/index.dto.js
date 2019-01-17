@@ -3,7 +3,7 @@ const sequelize = require('./db.connection');
 
 
 // entity path
-const user_domain = './domains/user';
+const user_domain = './domains/profile';
 const persona_domain = './domains/persona';
 const activity_domain = './domains/activity';
 
@@ -17,7 +17,7 @@ const ProfileCategory = require(user_domain + '/profile/ProfileCategory.entity')
 
 
 const History = require(user_domain + '/profile/History.entity');
-
+;;;;;;;
 const Persona = require(user_domain + '/profile/Persona.entity');
 
 const Personality = require(persona_domain + '/Personality.entity');
@@ -51,7 +51,7 @@ const db = {
 
 // associate entities :: app server-side
 
-db.User.hasOne(db.VerifyEmail);     // domain :: user
+db.User.hasOne(db.VerifyEmail);     // domain :: profile
 
 db.VerifyEmail.belongsTo(db.User, {foreignKey: 'fkUserId', target: 'id', constraints: true});
 db.Secret.belongsTo(db.User);

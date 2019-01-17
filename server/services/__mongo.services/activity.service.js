@@ -23,7 +23,7 @@ const {
 ///////////////////////////////
 
 // EXAMPLE
-// Transaction.find({username : user.username})
+// Transaction.find({username : profile.username})
 //     .select('uniqueId confirmation_link item_name timeout username')
 //     .exec(function(err, txs) {
 //         console.log(txs);
@@ -106,7 +106,7 @@ const saveActivityPlace = (placeData) => {
 // PRIVATE FUNCTIONS
 ///////////////////////////////
 
-// TODO implement user id, pass into request object
+// TODO implement profile id, pass into request object
 function createNewActivity(activityData) {
     const actTag = createNewActivityTag(activityData),
         cal = createNewActivityCalendar(activityData),

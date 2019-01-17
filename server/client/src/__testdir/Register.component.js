@@ -31,11 +31,11 @@ class RegisterComponent extends Component {
             passwordConfirm: this.state.passwordConfirm
         }
 
-        axios.post('api/user/register', user)
+        axios.post('api/profile/register', user)
             .then(res => {
                 console.log(res.data);
             })
-            .catch(error => console.log(error, 'could not save user'));
+            .catch(error => console.log(error, 'could not save profile'));
     }
 
     onChange(e) {

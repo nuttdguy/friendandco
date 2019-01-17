@@ -21,7 +21,7 @@ async function genId(numToGen) {
 }
 
 
-// user
+// profile
 const users = (ids, passwords) => [
     {id: ids[0], username: 'adam', firstName: 'adam', lastName: 'lask',
         email: 'adamlask@friendandco1.com', password: passwords[0] },

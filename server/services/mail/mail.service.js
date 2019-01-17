@@ -10,7 +10,7 @@ const createTransporter = () => {
         port: KEYS.PORT,
         secure: KEYS.SECURE, // true for 465, false for other ports
         auth: {
-            user: KEYS.AUTH_USER_GMAIL, // generated ethereal user
+            user: KEYS.AUTH_USER_GMAIL, // generated ethereal profile
             pass: KEYS.AUTH_USER_PASS  // generated ethereal password
         },
         tls: {
