@@ -5,9 +5,9 @@ const db = require('../db/db.connection');
 // Load models
 const {
     Activity,
-    Kind,
-    Scene,
-    Tag,
+    ActivityKind,
+    ActivityScene,
+    ActivityTag,
     genUUID4
 } = db.sequelize.models;
 
@@ -21,19 +21,19 @@ function deleteActivity(activityId) {
 // delete kind; one
 function deleteKind(kindId) {
     console.log('deleting kind by id ... ', kindId);
-    return Kind.destroy({where: {id: kindId}});
+    return ActivityKind.destroy({where: {id: kindId}});
 }
 
 // delete scene; one
 function deleteScene(sceneId) {
     console.log('deleting scene by id ... ', sceneId);
-    return Scene.destroy({where: {id: sceneId}});
+    return ActivityScene.destroy({where: {id: sceneId}});
 }
 
 // delete tag; one
 function deleteTag(tagId) {
     console.log('deleting tag by id ... ', tagId);
-    return Tag.destroy({where: {id: tagId}});
+    return ActivityTag.destroy({where: {id: tagId}});
 }
 
 // get activity; one
@@ -51,37 +51,37 @@ function getActivities() {
 // get kind; one
 function getKind(kindId) {
     console.log('getting kind by id ... ', kindId);
-    return Kind.findOne({where: {id: kindId}})
+    return ActivityKind.findOne({where: {id: kindId}})
 }
 
 // get kind; all
 function getKinds() {
-    console.log('getting all kinds ... ');
-    return Kind.findAll({});
+    console.log('getting all kinds ... ', ActivityKind);
+    return ActivityKind.findAll({});
 }
 
 // get scene; one
 function getScene(sceneId) {
     console.log('getting scene by id ... ', sceneId);
-    return Scene.findOne({where: {id: sceneId}})
+    return ActivityScene.findOne({where: {id: sceneId}})
 }
 
 // get scene; all
 function getScenes() {
     console.log('getting all scenes ... ');
-    return Scene.findAll({});
+    return ActivityScene.findAll({});
 }
 
 // get tag; one
 function getTag(tagId) {
     console.log('getting tag by id ... ', tagId);
-    return Tag.findOne({where: {id: tagId}})
+    return ActivityTag.findOne({where: {id: tagId}})
 }
 
 // get tag; all
 function getTags() {
     console.log('getting all tags ...');
-    return Tag.findAll({});
+    return ActivityTag.findAll({});
 }
 
 // create new activity
@@ -149,7 +149,7 @@ async function updateActivity(activityData) {
 async function updateKind(kindData) {
     try {
         console.log('updating kind ... ', kindData.id);
-        return Kind.update(
+        return ActivityKind.update(
             { ...kindData },
             { where: {id: kindData.id}
         });
@@ -162,7 +162,7 @@ async function updateKind(kindData) {
 async function updateScene(sceneData) {
     try {
         console.log('updating scene ... ', sceneData.id);
-        return Scene.update(
+        return ActivityScene.update(
             { ...sceneData },
             { where: {id: sceneData.id}
         });
@@ -175,7 +175,7 @@ async function updateScene(sceneData) {
 async function updateTag(tagData) {
     try {
         console.log('updating tag ... ', tagData.id);
-        return Tag.update(
+        return ActivityTag.update(
             { ...tagData },
             { where: {id: tagData.id}
         });
@@ -216,7 +216,7 @@ function buildActivity(activityData) {
 function buildKind(kindData) {
 
     console.log('building kind ... ');
-    return Kind.build({
+    return ActivityKind.build({
         id: genUUID4(),
         label: kindData.label,
         desc: kindData.desc,
@@ -230,7 +230,7 @@ function buildKind(kindData) {
 function buildScene(sceneData) {
 
     console.log('building scene ... ');
-    return Scene.build({
+    return ActivityScene.build({
         id: genUUID4(),
         label: sceneData.label,
         desc: sceneData.desc,
@@ -244,7 +244,7 @@ function buildScene(sceneData) {
 function buildTag(tagData) {
 
     console.log('building tag ... ');
-    return Tag.build({
+    return ActivityTag.build({
         id: genUUID4(),
         label: tagData.label,
         timesUsed: 0,
