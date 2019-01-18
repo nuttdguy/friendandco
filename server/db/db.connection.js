@@ -1,5 +1,6 @@
 // import Sequelize ORM
 const Sequelize = require('sequelize');
+const uuid = require('uuid/v4');
 const db = {};
 
 // config connection
@@ -15,6 +16,10 @@ const sequelize = new Sequelize(KEYS.MYSQLURI, {
 
 // add models
 require('../models/index.models')(sequelize, Sequelize.DataTypes);
+
+
+// add UUID generator to sequelize
+sequelize.genUUID4 = uuid;
 
 
 // add Sequelize and sequelize connection instance to db

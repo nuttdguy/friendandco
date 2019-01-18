@@ -1,5 +1,6 @@
 // Require db connection
 const db = require('../db/db.connection');
+const genUUID4 = db.sequelize.genUUID4;
 
 
 // Load models
@@ -8,7 +9,6 @@ const {
     ActivityKind,
     ActivityScene,
     ActivityTag,
-    genUUID4
 } = db.sequelize.models;
 
 
