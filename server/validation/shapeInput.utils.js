@@ -2,7 +2,9 @@
 module.exports = function shapeInput(data) {
     let copy = {...data};
     for (let k in copy) {
-        copy[k] = copy[k].trim().toLowerCase();
+        if(typeof copy[k] === 'string') {
+            copy[k] = copy[k].trim().toLowerCase();
+        }
     }
     return copy;
 };

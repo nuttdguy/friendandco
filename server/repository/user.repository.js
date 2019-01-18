@@ -1,8 +1,8 @@
 // Require db connection
 const db = require('../db/db.connection');
+const genUUID4 = db.sequelize.genUUID4;
 
 const {
-    generateUUID4,
     bcryptPassword
 } = require('../services/common/common.service');
 
@@ -17,7 +17,6 @@ const {
     Persona,
     Photo,
     Work,
-    genUUID4,
 } = db.sequelize.models;
 
 
@@ -88,18 +87,17 @@ async function saveUser(user) {
     user.password = await bcryptPassword(user);
 
     try {
-        // save profile
+        // save user
         user = await buildUser(user);
 
         // save verify email url
         let email = await buildVerifyEmail(user);
-        // console.log(payload);
 
-        // SET FOREIGN KEY VALUE
+        // set foreign key
         email.set({fkUserId: user.id});
 
-        // PERSIST OBJECTS
-        console.log('saving profile ... ', user.userId);
+        // persist objects
+        console.log('saving user ... ', user.userId);
         user.save();
 
         console.log('saving verify email ... ', email.userId);
@@ -142,7 +140,7 @@ async function updateUser(dataToUpdate) {
 
 // builds new profile object
 const buildUser = function(payload) {
-    console.log('building profile ...');
+    console.log('building user ...');
     return User.build({
         id: genUUID4(),
         username: payload.username,
@@ -170,7 +168,7 @@ const buildVerifyEmail = function(payload) {
 const buildProfile = function(payload) {
     console.log('building profile ... ');
     return Profile.build({
-        id: this.genUUID4,
+        id: genUUID4(),
         type: payload.id,
         fkUserId: payload.id
     });
@@ -178,32 +176,32 @@ const buildProfile = function(payload) {
 
 const buildEducation = function(){
     return Education.build({
-        id: this.genUUID4,
+        id: genUUID4,
 
     })
 };
 
 const buildHistory = function() {
     return History.build({
-        id: this.genUUID4,
+        id: genUUID4,
     })
 };
 
 const buildPersona = function() {
     return Persona.build({
-        id: this.genUUID4,
+        id: genUUID4,
     })
 };
 
 const buildPhoto = function() {
     return Photo.build({
-        id: this.genUUID4,
+        id: genUUID4,
     })
 };
 
 const buildWork = function() {
     return Work.build({
-        id: this.genUUID4,
+        id: genUUID4,
     })
 };
 
