@@ -22,7 +22,7 @@ app.use(passport.initialize());
 
 
 // Load routes
-require('./controllers/index.routes')(app);
+require('./routes/index.routes')(app);
 
 
 // Serve static assets if in production

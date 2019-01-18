@@ -91,7 +91,7 @@ async function updateUser(req, res, next) {
 }
 
 
-console.log('done loading profile controllers ...');
+console.log('done loading profile routes ...');
 
 
 

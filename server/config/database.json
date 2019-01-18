@@ -1,11 +1,10 @@
 {
   "development": {
-    "username": "friendsandco",
-    "password": "friendsandcoAdmin",
-    "database": "friendsandco",
+    "username": "friendandco",
+    "password": "friendandcoAdmin",
+    "database": "friendandco",
     "host": "127.0.0.1",
-    "dialect": "mysql",
-    "seederStorage": "json",
+    "dialect": "mysql"
   },
   "test": {
     "username": "root",

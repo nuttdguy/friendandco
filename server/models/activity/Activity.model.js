@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Activity = sequelize.define('Activity', {
+    const Model = sequelize.define('Activity', {
         id: {
             type: DataTypes.UUID,
             primaryKey: true,
@@ -41,31 +41,35 @@ module.exports = (sequelize, DataTypes) => {
         },
         beginDate: {
             type: DataTypes.DATEONLY,
+            default: Date.now()
         },
         endDate: {
             type: DataTypes.DATEONLY,
+            default: Date.now()
         },
         beginTime: {
             type: DataTypes.TIME,
+            default: Date.now()
         },
         endTime: {
             type: DataTypes.TIME,
+            default: Date.now()
         },
         url: {
             type: DataTypes.STRING,
         },
         isActive: {
             type: DataTypes.BOOLEAN,
-            defaultValue: true
+            default: true
         },
         createdBy: {
             type: DataTypes.UUID,
             allowNull: false
-        }
+        },
 
     });
 
-    return Activity;
+    return Model;
 };
 
 

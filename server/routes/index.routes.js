@@ -68,12 +68,11 @@
  * */
 
 
-// import controllers
+// import routes
 const userController = require('./user.controller');
 const activityController = require('./activity.controller');
 const profileController = require('./profile.controller');
 
-// TODO refactor all routes; use url to reduce redundant routes + operations
 module.exports = (app) => {
 
     /*****

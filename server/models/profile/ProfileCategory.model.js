@@ -30,6 +30,13 @@ module.exports = (sequelize, DataTypes) => {
                 isUUID: 4
             }
         },
+        fkProfileId: {
+            type: DataTypes.UUID,
+            allowNull: true,
+            validate: {
+                isUUID: 4
+            }
+        },
     });
 
     return Model;

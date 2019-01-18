@@ -1,4 +1,4 @@
-const router = require('../controllers/user.controller');
+const router = require('../routes/user.controller');
 const express = require('express');
 const app = express();
 const bodyparser = require('body-parser');
@@ -8,7 +8,7 @@ const chai = require('chai');
 const expect = chai.expect;
 
 // Load routes
-require('../controllers/index.routes')(app);
+require('../routes/index.routes')(app);
 
 const { User, genUUID4 } = require('../dto-to-delete/index.dto');
 
