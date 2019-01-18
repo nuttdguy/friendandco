@@ -141,6 +141,7 @@ async function getTags(req, res, next) {
     }
 }
 
+// TODO add validation to make sure that the user does exist before being able to insert new record
 // add new activity
 async function newActivity(req, res, next) {
     const activityData = req.body;

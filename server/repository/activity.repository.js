@@ -193,7 +193,7 @@ async function updateTag(tagData) {
 // build activity
 function buildActivity(activityData) {
     return Activity.build({
-        id: Activity.genUUID4(),
+        id: genUUID4(),
         title: activityData.title,
         city: activityData.city,
         state: activityData.state,
