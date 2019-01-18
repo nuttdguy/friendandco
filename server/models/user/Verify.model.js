@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Model = sequelize.define('VerifyEmail',{
+    const Model = sequelize.define('Verify',{
 
         id: {
             type: DataTypes.UUID,

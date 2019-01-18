@@ -22,7 +22,7 @@ const shapeInput = require('../validation/shapeInput.utils');
 async function activateUser(userId) {
     try {
         // find record in verify email
-        const hasVerified = await userRepository.findVerifyEmail(userId);
+        const hasVerified = await userRepository.findVerify(userId);
 
 
         if (hasVerified !== null) {
@@ -30,8 +30,8 @@ async function activateUser(userId) {
             // activate profile account
             const user =  await userRepository.activateAccount(userId);
 
-            // delete verify email record
-            userRepository.deleteVerifyEmail(userId);
+            // delete verify record
+            userRepository.deleteVerify(userId);
             return user;
         }
 

@@ -10,7 +10,7 @@ const {
 // Load models
 const {
     User,
-    VerifyEmail,
+    Verify,
     Profile,
     Education,
     History,
@@ -37,10 +37,10 @@ async function activateAccount(userId) {
 
 }
 
-// delete verify email
-function deleteVerifyEmail(userId) {
-    console.log('deleting verify email record ...', userId);
-    return VerifyEmail.destroy({
+// delete verify record
+function deleteVerify(userId) {
+    console.log('deleting verify record ...', userId);
+    return Verify.destroy({
         where: {userId: userId}
     })
 }
@@ -74,9 +74,9 @@ async function findByUsername(username) {
 }
 
 // find profile by id
-async function findVerifyEmail(userId) {
-    console.log('finding verify email url by profile id  ...', userId);
-    return await VerifyEmail.findOne(
+async function findVerify(userId) {
+    console.log('finding verify url by profile id  ...', userId);
+    return await Verify.findOne(
         {where: { userId: userId}});
 }
 
@@ -90,8 +90,8 @@ async function saveUser(user) {
         // save user
         user = await buildUser(user);
 
-        // save verify email url
-        let email = await buildVerifyEmail(user);
+        // save verify url
+        let email = await buildVerify(user);
 
         // set foreign key
         email.set({fkUserId: user.id});
@@ -100,7 +100,7 @@ async function saveUser(user) {
         console.log('saving user ... ', user.userId);
         user.save();
 
-        console.log('saving verify email ... ', email.userId);
+        console.log('saving verify record... ', email.userId);
         email.save();
 
         return {user: user, email: email};
@@ -151,11 +151,11 @@ const buildUser = function(payload) {
     })
 };
 
-// build new verify email object
-const buildVerifyEmail = function(payload) {
-    console.log('building verify email ...', payload.email);
+// build new verify object
+const buildVerify = function(payload) {
+    console.log('building verify ...', payload.email);
 
-    return VerifyEmail.build({
+    return Verify.build({
         id: genUUID4(),
         email: payload.email,
         username: payload.username,
@@ -211,11 +211,11 @@ module.exports = {
     activateAccount,
     buildProfile,
     deleteUser,
-    deleteVerifyEmail,
+    deleteVerify,
     findByEmail,
     findById,
     findByUsername,
-    findVerifyEmail,
+    findVerify,
     saveUser,
     updateUser
 };

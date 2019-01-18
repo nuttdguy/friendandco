@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
 
     // User Models
     require('./user/User.model')(sequelize, DataTypes);
-    require('./user/VerifyEmail.model')(sequelize, DataTypes);
+    require('./user/Verify.model')(sequelize, DataTypes);
 
     console.log('done adding database models ...');
 
