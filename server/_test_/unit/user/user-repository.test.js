@@ -177,7 +177,20 @@ describe('CRUD User', () => {
         }).catch(e => {
             done(e);
         })
+    });
+
+    it('should delete user by id', done => {
+        deleteUser(user.id).then(res => {
+            foundUser = res;
+
+            expect(foundUser).to.equal(1);
+            expect(foundUser).to.be.a('number');
+            done()
+        }).catch(e => {
+            done(e);
+        })
     })
+
 });
 
 

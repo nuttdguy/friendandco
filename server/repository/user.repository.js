@@ -43,9 +43,13 @@ function deleteVerify(userId) {
 
 // delete user
 async function deleteUser(userId) {
+    let result = null;
+
     try {
         console.log('deleting the user...', userId);
-        return await User.destroy({where: {id: userId}})
+        result = await User.destroy({where: {id: userId}})
+
+        return result;
     } catch (e) {
         return e;
     }
