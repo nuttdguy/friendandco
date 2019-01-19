@@ -10,10 +10,14 @@ module.exports = (sequelize, DataTypes) => {
         fkUserId: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
-            foreignKey: {
-                references: 'id',
-                model: 'users'
-            }
+            primaryKey: true,
+            //     foreignKey: true,
+            //     allowNull: false,
+            //     references: {
+            //         model: 'users',
+            //         key: 'id'
+            //     },
+            // },
         },
     });
 

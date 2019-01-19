@@ -37,7 +37,7 @@ async function activateAccount(userId) {
 function deleteVerify(userId) {
     console.log('deleting verify record ...', userId);
     return Verify.destroy({
-        where: {userId: userId}
+        where: {url: userId}
     })
 }
 
@@ -105,11 +105,25 @@ async function findVerify(userId) {
 
     try {
         console.log('finding verify url by user id  ...', userId);
-        verify = await Verify.findOne({where: {userId: userId}});
+        verify = await Verify.findOne({where: {url: userId}});
 
         return verify.dataValues;
     } catch (e) {
         return e;
+    }
+
+}
+
+// save user
+async function saveProfile(profile) {
+
+    try {
+        console.log('saving profile with user id ... ', profile.fkUserId);
+        profile = await profile.save();
+
+        return profile.dataValues;
+    } catch (e) {
+        return e
     }
 
 }
@@ -192,23 +206,19 @@ const buildUser = function (payload) {
 
 // build new verify object
 const buildVerify = function (payload) {
-    console.log('building verify ...', payload.email);
+    console.log('building verify ...', payload.id);
 
     return Verify.build({
         id: genUUID4(),
-        email: payload.email,
-        username: payload.username,
-        password: payload.password,
-        userId: payload.id,
+        url: payload.id,
     })
 };
 
 
 const buildProfile = function (payload) {
-    console.log('building profile ... ');
+    console.log('building profile for user ... ', payload.fkUserId);
     return Profile.build({
         id: genUUID4(),
-        type: payload.id,
         fkUserId: payload.id
     });
 };
@@ -263,6 +273,7 @@ module.exports = {
     findById,
     findByUsername,
     findVerify,
+    saveProfile,
     saveUser,
     saveVerify,
     updateUser

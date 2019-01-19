@@ -20,8 +20,11 @@ const {
     findById,
     findByUsername,
     findVerify,
+    saveProfile,
     saveUser,
+    saveVerify,
     updateUser
+
 } = require('../../../repository/user.repository');
 
 
@@ -41,14 +44,12 @@ after(done => {
 // [3]. save a user object
 // [4]. update a user object
 // [5]. delete a user object
-
 describe('CRUD User', () => {
 
     let db = null;
     let UserModel = null;
 
     let user = null;
-    let genUUID4 = null;
     let UserData = null;
     let bcryptPassword = null;
     let foundUser = null;
@@ -57,7 +58,6 @@ describe('CRUD User', () => {
 
     before((done) => {
         db = require('../../../db/db.connection'); // get db connection
-        genUUID4 = db.genUUID4;
         UserModel = db.sequelize.models.User;
         bcryptPassword = require('../../../services/common/common.service').bcryptPassword;
         done();
@@ -77,13 +77,13 @@ describe('CRUD User', () => {
             username: 'username',
             firstName: 'firstname',
             lastName: 'lastname',
-            id: genUUID4(),
             email: 'first@last.com',
             password: 'password-test'
         };
 
 
         user = buildUser(UserData);
+        expect(user.id).to.be.a('string');
         expect(user.username).to.equal(UserData.username);
         expect(user.firstName).to.equal(UserData.firstName);
         expect(user.lastName).to.equal(UserData.lastName);
@@ -194,24 +194,229 @@ describe('CRUD User', () => {
 });
 
 
-// [1]. find a user object
-// [2]. build a user object
-// [3]. save a user object
-// [4]. update a user object
-// [5]. delete a user object
-
-
 // Verify
 // [1]. build a verify email object
 // [2]. save a verify email object
 // [3]. update a verify email object
 // [4]. delete a verify email object
+describe('CRUD Verify', () => {
+
+    let db = null;
+    let userPayload = null;
+    let VerifyModel = null;
+
+    let verify = null;
+    let foundVerify = null;
+    let originVerify = null;
+
+
+    before((done) => {
+        db = require('../../../db/db.connection');
+        VerifyModel = db.sequelize.models.Verify;
+
+        userPayload = buildUser({
+            username: 'verifyUsername',
+            firstName: 'verifyName',
+            lastName: 'lastname',
+            email: 'first@verify.com',
+            password: 'verify-password-test'
+        });
+
+        done();
+    });
+
+    beforeEach(done => {
+        foundVerify = null;
+        done();
+    });
+
+    it('should build sequelize Verify model with user data as payload', done => {
+
+        verify = buildVerify(userPayload); // send user payload
+        expect(verify.id).to.be.a('string');
+        expect(verify.url).to.be.a('string');
+        expect(verify).to.be.instanceof(VerifyModel);
+        done();
+
+    });
+
+    it('should enforce user model constraint when saving verify record to database', done => {
+
+        saveUser(userPayload).then(user => {
+
+            saveVerify(verify).then(res => {
+                originVerify = {...verify.dataValues}; // save original
+
+                expect(res.url).to.equal(verify.url);
+                expect(res.url).to.equal(userPayload.id);
+                expect(res.url).to.equal(user.id);
+
+                userPayload = {...user};
+                done();
+            }).catch(e => {
+                done(e);
+            });
+        }).catch(e => {
+            done(e)
+        })
+
+    });
+
+    it('should find verify record url by user id', done => {
+
+        findVerify(userPayload.id).then(res => {
+            verify = res;
+
+            expect(verify.url).to.equal(userPayload.id);
+            expect(verify.id).to.not.equal(userPayload.id);
+
+            done();
+
+        }).catch(e => {
+            done(e);
+        });
+
+
+    });
+
+    it('should delete verify record when url record is found', done => {
+        deleteVerify(verify.url).then(res => {
+            verify = res;
+
+            expect(verify).to.equal(1);
+            expect(verify).to.be.a('number');
+
+            done()
+        }).catch(e => {
+            done(e);
+        })
+    })
+
+});
+
 
 // Profile
 // [1]. build a profile object
 // [2]. save a profile object
 // [3]. update a profile object
 // [4]. delete a profile object
+describe('CRUD Profile', () => {
+
+    let db = null;
+    let userPayload = null;
+    let ProfileModel = null;
+
+    let profile = null;
+    let foundProfile = null;
+    let originProfile = null;
+
+
+    before((done) => {
+        db = require('../../../db/db.connection');
+        ProfileModel = db.sequelize.models.Profile;
+
+        userPayload = buildUser({
+            username: 'profileUsername',
+            firstName: 'profileName',
+            lastName: 'lastname',
+            email: 'first@profile.com',
+            password: 'profile-password-test'
+        });
+
+        done();
+    });
+
+    beforeEach(done => {
+        foundProfile = null;
+        done();
+    });
+
+    it('should build a Profile referencing user with foreign key as id', done => {
+
+        profile = buildProfile(userPayload); // send user payload
+
+        expect(profile.id).to.be.a('string');
+        expect(profile.fkUserId).to.equal(userPayload.id);
+        expect(profile.fkUserId).to.be.a('string');
+        expect(profile).to.be.instanceof(ProfileModel);
+
+        done();
+
+    });
+
+    // it('should save profile if user exists', done => {
+    //
+    //     saveUser(userPayload).then(user => {
+    //
+    //         saveProfile(profile).then(res => {
+    //
+    //             expect(res.id).to.be.a('string');
+    //             expect(res.fkUserId).to.equal(userPayload.id);
+    //
+    //             originProfile = {...profile};
+    //             done();
+    //         }).catch(e => {
+    //             done(e);
+    //         });
+    //     }).catch(e => {
+    //         done(e)
+    //     });
+    //
+    // });
+
+    // it('should save profile if user exists', done => {
+    //
+    //     saveUser(userPayload).then(user => {
+    //
+    //         saveProfile(profile).then(res => {
+    //
+    //             expect(res.id).to.be.a('string');
+    //             expect(res.fkUserId).to.equal(userPayload.id);
+    //
+    //             originProfile = {...profile};
+    //             done();
+    //         }).catch(e => {
+    //             done(e);
+    //         });
+    //     }).catch(e => {
+    //         done(e)
+    //     });
+    //
+    //
+    // });
+
+    // it('should find profile record url by user id', done => {
+    //
+    //     findVerify(userPayload.id).then(res => {
+    //         profile = res;
+    //
+    //         expect(profile.url).to.equal(userPayload.id);
+    //         expect(profile.id).to.not.equal(userPayload.id);
+    //
+    //         done();
+    //
+    //     }).catch(e => {
+    //         done(e);
+    //     });
+    //
+    //
+    // });
+    //
+    // it('should delete profile record when url record is found', done => {
+    //     deleteVerify(profile.url).then(res => {
+    //         profile = res;
+    //
+    //         expect(profile).to.equal(1);
+    //         expect(profile).to.be.a('number');
+    //
+    //         done()
+    //     }).catch(e => {
+    //         done(e);
+    //     })
+    // })
+
+});
+
 
 // Education
 // [1]. build an education object

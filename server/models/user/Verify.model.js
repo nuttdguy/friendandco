@@ -6,38 +6,16 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
         },
-        userId: {
+        url: {
             type: DataTypes.UUID,
-            allowNull: false,
-        },
-        email: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        username: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        password: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        isVerifyEmail: {
-            type: DataTypes.BOOLEAN
-        },
-        isRecoverPassword: {
-            type: DataTypes.BOOLEAN
-        },
-        fkUserId: {
-            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true,
             foreignKey: true,
             allowNull: false,
             references: {
                 model: 'users',
                 key: 'id'
             },
-            onUpdate: 'cascade',
-            onDelete: 'cascade'
         },
     });
 

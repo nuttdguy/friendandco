@@ -28,7 +28,10 @@ db.sequelize = sequelize;
 
 
 // sync db
+
 sequelize.sync();
+// sequelize.sync({force: true});
+
 console.log('done syncing database ...');
 
 
