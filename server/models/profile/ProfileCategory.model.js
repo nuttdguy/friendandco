@@ -3,6 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     const Model = sequelize.define('ProfileCategory', {
         id: {
             type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
             validate: {
                 isUUID: 4
@@ -32,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         fkProfileId: {
             type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
             allowNull: true,
             validate: {
                 isUUID: 4

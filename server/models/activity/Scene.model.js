@@ -3,6 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     const Scene = sequelize.define('ActivityScene', {
         id: {
             type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
             validate: {
                 isUUID: 4
@@ -23,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         createdBy: {
             type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
             allowNull: false,
         }
     });

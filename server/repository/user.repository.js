@@ -52,38 +52,72 @@ async function deleteUser(userId) {
 }
 
 // find user by email
-function findByEmail(email) {
-    console.log('finding user by email ... ', email);
-    return User.findOne({where: {email: email}});
+async function findByEmail(email) {
+    let user = null;
+
+    try {
+        console.log('finding user by email ... ', email);
+        user = await User.findOne({where: {email: email}});
+
+        return user.dataValues;
+    } catch (e) {
+        return e;
+    }
 }
 
 // find user by id
-function findById(userId) {
-    console.log('finding user by id ... ', userId);
-    const id = userId;
-    return User.findByPk(id);
+async function findById(userId) {
+    let user = null;
+
+    try {
+        console.log('finding user by id ... ', userId);
+        user = await User.findByPk(userId);
+
+        return user.dataValues;
+    } catch (e) {
+        return e;
+    }
+
 }
 
 // find user by username
-function findByUsername(username) {
-    console.log('finding user by username ... ', username);
-    return User.findOne({where: {username: username}});
+async function findByUsername(username) {
+    let user = null;
+
+    try {
+        console.log('finding user by username ... ', username);
+        user = await User.findOne({where: {username: username}});
+
+        return user.dataValues;
+    } catch (e) {
+        return e;
+    }
+
 }
 
 // find user by id
-function findVerify(userId) {
-    console.log('finding verify url by user id  ...', userId);
-    return Verify.findOne(
-        {where: {userId: userId}});
+async function findVerify(userId) {
+    let verify = null;
+
+    try {
+        console.log('finding verify url by user id  ...', userId);
+        verify = await Verify.findOne({where: {userId: userId}});
+
+        return verify.dataValues;
+    } catch (e) {
+        return e;
+    }
+
 }
 
 // save user
-function saveUser(user) {
+async function saveUser(user) {
 
     try {
         console.log('saving user ... ', user.id);
-        user.save(user);
-        return user;
+        user = await user.save();
+
+        return user.dataValues;
     } catch (e) {
         return e
     }
@@ -91,12 +125,14 @@ function saveUser(user) {
 }
 
 // save verify record
-function saveVerify(email) {
+async function saveVerify(email) {
+    let verify = null;
 
     try {
         console.log('saving verify record... ', email.id);
-        email.save();
-        return email;
+        verify = await email.save();
+
+        return verify.dataValues;
     } catch (e) {
         return e
     }
@@ -104,26 +140,31 @@ function saveVerify(email) {
 }
 
 // update profile
-function updateUser(dataToUpdate) {
-    try {
-        const user = User.findByPk(dataToUpdate.id);
+async function updateUser(data) {
+    let user = null;
 
+    try {
+
+        user = await User.findByPk(data.id);
         if (user !== null) {
 
-            console.log('updating profile ... ', dataToUpdate.id);
-            return user.update(
+            console.log('updating user ... ', data.id);
+            user = await user.update(
                 {
-                    username: dataToUpdate.username,
-                    firstName: dataToUpdate.firstName,
-                    lastName: dataToUpdate.lastName,
-                    email: dataToUpdate.email
+                    username: data.username,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    email: data.email
                 },
-                {where: {userId: dataToUpdate.id}})
+                {where: {userId: data.id}});
+            return user.dataValues;
         }
-        return 'profile was not found ... ' + dataToUpdate.id;
+
     } catch (e) {
         return e;
     }
+
+    return 'profile was not found ... ' + dataToUpdate.id;
 }
 
 

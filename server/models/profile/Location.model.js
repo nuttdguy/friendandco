@@ -3,6 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     const Model = sequelize.define('Location',{
         id: {
             type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
             validate: {
                 isUUID: 4

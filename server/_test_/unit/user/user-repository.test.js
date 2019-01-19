@@ -45,13 +45,14 @@ after(done => {
 describe('CRUD User', () => {
 
     let db = null;
-    let User = null;
     let UserModel = null;
+
+    let user = null;
     let genUUID4 = null;
     let UserData = null;
     let bcryptPassword = null;
     let foundUser = null;
-    let savedUser = null;
+    let originUser = null;
 
 
     before((done) => {
@@ -82,26 +83,26 @@ describe('CRUD User', () => {
         };
 
 
-        User = buildUser(UserData);
-        expect(User.username).to.equal(UserData.username);
-        expect(User.firstName).to.equal(UserData.firstName);
-        expect(User.lastName).to.equal(UserData.lastName);
-        expect(User.email).to.equal(UserData.email);
-        expect(User.password).to.equal(UserData.password);
+        user = buildUser(UserData);
+        expect(user.username).to.equal(UserData.username);
+        expect(user.firstName).to.equal(UserData.firstName);
+        expect(user.lastName).to.equal(UserData.lastName);
+        expect(user.email).to.equal(UserData.email);
+        expect(user.password).to.equal(UserData.password);
         // expect(User.password).to.equal('wrong');
-        expect(User).to.be.an.instanceof(UserModel);
+        expect(user).to.be.instanceof(UserModel);
         done();
 
     });
 
     it('should hash and set user password to hashed password', done => {
 
-        bcryptPassword(User).then(hash => {
-            User.password = hash;
-            expect(User.password).to.not.be.equal(UserData.password);
-            expect(User.password).to.equal(hash);
+        bcryptPassword(user).then(hash => {
+            user.password = hash;
+            expect(user.password).to.not.be.equal(UserData.password);
+            expect(user.password).to.equal(hash);
 
-            // expect(User.password).to.equal(30);
+            // expect(user.password).to.equal(30);
             done();
         }).catch(e => {
             done(e);
@@ -111,36 +112,38 @@ describe('CRUD User', () => {
 
     it('should save user to database', done => {
 
-        // TODO why are these test passing ??
-
-        try {
-            savedUser = saveUser(User);
-            expect(savedUser.username).to.equal(User.username);
+        saveUser(user).then(res => {
+            originUser = {...user.dataValues};
+            expect(originUser.username).to.equal(user.username);
 
             done();
-        } catch (e) {
+        }).catch(e => {
             done(e);
-        }
+        });
+
     });
 
-    // TODO only works with hard-coded value; must have something to do with UUID
     it('should find a user by ID, when user does exist', done => {
 
-        findById('61edae82-e95a-47b4-a74d-8b54dae74c66').then(res => {
+        findById(user.id).then(res => {
             foundUser = res;
 
-            // console.log(foundUser.dataValues);
+            expect(foundUser.id).to.equal(originUser.id);
             done();
 
         }).catch(e => {
             done(e);
-        })
+        });
+
 
     });
 
     it('should find a user by EMAIL, when user does exist', done => {
-        findByEmail(User.email).then(res => {
+
+        findByEmail(user.email).then(res => {
             foundUser = res;
+
+            expect(foundUser.email).to.equal(originUser.email);
             done();
 
         }).catch(e => {
@@ -149,8 +152,11 @@ describe('CRUD User', () => {
     });
 
     it('should find a user by Username, when user does exist', done => {
-        foundUser = findByUsername(User.username).then(res => {
+
+        findByUsername(user.username).then(res => {
             foundUser = res;
+
+            expect(foundUser.username).to.equal(originUser.username);
             done();
 
         }).catch(e => {
@@ -158,6 +164,20 @@ describe('CRUD User', () => {
         });
     });
 
+    it('should update user by id', done => {
+        user.username = 'changing username';
+
+        updateUser(user).then(res => {
+            foundUser = res;
+
+            expect(foundUser.username).to.equal(user.username);
+            expect(foundUser.username).to.not.be.equal(originUser.username);
+            done();
+
+        }).catch(e => {
+            done(e);
+        })
+    })
 });
 
 

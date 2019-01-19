@@ -2,6 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const Model = sequelize.define('Activity', {
         id: {
             type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
             field: 'id',
             validate: {
@@ -64,6 +65,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         createdBy: {
             type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
             allowNull: false
         },
 
