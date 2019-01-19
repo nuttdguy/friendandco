@@ -1,10 +1,6 @@
 // Require db connection
 const db = require('../db/db.connection');
-const genUUID4 = db.sequelize.genUUID4;
-
-const {
-    bcryptPassword
-} = require('../services/common/common.service');
+const genUUID4 = db.genUUID4;
 
 
 // Load models
@@ -20,16 +16,16 @@ const {
 } = db.sequelize.models;
 
 
-// activate profile account
+// activate user account
 async function activateAccount(userId) {
 
     try {
-        console.log('activating profile account ... ', userId);
+        console.log('activating user account ... ', userId);
 
         // update field of profile record
         return await User.update(
             {isActive: true},
-            {where: { id: userId }});
+            {where: {id: userId}});
 
     } catch (e) {
         return e;
@@ -45,75 +41,72 @@ function deleteVerify(userId) {
     })
 }
 
-// delete profile
+// delete user
 async function deleteUser(userId) {
     try {
-        console.log('deleting the profile...', userId);
+        console.log('deleting the user...', userId);
         return await User.destroy({where: {id: userId}})
     } catch (e) {
         return e;
     }
 }
 
-// find profile by email
-async function findByEmail(email) {
-    console.log('finding profile by email ... ', email);
-    return await User.findOne({where: {email: email}})
+// find user by email
+function findByEmail(email) {
+    console.log('finding user by email ... ', email);
+    return User.findOne({where: {email: email}});
 }
 
-// find profile by id
-async function findById(userId) {
-    console.log('finding profile by id ... ', userId);
-    return await User.findByPk(userId)
+// find user by id
+function findById(userId) {
+    console.log('finding user by id ... ', userId);
+    const id = userId;
+    return User.findByPk(id);
 }
 
-// find profile by username
-async function findByUsername(username) {
-    console.log('finding profile by username ... ', username);
-    return await User.findOne({where: {username: username}})
+// find user by username
+function findByUsername(username) {
+    console.log('finding user by username ... ', username);
+    return User.findOne({where: {username: username}});
 }
 
-// find profile by id
-async function findVerify(userId) {
-    console.log('finding verify url by profile id  ...', userId);
-    return await Verify.findOne(
-        {where: { userId: userId}});
+// find user by id
+function findVerify(userId) {
+    console.log('finding verify url by user id  ...', userId);
+    return Verify.findOne(
+        {where: {userId: userId}});
 }
 
-// save profile
-async function saveUser(user) {
-
-    // generate & assign token as password
-    user.password = await bcryptPassword(user);
+// save user
+function saveUser(user) {
 
     try {
-        // save user
-        user = await buildUser(user);
-
-        // save verify url
-        let email = await buildVerify(user);
-
-        // set foreign key
-        email.set({fkUserId: user.id});
-
-        // persist objects
-        console.log('saving user ... ', user.userId);
-        user.save();
-
-        console.log('saving verify record... ', email.userId);
-        email.save();
-
-        return {user: user, email: email};
+        console.log('saving user ... ', user.id);
+        user.save(user);
+        return user;
     } catch (e) {
-        return e;
+        return e
+    }
+
+}
+
+// save verify record
+function saveVerify(email) {
+
+    try {
+        console.log('saving verify record... ', email.id);
+        email.save();
+        return email;
+    } catch (e) {
+        return e
     }
 
 }
 
 // update profile
-async function updateUser(dataToUpdate) {
+function updateUser(dataToUpdate) {
     try {
-        const user = await User.findByPk(dataToUpdate.id);
+        const user = User.findByPk(dataToUpdate.id);
 
         if (user !== null) {
 
@@ -139,8 +132,9 @@ async function updateUser(dataToUpdate) {
 
 
 // builds new profile object
-const buildUser = function(payload) {
+const buildUser = function (payload) {
     console.log('building user ...');
+
     return User.build({
         id: genUUID4(),
         username: payload.username,
@@ -148,11 +142,11 @@ const buildUser = function(payload) {
         lastName: payload.lastName,
         password: payload.password,
         email: payload.email,
-    })
+    });
 };
 
 // build new verify object
-const buildVerify = function(payload) {
+const buildVerify = function (payload) {
     console.log('building verify ...', payload.email);
 
     return Verify.build({
@@ -165,7 +159,7 @@ const buildVerify = function(payload) {
 };
 
 
-const buildProfile = function(payload) {
+const buildProfile = function (payload) {
     console.log('building profile ... ');
     return Profile.build({
         id: genUUID4(),
@@ -174,32 +168,32 @@ const buildProfile = function(payload) {
     });
 };
 
-const buildEducation = function(){
+const buildEducation = function () {
     return Education.build({
         id: genUUID4,
 
     })
 };
 
-const buildHistory = function() {
+const buildHistory = function () {
     return History.build({
         id: genUUID4,
     })
 };
 
-const buildPersona = function() {
+const buildPersona = function () {
     return Persona.build({
         id: genUUID4,
     })
 };
 
-const buildPhoto = function() {
+const buildPhoto = function () {
     return Photo.build({
         id: genUUID4,
     })
 };
 
-const buildWork = function() {
+const buildWork = function () {
     return Work.build({
         id: genUUID4,
     })
@@ -208,8 +202,16 @@ const buildWork = function() {
 
 module.exports = {
 
-    activateAccount,
+    buildEducation,
+    buildHistory,
+    buildPersona,
+    buildPhoto,
     buildProfile,
+    buildUser,
+    buildVerify,
+    buildWork,
+
+    activateAccount,
     deleteUser,
     deleteVerify,
     findByEmail,
@@ -217,5 +219,6 @@ module.exports = {
     findByUsername,
     findVerify,
     saveUser,
+    saveVerify,
     updateUser
 };

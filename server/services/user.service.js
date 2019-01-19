@@ -1,5 +1,5 @@
 // LOAD MODULES
-const { bcryptCompare, signJwt } = require('./common/common.service');
+const { bcryptCompare, signJwt, bcryptPassword } = require('./common/common.service');
 const { sendMail } = require('./mail/mail.service');
 
 
@@ -112,14 +112,32 @@ async function registerUser(user) {
 
         // find profile by email; returns null if not found
         const foundUser = await userRepository.findByEmail(user.email);
+
         if (foundUser === null) {
 
-            // build profile + verify email; then save
+            // build user
+            user = await userRepository.buildUser(user);
+
+            // generate & assign token as password
+            await bcryptPassword(user).then(hash => {
+                user.password = hash;
+            });
+
+            // build verify record
+            let email = await userRepository.buildVerify(user);
+
+            // set foreign key
+            await email.set({fkUserId: user.id});
+
+            // save user
             user = await userRepository.saveUser(user);
 
-            user = user.user.dataValues;
+            // save verify record
+            email = await userRepository.email.save(email);
 
-            return user;
+
+            return {user: user, email: email};
+
             // send verify email
             // return sendMail(profile);
 

@@ -60,7 +60,7 @@ async function registerUser(req, res, next) {
     let user = req.body;
 
     try {
-        const result = await userService.registerUser(user);
+        const result = await userService.registerUser(user, next);
         res.status(200).json(result);
     } catch (e) {
         next(e);

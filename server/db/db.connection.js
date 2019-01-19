@@ -19,7 +19,7 @@ require('../models/index.models')(sequelize, Sequelize.DataTypes);
 
 
 // add UUID generator to sequelize
-sequelize.genUUID4 = uuid;
+db.genUUID4 = uuid;
 
 
 // add Sequelize and sequelize connection instance to db

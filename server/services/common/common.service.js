@@ -15,20 +15,18 @@ const generateUUID4 = (config = {}) => {
 
 
 // encrypt password using an available bcrypt library function
-const bcryptPassword = async (payload, next) => {
-    let salt, hash = null;
+const bcryptPassword = async (payload) => {
+    const saltRounds = 10; let hash = null;
 
     try {
-        salt = await bcrypt.genSalt(10);
-        hash = await bcrypt.hash(payload.password, salt);
+        hash = await bcrypt.hash(payload.password, saltRounds);
+        console.log('done hashing password ... ', hash);
 
-        console.log(hash, 'HASHING PASSWORD DONE...');
         return hash;
 
     } catch (e) {
         // TODO add errors instance, object to handle error messages
-        console.log('BCRYPT ERROR: ');
-        console.log(e);
+        console.log('bcrypt error: ', e);
         return e;
     }
 

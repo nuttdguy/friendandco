@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "mocha -w _test_/*",
+    "test": "mocha -w _test_/unit/*",
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm run start --prefix _client",
