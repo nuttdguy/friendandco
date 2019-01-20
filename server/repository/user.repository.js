@@ -2,18 +2,8 @@
 const db = require('../db/db.connection');
 const genUUID4 = db.genUUID4;
 
-
-// Load models
-const {
-    User,
-    Verify,
-    Profile,
-    Education,
-    History,
-    Persona,
-    Photo,
-    Work,
-} = db.sequelize.models;
+// load models
+const $ = db.sequelize.models;
 
 
 // activate user account
@@ -33,12 +23,13 @@ async function activateAccount(userId) {
 
 }
 
-async function deleteEducation() {
+// delete by model + id
+async function deleteBy(model, field, value) {
     let deleteQty = 0;
 
     try {
-        console.log('deleting profile by user id ...  ', id);
-        deleteQty = Education.destroy({where: {id: id}});
+        console.log('deleting domain type ...  ', value);
+        deleteQty = $[model].destroy({where: {[field]: value}});
 
         return deleteQty;
     } catch (e) {
@@ -46,13 +37,13 @@ async function deleteEducation() {
     }
 }
 
-// delete profile
-async function deleteProfile(id) {
+// delete by model + id
+async function deleteOne(model, id) {
     let deleteQty = 0;
 
     try {
-        console.log('deleting profile by user id ...  ', id);
-        deleteQty = Profile.destroy({where: {id: id}});
+        console.log('deleting domain type ...  ', id);
+        deleteQty = $[model].destroy({where: {id: id}});
 
         return deleteQty;
     } catch (e) {
@@ -60,294 +51,98 @@ async function deleteProfile(id) {
     }
 }
 
-// delete verify record
-function deleteVerify(userId) {
-    console.log('deleting verify record ...', userId);
-    return Verify.destroy({
-        where: {id: userId}
-    })
-}
-
-// delete user
-async function deleteUser(userId) {
-    let result = null;
+// find by model + id
+async function findByPk(model, id) {
 
     try {
-        console.log('deleting the user...', userId);
-        result = await User.destroy({where: {id: userId}})
+        console.log(`finding ${model} by pk => ${id}`);
+        model = await $[model].findByPk(id);
 
-        return result;
-    } catch (e) {
-        return e;
-    }
-}
-
-// find user by email
-async function findByEmail(email) {
-    let user = null;
-
-    try {
-        console.log('finding user by email ... ', email);
-        user = await User.findOne({where: {email: email}});
-
-        return user.dataValues;
-    } catch (e) {
-        return e;
-    }
-}
-
-// find user by id
-async function findById(userId) {
-    let user = null;
-
-    try {
-        console.log('finding user by id ... ', userId);
-        user = await User.findByPk(userId);
-
-        return user.dataValues;
+        return model.dataValues;
     } catch (e) {
         return e;
     }
 
 }
 
-// find user by username
-async function findByUsername(username) {
-    let user = null;
+// find by model + id
+async function findBy(model, field, id) {
 
     try {
-        console.log('finding user by username ... ', username);
-        user = await User.findOne({where: {username: username}});
+        console.log(`finding ${model} by ${field} => ${id}`);
+        model = await $[model].findOne({where: {[field]: id }});
 
-        return user.dataValues;
+        return model.dataValues;
     } catch (e) {
         return e;
     }
 
 }
 
-// find user profile
-async function findProfile(userId) {
-    let profile = null;
+// save build type
+async function save(model, data) {
 
     try {
-        console.log('finding profile by user id ... ', userId);
-        profile = await Profile.findOne({where: {id: userId}});
+        console.log(`saving ${model} with ${data.id}`);
+        data = await data.save();
 
-        return profile.dataValues;
-    } catch(e) {
-        return e;
-    }
-}
-
-// find user by id
-async function findVerify(userId) {
-    let verify = null;
-
-    try {
-        console.log('finding verify url by user id  ...', userId);
-        verify = await Verify.findByPk(userId);
-
-        return verify.dataValues;
+        return data.dataValues;
     } catch (e) {
         return e;
     }
 
 }
 
-// save user
-async function saveProfile(profile) {
+
+// update model + data
+async function update(model, data) {
+    const Model = db.sequelize.models[model];
 
     try {
-        console.log('saving profile with user id ... ', profile.id);
-        profile = await profile.save();
-
-        return profile.dataValues;
-    } catch (e) {
-        return e;
-    }
-
-}
-
-// save user
-async function saveUser(user) {
-
-    try {
-        console.log('saving user ... ', user.id);
-        user = await user.save();
-
-        return user.dataValues;
-    } catch (e) {
-        return e
-    }
-
-}
-
-// save verify record
-async function saveVerify(verifyRecord) {
-    let verify = null;
-
-    try {
-        console.log('saving verify record... ', verifyRecord.id);
-        verify = await verifyRecord.save();
-
-        return verify.dataValues;
-    } catch (e) {
-        return e
-    }
-
-}
-
-// update user
-async function updateUser(data) {
-    let user = null;
-
-    try {
-
-        user = await User.findByPk(data.id);
-        if (user !== null) {
-
-            console.log('updating user ... ', data.id);
-            user = await user.update(
-                {
-                    username: data.username,
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    email: data.email
-                },
-                {where: {userId: data.id}});
-            return user.dataValues;
-        }
+        console.log('updating model: ... ', model);
+        return await Model.update(
+            {...data},
+            {where: {id: data.id}});
 
     } catch (e) {
         return e;
     }
 
-    return 'profile was not found ... ' + dataToUpdate.id;
-}
-
-// update profile
-async function updateProfile(data) {
-    let profile = null;
-
-    try {
-
-        profile = await Profile.findByPk(data.id);
-        if (profile !== null) {
-
-            console.log('updating profile ... ', data.id);
-            profile = await profile.update(
-                {
-                    isActive: data.isActive,
-                },
-                {where: {id: data.id}});
-            return profile.dataValues;
-        }
-
-    } catch (e) {
-        return e;
-    }
-
-    return 'profile was not found ... ' + profile;
 }
 
 
 // ENTITIES :: BUILD ; CREATE NEW
 ///////////////////////////////
 
-
-// builds new profile object
-const buildUser = function (payload) {
-    console.log('building user ...');
-
-    return User.build({
-        id: genUUID4(),
-        username: payload.username,
-        firstName: payload.firstName,
-        lastName: payload.lastName,
-        password: payload.password,
-        email: payload.email,
-    });
+// build model objects
+const buildModel = function(model, data) {
+    return $[model].build({...data});
 };
 
-// build new verify object
-const buildVerify = function (payload) {
-    console.log('building verify ...', payload.id);
 
-    return Verify.build({
-        id: payload.id,
-    })
-};
-
-// build new profile object
-const buildProfile = function (payload) {
-    console.log('building profile using existing user id ... ', payload.id);
-    return Profile.build({
+const buildProfile = function (model = 'Profile', userId, domainId) {
+    console.log('building profile using user id: ... ' + userId + ' and domain id: ... ' + domainId);
+    return $[model].build({
         id: genUUID4(),
-        userId: payload.id,
-        domainName: payload.domainName,
-        // domainName: genUUID4(),
+        userId: userId,
+        domainTypeId: domainId,
         isActive: true
     });
     /// TODO change domain name after creating table for it
 };
 
-const buildEducation = function (payload) {
-    return Education.build({
-        id: payload.id,
-
-    })
-};
-
-const buildHistory = function () {
-    return History.build({
-        id: genUUID4,
-    })
-};
-
-const buildPersona = function () {
-    return Persona.build({
-        id: genUUID4,
-    })
-};
-
-const buildPhoto = function () {
-    return Photo.build({
-        id: genUUID4,
-    })
-};
-
-const buildWork = function () {
-    return Work.build({
-        id: genUUID4,
-    })
-};
 
 
 module.exports = {
 
-    buildEducation,
-    buildHistory,
-    buildPersona,
-    buildPhoto,
-    buildProfile,
-    buildUser,
-    buildVerify,
-    buildWork,
-
     activateAccount,
-    deleteEducation,
-    deleteProfile,
-    deleteUser,
-    deleteVerify,
-    findByEmail,
-    findById,
-    findByUsername,
-    findProfile,
-    findVerify,
-    saveProfile,
-    saveUser,
-    saveVerify,
-    updateProfile,
-    updateUser
+    buildModel,
+    buildProfile,
+    deleteOne,
+    deleteBy,
+    findByPk,
+    findBy,
+    save,
+    update,
+    update,
 };

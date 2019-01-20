@@ -1,6 +1,7 @@
 
 module.exports = (sequelize) => {
     const {
+        DomainType,
         Profile,
         User,
         Verify
@@ -9,6 +10,7 @@ module.exports = (sequelize) => {
 
     User.hasOne(Verify, { foreignKey: 'id' });
     User.hasOne(Profile, { foreignKey: 'userId' });
+    DomainType.hasOne(Profile, { foreignKey: 'domainTypeId'});
 
     // Verify.belongsTo(User, {foreignKey: 'verify', sourceKey: 'id'});
     // Profile.belongsTo(User, {foreignKey: 'profile', sourceKey: 'id'});

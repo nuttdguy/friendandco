@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
 
 
     // Profile Models
-    require('./profile/DomainType.model')(sequelize, DataTypes);
     require('./profile/Education.model')(sequelize, DataTypes);
     require('./profile/History.model')(sequelize, DataTypes);
     require('./profile/Hobby.model')(sequelize, DataTypes);
@@ -30,6 +29,9 @@ module.exports = (sequelize, DataTypes) => {
     // User Models
     require('./user/User.model')(sequelize, DataTypes);
     require('./user/Verify.model')(sequelize, DataTypes);
+
+    // Type Models
+    require('./type/Domain.model')(sequelize, DataTypes);
 
     console.log('done adding database models ...');
 

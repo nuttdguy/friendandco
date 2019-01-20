@@ -20,13 +20,13 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: 'cascade',
             onUpdate: 'cascade'
         },
-        domainName: {
+        domainTypeId: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
             allowNull: false,
             references: {
-                model: 'domainNames',
+                model: 'domainTypes',
                 key: 'id'
             },
             onDelete: 'cascade',

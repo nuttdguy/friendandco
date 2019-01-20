@@ -4,30 +4,17 @@ const expect = chai.expect;
 // load user repository functions for testing
 const {
 
-    buildEducation,
-    buildHistory,
-    buildPersona,
-    buildPhoto,
+    buildModel,
     buildProfile,
-    buildUser,
-    buildVerify,
-    buildWork,
 
     activateAccount,
-    deleteEducation,
-    deleteProfile,
-    deleteUser,
-    deleteVerify,
-    findByEmail,
-    findById,
-    findByUsername,
-    findProfile,
-    findVerify,
-    saveProfile,
-    saveUser,
-    saveVerify,
-    updateProfile,
-    updateUser
+
+    deleteOne,
+    deleteBy,
+    findByPk,
+    findBy,
+    save,
+    update,
 
 } = require('../../../repository/user.repository');
 
@@ -51,34 +38,29 @@ after(done => {
 describe('CRUD User', () => {
 
     let db = null;
-    let UserModel = null;
+    const ModelName = 'User';
+    let Model = null;
 
-    let user = null;
-    let UserData = null;
+    let instance = null;
     let bcryptPassword = null;
-    let foundUser = null;
-    let originUser = null;
+    let copiedInstance = null;
+    let copiedResponse = null;
 
 
     before((done) => {
         db = require('../../../db/db.connection'); // get db connection
-        UserModel = db.sequelize.models.User;
+        Model = db.sequelize.models[ModelName];
         bcryptPassword = require('../../../services/common/common.service').bcryptPassword;
         done();
     });
 
     after(done => {
-        deleteUser(originUser.id);
+        deleteOne(ModelName, instance.id);
         done()
     });
 
-    beforeEach(done => {
-        foundUser = null;
-        done();
-    });
-
-    it('should build sequelize user model', done => {
-        UserData = {
+    it(`should build => ${ModelName}` , done => {
+        instance = {
             username: 'username',
             firstName: 'firstname',
             lastName: 'lastname',
@@ -87,117 +69,186 @@ describe('CRUD User', () => {
         };
 
 
-        user = buildUser(UserData);
-        expect(user.id).to.be.a('string');
-        expect(user.username).to.equal(UserData.username);
-        expect(user.firstName).to.equal(UserData.firstName);
-        expect(user.lastName).to.equal(UserData.lastName);
-        expect(user.email).to.equal(UserData.email);
-        expect(user.password).to.equal(UserData.password);
+        instance = buildModel(ModelName, instance);
+        expect(instance.id).to.be.a('string');
+        expect(instance).to.have.property('username');
+        expect(instance).to.have.property('firstName');
+        expect(instance).to.have.property('lastName');
+        expect(instance).to.have.property('email');
+        expect(instance).to.have.property('password');
         // expect(User.password).to.equal('wrong');
-        expect(user).to.be.instanceof(UserModel);
+        expect(instance).to.be.instanceof(Model);
         done();
 
     });
 
-    it('should hash and set user password to hashed password', done => {
+    it(`should hash and set user password to hashed password`, done => {
 
-        bcryptPassword(user).then(hash => {
-            user.password = hash;
-            expect(user.password).to.not.be.equal(UserData.password);
-            expect(user.password).to.equal(hash);
+        bcryptPassword(instance).then(res => {
+            copiedResponse = res;
 
-            // expect(user.password).to.equal(30);
+            instance.password = copiedResponse;
+            expect(instance.password).to.equal(copiedResponse);
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
             done();
         }).catch(e => {
+
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
             done(e);
         });
 
     });
 
-    it('should save user to database', done => {
+    it(`should save and enforce constraint => ${ModelName} `, done => {
 
-        saveUser(user).then(res => {
-            originUser = {...user.dataValues};
-            expect(originUser.username).to.equal(user.username);
+        save(ModelName, instance).then(res => {
+            copiedResponse = res;
 
+            expect(copiedResponse.username).to.equal(instance.username);
+            expect(copiedResponse).to.have.property('username');
+            expect(copiedResponse).to.have.property('firstName');
+            expect(copiedResponse).to.have.property('lastName');
+            expect(copiedResponse).to.have.property('email');
+            expect(copiedResponse).to.have.property('password');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+
+            copiedInstance = {...res};
             done();
         }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
             done(e);
         });
 
     });
 
-    it('should find a user by ID, when user does exist', done => {
+    it(`should find ${ModelName} by Pk`, done => {
 
-        findById(user.id).then(res => {
-            foundUser = res;
+        findByPk(ModelName, instance.id).then(res => {
+            copiedResponse = res;
 
-            expect(foundUser.id).to.equal(originUser.id);
+            expect(copiedResponse.id).to.equal(instance.id);
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+
             done();
-
         }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
             done(e);
         });
 
 
     });
 
-    it('should find a user by EMAIL, when user does exist', done => {
+    it(`should find ${ModelName} email`, done => {
 
-        findByEmail(user.email).then(res => {
-            foundUser = res;
+        findBy(ModelName, 'email', instance.email).then(res => {
+            copiedResponse = res;
 
-            expect(foundUser.email).to.equal(originUser.email);
+            expect(copiedResponse.email).to.equal(instance.email);
+            expect(copiedResponse.id).to.equal(instance.id);
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
             done();
 
         }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
             done(e);
         });
     });
 
-    it('should find a user by Username, when user does exist', done => {
+    it(`should find ${ModelName} username`, done => {
 
-        findByUsername(user.username).then(res => {
-            foundUser = res;
+        findBy(ModelName, 'username', instance.username).then(res => {
+            copiedResponse = res;
 
-            expect(foundUser.username).to.equal(originUser.username);
+            expect(copiedResponse.username).to.equal(instance.username);
+            expect(copiedResponse.id).to.equal(instance.id);
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
             done();
 
         }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
             done(e);
         });
     });
 
-    it('should update user by id', done => {
-        user.username = 'changing username';
+    it(`should update ${ModelName} by id`, done => {
+        copiedInstance.username = 'changing username';
+        copiedInstance.firstName = 'changing firstName';
+        copiedInstance.lastName = 'changing lastName';
+        copiedInstance.email = 'changing email';
+        copiedInstance.password = 'changing password';
 
-        updateUser(user).then(res => {
-            foundUser = res;
+        update(ModelName, copiedInstance).then(res => {
+            copiedResponse = res;
 
-            expect(foundUser.username).to.equal(user.username);
-            expect(foundUser.username).to.not.be.equal(originUser.username);
+            expect(copiedResponse).to.eql([1]);
+            expect(copiedResponse).to.be.a('array');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
             done();
 
         }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
             done(e);
         })
     });
 
-    it('should delete user by id', done => {
-        deleteUser(user.id).then(res => {
-            foundUser = res;
+    it(`should delete ${ModelName} id`, done => {
+        deleteOne(ModelName, instance.id).then(res => {
+            copiedResponse = res;
 
-            expect(foundUser).to.equal(1);
-            expect(foundUser).to.be.a('number');
-            done()
+            expect(copiedResponse).to.equal(1);
+            expect(copiedResponse).to.be.a('number');
+
+            // check for SQL exceptions
+            expect(res).to.not.have.property('original');
+            done();
+
         }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
             done(e);
         })
     })
 
 });
-
 
 // Verify
 // [1]. build a verify email object
@@ -207,19 +258,21 @@ describe('CRUD User', () => {
 describe('CRUD Verify', () => {
 
     let db = null;
-    let userPayload = null;
-    let VerifyModel = null;
+    let user = null;
+    const User = 'User';
+    const ModelName = 'Verify';
+    let Model = null;
 
-    let verify = null;
-    let foundVerify = null;
-    let originVerify = null;
+    let instance = null;
+    let copiedResponse = null;
+    let copiedInstance = null;
 
 
     before((done) => {
         db = require('../../../db/db.connection');
-        VerifyModel = db.sequelize.models.Verify;
+        Model = db.sequelize.models[ModelName];
 
-        userPayload = buildUser({
+        user = buildModel(User, {
             username: 'verifyUsername',
             firstName: 'verifyName',
             lastName: 'lastname',
@@ -227,83 +280,118 @@ describe('CRUD Verify', () => {
             password: 'verify-password-test'
         });
 
-        done();
-    });
+        save(User, user).then(res => {
+            copiedResponse = res;
 
-    beforeEach(done => {
-        foundVerify = null;
-        done();
-    });
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
 
-    after(done => {
-        deleteUser(userPayload.id);
-        done();
-    });
+            user = {...res};
+            done();
 
-    it('should build sequelize Verify model with user data as payload', done => {
-
-        verify = buildVerify(userPayload); // send user payload
-
-        expect(verify.dataValues.id).to.be.a('string');
-        expect(verify.dataValues).to.contain.all.keys('id');
-        expect(verify).to.be.instanceof(VerifyModel);
-        done();
-
-    });
-
-    it('should enforce user model constraint when saving verify record to database', done => {
-
-        saveUser(userPayload).then(user => {
-
-            saveVerify(verify).then(res => {
-                originVerify = {...verify.dataValues}; // save original
-
-                expect(res.id).to.equal(userPayload.id);
-                expect(res).to.have.all.keys('id', 'createdAt', 'updatedAt');
-
-                userPayload = {...user};
-                done();
-            }).catch(e => {
-                done(e);
-            });
         }).catch(e => {
-            done(e)
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+            console.log(e);
+            done(e);
         })
 
     });
 
-    it('should find verify record url by user id', done => {
+    beforeEach(done => {
+        copiedResponse = null;
+        done();
+    });
 
-        findVerify(userPayload.id).then(res => {
-            verify = res;
+    after(done => {
+        deleteOne(User, user.id);
+        done();
+    });
 
-            expect(verify.id).to.equal(userPayload.id);
-            expect(res).to.have.all.keys('id', 'createdAt', 'updatedAt');
+    it(`should build => ${ModelName} => preconditions: ${User}`, done => {
 
+        instance = buildModel(ModelName, user); // send user payload
+
+        expect(instance.dataValues.id).to.be.a('string');
+        expect(instance.dataValues).to.contain.all.keys('id');
+        expect(instance).to.be.instanceof(Model);
+        done();
+
+    });
+
+    it(`should save and enforce constraint => ${ModelName} => preconditions: ${User}`, done => {
+
+        save(ModelName, instance).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse.id).to.equal(user.id);
+            expect(copiedResponse).to.have.all.keys('id', 'createdAt', 'updatedAt');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+
+            // copy saved object on success
+            copiedInstance = {...res};
             done();
 
         }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
             done(e);
-        });
+        })
 
 
     });
 
-    it('should delete verify record when url record is found', done => {
-        deleteVerify(verify.id).then(res => {
-            verify = res;
+    it(`should find verify record ${ModelName} by associated user id`, done => {
 
-            expect(verify).to.equal(1);
-            expect(verify).to.be.a('number');
+        findByPk(ModelName, instance.id).then(res => {
+            copiedResponse = res;
 
-            done()
+            expect(copiedResponse.id).to.equal(user.id);
+            expect(copiedResponse).to.have.all.keys('id', 'createdAt', 'updatedAt');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+            done();
+
         }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
+            done(e);
+        })
+
+    });
+
+    it(`should delete verify record ${ModelName} by associated user id`, done => {
+        deleteOne(ModelName, instance.id).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse).to.equal(1);
+            expect(copiedResponse).to.be.a('number');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+            done();
+
+        }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
             done(e);
         })
     })
 
 });
-
 
 // Profile
 // [1]. build a profile object
@@ -313,20 +401,22 @@ describe('CRUD Verify', () => {
 describe('CRUD Profile', () => {
 
     let db = null;
-    let userPayload = null;
-    let ProfileModel = null;
+    let user = null;
+    let domainType = null;
+    const User = 'User';
+    const DomainType = 'DomainType';
+    const ModelName = 'Profile';
+    let Model = null;
 
-    let profile = null;
-    let foundProfile = null;
-    let originProfile = null;
-    let response = null;
-
+    let instance = null;
+    let copiedResponse = null;
+    let copiedInstance = null;
 
     before((done) => {
         db = require('../../../db/db.connection');
-        ProfileModel = db.sequelize.models.Profile;
+        Model = db.sequelize.models[ModelName];
 
-        userPayload = buildUser({
+        user = buildModel(User, {
             username: 'profileUsername',
             firstName: 'profileName',
             lastName: 'lastname',
@@ -334,252 +424,451 @@ describe('CRUD Profile', () => {
             password: 'profile-password-test'
         });
 
-        saveUser(userPayload).then(res => {
-            userPayload = res;
-            done();
+        domainType = buildModel(DomainType, {
+            name: 'Education',
+            desc: 'Identifies the domain type related to education',
+            isActive: true
         });
 
+        save(User, user)
+            .then(res => {
+                // check for SQL exceptions
+                expect(res).to.not.have.property('original');
+
+                user = res;
+            })
+            .catch(e => {
+                if (copiedResponse.hasOwnProperty('original')) {
+                    console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+                }
+
+                console.log(e);
+            });
+
+        save(DomainType, domainType)
+            .then(res => {
+                // check for SQL exceptions
+                expect(res).to.not.have.property('original');
+                domainType = res;
+            })
+            .catch(e => {
+                if (copiedResponse.hasOwnProperty('original')) {
+                    console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+                }
+
+                console.log(e);
+            });
+
+        done();
     });
 
     beforeEach(done => {
-        foundProfile = null;
+        copiedResponse = null;
         done();
     });
 
     after(done => {
-        // deleteProfile(profile.id);
-        deleteUser(userPayload.id);
+        deleteOne(User, user.id);
         done();
     });
 
-    it('should build a Profile using an existing user id', done => {
+    it(`should build => ${ModelName} => preconditions: ${User} + ${DomainType}`, done => {
 
-        profile = buildProfile(userPayload); // send user payload
+        instance = buildProfile(ModelName, user.id, domainType.id); // send user payload
 
-        expect(profile.id).to.be.a('string');
-        expect(profile.userId).to.equal(userPayload.id);
-        expect(profile.dataValues).to.contain.all.keys('id', 'userId', 'domainName', 'isActive');
-        expect(profile).to.be.instanceof(ProfileModel);
+        expect(instance.id).to.be.a('string');
+        expect(instance.userId).to.equal(user.id);
+        expect(instance.domainTypeId).to.equal(domainType.id);
+        expect(instance.dataValues).to.contain.all.keys('id', 'userId', 'domainTypeId', 'isActive');
+        expect(instance).to.be.instanceof(Model);
 
         done();
 
     });
 
-    it('should save profile; precondition is that user exists', done => {
+    it(`should build => ${ModelName} => preconditions: ${User} + ${DomainType}`, done => {
 
-        saveProfile(profile).then(res => {
-            response = res;
+        save(ModelName, instance).then(res => {
+            copiedResponse = res;
 
-            expect(response.id).to.be.a('string');
-            expect(response.userId).to.equal(userPayload.id);
-            expect(response).to.contain.all.keys('id', 'userId', 'domainName', 'isActive', 'updatedAt', 'createdAt');
+            expect(copiedResponse.id).to.be.a('string');
+            expect(copiedResponse.userId).to.equal(user.id);
+            expect(copiedResponse.domainTypeId).to.equal(domainType.id);
+            expect(copiedResponse).to.contain.all.keys('id', 'userId', 'domainTypeId', 'isActive', 'updatedAt', 'createdAt');
 
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
 
-            profile = {...response};
+            copiedInstance = {...res};
             done();
 
         }).catch(e => {
-            if (response.hasOwnProperty('original')) {
-                console.log('SQL ERROR: ', response.original.sqlMessage);
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
             }
+
+            console.log(e);
+            done(e);
+        })
+
+    });
+
+    it(`should find profile ${ModelName} by user id`, done => {
+
+        findBy(ModelName, 'userId', user.id).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse.id).to.be.a('string');
+            expect(copiedResponse.id).to.equal(instance.id);
+            expect(copiedResponse.userId).to.equal(user.id);
+            expect(copiedResponse.domainTypeId).to.equal(domainType.id);
+            expect(copiedResponse).to.contain.all.keys('id', 'userId', 'domainTypeId', 'isActive', 'updatedAt', 'createdAt');
+
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+            done();
+
+        }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
+            done(e);
+        })
+
+    });
+
+    it('should update profile isActive by user id', done => {
+
+        copiedInstance.isActive = false;
+
+        update(ModelName, copiedInstance).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse).to.eql([1]);
+            expect(copiedResponse).to.be.a('array');
+
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+            done();
+
+        }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
+            done(e);
+        })
+
+    });
+
+    it('should delete profile by user id', done => {
+
+        deleteBy(ModelName, 'userId', copiedInstance.userId).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse).to.equal(1);
+            expect(copiedResponse).to.be.a('number');
+
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+            done();
+
+        }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
+            done(e);
+        })
+    })
+
+});
+
+// DomainType
+// [1]. build a domainType object
+// [2]. save a domainType object
+// [3]. update a domainType object
+// [4]. delete a domainType object
+describe('CRUD Domain', () => {
+
+    const ModelName = "DomainType";
+    let db = null;
+    let Model = null;
+
+    let instance = null;
+    let copiedResponse = null;
+    let copiedInstance = null;
+
+    before((done) => {
+        db = require('../../../db/db.connection');
+        Model = db.sequelize.models[ModelName];
+
+        instance = {
+            name: 'Education',
+            desc: 'Identifies the domain type related to education',
+            isActive: true
+        };
+
+        done();
+    });
+
+    after(done => {
+        deleteOne(ModelName, instance.id);
+        done();
+    });
+
+    it(`should build => ${ModelName}`, done => {
+
+        instance = buildModel(ModelName, instance);
+
+        expect(instance.id).to.be.a('string');
+        expect(instance.dataValues).to.contain.all.keys('id', 'name', 'desc', 'isActive');
+        expect(instance).to.be.instanceof(Model);
+
+        done();
+    });
+
+    it(`should save => ${ModelName} by id`, done => {
+
+        // console.log(instance);
+        save(ModelName, instance).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse.id).to.be.a('string');
+            expect(copiedResponse).to.contain.all.keys('id', 'name', 'desc', 'isActive', 'createdAt', 'updatedAt');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+
+            copiedInstance = {...res};
+            done();
+
+        }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
             done(e);
         });
 
     });
 
-    // it('should find profile by user id', done => {
-    //
-    //     findProfile(userPayload.id).then(res => {
-    //         profile = res;
-    //
-    //         expect(profile.id).to.be.a('string');
-    //         expect(profile.id).to.equal(userPayload.id);
-    //         expect(profile).to.contain.all.keys('id', 'isActive', 'updatedAt', 'createdAt');
-    //
-    //         done();
-    //
-    //     }).catch(e => {
-    //         console.log(e);
-    //         done(e);
-    //     });
-    //
-    // });
-    //
-    // it('should update profile isActive by user id', done => {
-    //
-    //     profile.isActive = false;
-    //
-    //     updateProfile(profile).then(res => {
-    //
-    //         expect(res.id).to.equal(profile.id);
-    //         expect(res.isActive).to.equal(false);
-    //         expect(res.isActive).to.not.equal(originProfile.isActive);
-    //         expect(res).to.contain.all.keys('id', 'isActive', 'updatedAt', 'createdAt');
-    //
-    //         profile = {...res};
-    //         done();
-    //
-    //     }).catch(e => {
-    //         console.log(e);
-    //         done(e);
-    //     });
-    //
-    // });
-    //
-    // it('should delete profile by user id', done => {
-    //
-    //     deleteProfile(userPayload.id).then(res => {
-    //         profile = res;
-    //
-    //         expect(profile).to.equal(1);
-    //         expect(profile).to.be.a('number');
-    //
-    //         done()
-    //     }).catch(e => {
-    //         done(e);
-    //     })
-    // })
+    it(`should find => ${ModelName} by id`, done => {
+
+        findByPk(ModelName, instance.id).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse.id).to.be.a('string');
+            expect(copiedResponse).to.have.all.keys('id', 'name', 'desc', 'isActive', 'createdAt', 'updatedAt');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+
+            done();
+        }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
+            done(e);
+        });
+
+    });
+
+    it(`should update => ${ModelName} by id`, done => {
+
+        copiedInstance.desc = 'Update desc';
+        copiedInstance.name = 'Update Education';
+        copiedInstance.isActive = false;
+
+        update(ModelName, copiedInstance).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse).to.eql([1]);
+            expect(copiedResponse).to.be.a('array');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+
+            done();
+        }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+            console.log(e);
+            done(e);
+        });
+
+    });
+
+    it(`should delete => ${ModelName} by id`, done => {
+
+        deleteOne(ModelName, instance.id).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse).to.equal(1);
+            expect(copiedResponse).to.be.a('number');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+            done()
+        }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+            console.log(e);
+            done(e);
+        })
+    })
 
 });
 
-
-// Education: precondition - requires user + profile
+// Education: precondition => none
 // [1]. build an education object
 // [2]. save an education object
 // [3]. update an education object
 // [4]. delete an education object
-// describe('CRUD Education', () => {
-//
-//     let db = null;
-//     let userPayload = null;
-//     let profilePayload = null;
-//     let EducationModel = null;
-//
-//     let education = null;
-//     let foundEducation = null;
-//     let originEducation = null;
-//
-//
-//     before((done) => {
-//         db = require('../../../db/db.connection');
-//         EducationModel = db.sequelize.models.Education;
-//
-//         userPayload = buildUser({
-//             username: 'profileUsername',
-//             firstName: 'profileName',
-//             lastName: 'lastname',
-//             email: 'first@profile.com',
-//             password: 'profile-password-test'
-//         });
-//
-//         saveUser(userPayload).then(res => {
-//             userPayload = res;
-//             saveProfile(userPayload).then(res => {
-//                 profilePayload = res;
-//                 done();
-//             })
-//         });
-//
-//     });
-//
-//     beforeEach(done => {
-//         foundEducation = null;
-//         done();
-//     });
-//
-//     after(done => {
-//         deleteEducation(education.id);
-//         done();
-//     });
-//
-//     it('should build a Education using an existing user id', done => {
-//
-//         education = buildEducation();
-//
-//         expect(education.id).to.be.a('string');
-//         expect(education.id).to.equal(userPayload.id);
-//         expect(education.dataValues).to.contain.all.keys('id', 'industry', 'specialty', 'createdAt', 'updatedAt');
-//         expect(education).to.be.instanceof(EducationModel);
-//
-//         done();
-//     });
-//
-//     // it('should save profile; precondition is that user exists', done => {
-//     //
-//     //     saveUser(userPayload).then(user => {
-//     //
-//     //         saveProfile(profile).then(res => {
-//     //             profile = res;
-//     //
-//     //             expect(profile.id).to.be.a('string');
-//     //             expect(profile.id).to.equal(userPayload.id);
-//     //             expect(profile).to.contain.all.keys('id', 'isActive', 'updatedAt', 'createdAt');
-//     //
-//     //             originProfile = {...profile};
-//     //             done();
-//     //         }).catch(e => {
-//     //             done(e);
-//     //         });
-//     //     }).catch(e => {
-//     //         done(e)
-//     //     });
-//     //
-//     // });
-//     //
-//     // it('should find profile by user id', done => {
-//     //
-//     //     findProfile(userPayload.id).then(res => {
-//     //         profile = res;
-//     //
-//     //         expect(profile.id).to.be.a('string');
-//     //         expect(profile.id).to.equal(userPayload.id);
-//     //         expect(profile).to.contain.all.keys('id', 'isActive', 'updatedAt', 'createdAt');
-//     //
-//     //         done();
-//     //
-//     //     }).catch(e => {
-//     //         console.log(e);
-//     //         done(e);
-//     //     });
-//     //
-//     // });
-//     //
-//     // it('should update profile isActive by user id', done => {
-//     //
-//     //     profile.isActive = false;
-//     //
-//     //     updateProfile(profile).then(res => {
-//     //
-//     //         expect(res.id).to.equal(profile.id);
-//     //         expect(res.isActive).to.equal(false);
-//     //         expect(res.isActive).to.not.equal(originProfile.isActive);
-//     //         expect(res).to.contain.all.keys('id', 'isActive', 'updatedAt', 'createdAt');
-//     //
-//     //         profile = {...res};
-//     //         done();
-//     //
-//     //     }).catch(e => {
-//     //         console.log(e);
-//     //         done(e);
-//     //     });
-//     //
-//     // });
-//     //
-//     // it('should delete profile by user id', done => {
-//     //
-//     //     deleteProfile(userPayload.id).then(res => {
-//     //         profile = res;
-//     //
-//     //         expect(profile).to.equal(1);
-//     //         expect(profile).to.be.a('number');
-//     //
-//     //         done()
-//     //     }).catch(e => {
-//     //         done(e);
-//     //     })
-//     // })
-//
-// });
+describe('CRUD Education', () => {
+
+    const ModelName = 'Education';
+    let db = null;
+    let Model = null;
+
+    let instance = null;
+    let copiedResponse = null;
+    let copiedInstance = null;
+
+    before((done) => {
+        db = require('../../../db/db.connection');
+        Model = db.sequelize.models[ModelName];
+
+        instance = {
+            industry: 'Education',
+            specialty: 'Grade School Teacher',
+        };
+
+        done();
+    });
+
+    after(done => {
+        deleteOne(ModelName, instance.id);
+        done();
+    });
+
+    it(`should build => ${ModelName}`, done => {
+
+        instance = buildModel(ModelName, instance);
+
+        expect(instance.id).to.be.a('string');
+        expect(instance.dataValues).to.contain.all.keys('id', 'industry', 'specialty');
+        expect(instance).to.be.instanceof(Model);
+
+        done();
+    });
+
+    it(`should save => ${ModelName}`, done => {
+
+        save(ModelName, instance).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse.id).to.be.a('string');
+            expect(copiedResponse).to.contain.all.keys('id', 'industry', 'specialty','createdAt', 'updatedAt');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+
+            copiedInstance = {...res};
+            done();
+
+        }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
+            done(e);
+        });
+
+    });
+
+    it(`should find => ${ModelName} by id`, done => {
+
+        findByPk(ModelName, instance.id).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse.id).to.be.a('string');
+            expect(copiedResponse).to.contain.all.keys('id', 'industry', 'specialty','createdAt', 'updatedAt');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+
+            done();
+        }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+
+            console.log(e);
+            done(e);
+        });
+
+    });
+
+    it(`should update => ${ModelName} by id`, done => {
+
+        copiedInstance.industry = 'Update education';
+        copiedInstance.specialty = 'Update specialty';
+
+        update(ModelName, copiedInstance).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse).to.eql([1]);
+            expect(copiedResponse).to.be.a('array');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+
+            done();
+        }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+            console.log(e);
+            done(e);
+        });
+
+    });
+
+    it(`should delete => ${ModelName} by id`, done => {
+
+        deleteOne(ModelName, instance.id).then(res => {
+            copiedResponse = res;
+
+            expect(copiedResponse).to.equal(1);
+            expect(copiedResponse).to.be.a('number');
+
+            // check for SQL exceptions
+            expect(copiedResponse).to.not.have.property('original');
+            done()
+        }).catch(e => {
+            if (copiedResponse.hasOwnProperty('original')) {
+                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+            }
+            console.log(e);
+            done(e);
+        })
+    })
+
+});
 
 
 // History

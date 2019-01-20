@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Model = sequelize.define('DomainName', {
+    const Model = sequelize.define('DomainType', {
 
 
         id: {
@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        description: {
+        desc: {
             type: DataTypes.STRING,
             allowNull: false
         },
