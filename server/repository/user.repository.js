@@ -33,11 +33,24 @@ async function activateAccount(userId) {
 
 }
 
+async function deleteProfile(id) {
+    let deleteQty = 0;
+
+    try {
+        console.log('deleting profile by user id ...  ', id);
+        deleteQty = Profile.destroy({where: {id: id}});
+
+        return deleteQty;
+    } catch (e) {
+        return e;
+    }
+}
+
 // delete verify record
 function deleteVerify(userId) {
     console.log('deleting verify record ...', userId);
     return Verify.destroy({
-        where: {url: userId}
+        where: {id: userId}
     })
 }
 
@@ -99,13 +112,27 @@ async function findByUsername(username) {
 
 }
 
+// find user profile
+async function findProfile(userId) {
+    let profile = null;
+
+    try {
+        console.log('finding profile by user id ... ', userId);
+        profile = await Profile.findOne({where: {id: userId}});
+
+        return profile.dataValues;
+    } catch(e) {
+        return e;
+    }
+}
+
 // find user by id
 async function findVerify(userId) {
     let verify = null;
 
     try {
         console.log('finding verify url by user id  ...', userId);
-        verify = await Verify.findOne({where: {url: userId}});
+        verify = await Verify.findByPk(userId);
 
         return verify.dataValues;
     } catch (e) {
@@ -118,7 +145,7 @@ async function findVerify(userId) {
 async function saveProfile(profile) {
 
     try {
-        console.log('saving profile with user id ... ', profile.fkUserId);
+        console.log('saving profile with user id ... ', profile.id);
         profile = await profile.save();
 
         return profile.dataValues;
@@ -143,12 +170,12 @@ async function saveUser(user) {
 }
 
 // save verify record
-async function saveVerify(email) {
+async function saveVerify(verifyRecord) {
     let verify = null;
 
     try {
-        console.log('saving verify record... ', email.id);
-        verify = await email.save();
+        console.log('saving verify record... ', verifyRecord.id);
+        verify = await verifyRecord.save();
 
         return verify.dataValues;
     } catch (e) {
@@ -157,7 +184,7 @@ async function saveVerify(email) {
 
 }
 
-// update profile
+// update user
 async function updateUser(data) {
     let user = null;
 
@@ -185,6 +212,31 @@ async function updateUser(data) {
     return 'profile was not found ... ' + dataToUpdate.id;
 }
 
+// update profile
+async function updateProfile(data) {
+    let profile = null;
+
+    try {
+
+        profile = await Profile.findByPk(data.id);
+        if (profile !== null) {
+
+            console.log('updating profile ... ', data.id);
+            profile = await profile.update(
+                {
+                    isActive: data.isActive,
+                },
+                {where: {id: data.id}});
+            return profile.dataValues;
+        }
+
+    } catch (e) {
+        return e;
+    }
+
+    return 'profile was not found ... ' + profile;
+}
+
 
 // ENTITIES :: BUILD ; CREATE NEW
 ///////////////////////////////
@@ -209,17 +261,16 @@ const buildVerify = function (payload) {
     console.log('building verify ...', payload.id);
 
     return Verify.build({
-        id: genUUID4(),
-        url: payload.id,
+        id: payload.id,
     })
 };
 
-
+// build new profile object
 const buildProfile = function (payload) {
-    console.log('building profile for user ... ', payload.fkUserId);
+    console.log('building profile using existing user id ... ', payload.id);
     return Profile.build({
-        id: genUUID4(),
-        fkUserId: payload.id
+        id: payload.id,
+        isActive: true
     });
 };
 
@@ -267,14 +318,17 @@ module.exports = {
     buildWork,
 
     activateAccount,
+    deleteProfile,
     deleteUser,
     deleteVerify,
     findByEmail,
     findById,
     findByUsername,
+    findProfile,
     findVerify,
     saveProfile,
     saveUser,
     saveVerify,
+    updateProfile,
     updateUser
 };

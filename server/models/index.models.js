@@ -32,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
 
     console.log('done adding database models ...');
 
+
     // Object.keys(db).forEach(modelName => {
     //   if (db[modelName].associate) {
     //     db[modelName].associate(db);

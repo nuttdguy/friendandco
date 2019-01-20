@@ -14,15 +14,18 @@ const {
     buildWork,
 
     activateAccount,
+    deleteProfile,
     deleteUser,
     deleteVerify,
     findByEmail,
     findById,
     findByUsername,
+    findProfile,
     findVerify,
     saveProfile,
     saveUser,
     saveVerify,
+    updateProfile,
     updateUser
 
 } = require('../../../repository/user.repository');
@@ -64,6 +67,7 @@ describe('CRUD User', () => {
     });
 
     after(done => {
+        deleteUser(originUser.id);
         done()
     });
 
@@ -230,11 +234,17 @@ describe('CRUD Verify', () => {
         done();
     });
 
+    after(done => {
+        deleteUser(userPayload.id);
+        done();
+    });
+
     it('should build sequelize Verify model with user data as payload', done => {
 
         verify = buildVerify(userPayload); // send user payload
-        expect(verify.id).to.be.a('string');
-        expect(verify.url).to.be.a('string');
+
+        expect(verify.dataValues.id).to.be.a('string');
+        expect(verify.dataValues).to.contain.all.keys('id');
         expect(verify).to.be.instanceof(VerifyModel);
         done();
 
@@ -247,9 +257,8 @@ describe('CRUD Verify', () => {
             saveVerify(verify).then(res => {
                 originVerify = {...verify.dataValues}; // save original
 
-                expect(res.url).to.equal(verify.url);
-                expect(res.url).to.equal(userPayload.id);
-                expect(res.url).to.equal(user.id);
+                expect(res.id).to.equal(userPayload.id);
+                expect(res).to.have.all.keys('id', 'createdAt', 'updatedAt');
 
                 userPayload = {...user};
                 done();
@@ -267,8 +276,8 @@ describe('CRUD Verify', () => {
         findVerify(userPayload.id).then(res => {
             verify = res;
 
-            expect(verify.url).to.equal(userPayload.id);
-            expect(verify.id).to.not.equal(userPayload.id);
+            expect(verify.id).to.equal(userPayload.id);
+            expect(res).to.have.all.keys('id', 'createdAt', 'updatedAt');
 
             done();
 
@@ -280,7 +289,7 @@ describe('CRUD Verify', () => {
     });
 
     it('should delete verify record when url record is found', done => {
-        deleteVerify(verify.url).then(res => {
+        deleteVerify(verify.id).then(res => {
             verify = res;
 
             expect(verify).to.equal(1);
@@ -331,89 +340,98 @@ describe('CRUD Profile', () => {
         done();
     });
 
-    it('should build a Profile referencing user with foreign key as id', done => {
+    after(done => {
+        deleteProfile(profile.id);
+        done();
+    });
+
+    it('should build a Profile using an existing user id', done => {
 
         profile = buildProfile(userPayload); // send user payload
 
         expect(profile.id).to.be.a('string');
-        expect(profile.fkUserId).to.equal(userPayload.id);
-        expect(profile.fkUserId).to.be.a('string');
+        expect(profile.id).to.equal(userPayload.id);
+        expect(profile.dataValues).to.contain.all.keys('id', 'isActive');
         expect(profile).to.be.instanceof(ProfileModel);
 
         done();
 
     });
 
-    // it('should save profile if user exists', done => {
-    //
-    //     saveUser(userPayload).then(user => {
-    //
-    //         saveProfile(profile).then(res => {
-    //
-    //             expect(res.id).to.be.a('string');
-    //             expect(res.fkUserId).to.equal(userPayload.id);
-    //
-    //             originProfile = {...profile};
-    //             done();
-    //         }).catch(e => {
-    //             done(e);
-    //         });
-    //     }).catch(e => {
-    //         done(e)
-    //     });
-    //
-    // });
+    it('should save profile; precondition is that user exists', done => {
 
-    // it('should save profile if user exists', done => {
-    //
-    //     saveUser(userPayload).then(user => {
-    //
-    //         saveProfile(profile).then(res => {
-    //
-    //             expect(res.id).to.be.a('string');
-    //             expect(res.fkUserId).to.equal(userPayload.id);
-    //
-    //             originProfile = {...profile};
-    //             done();
-    //         }).catch(e => {
-    //             done(e);
-    //         });
-    //     }).catch(e => {
-    //         done(e)
-    //     });
-    //
-    //
-    // });
+        saveUser(userPayload).then(user => {
 
-    // it('should find profile record url by user id', done => {
-    //
-    //     findVerify(userPayload.id).then(res => {
-    //         profile = res;
-    //
-    //         expect(profile.url).to.equal(userPayload.id);
-    //         expect(profile.id).to.not.equal(userPayload.id);
-    //
-    //         done();
-    //
-    //     }).catch(e => {
-    //         done(e);
-    //     });
-    //
-    //
-    // });
-    //
-    // it('should delete profile record when url record is found', done => {
-    //     deleteVerify(profile.url).then(res => {
-    //         profile = res;
-    //
-    //         expect(profile).to.equal(1);
-    //         expect(profile).to.be.a('number');
-    //
-    //         done()
-    //     }).catch(e => {
-    //         done(e);
-    //     })
-    // })
+            saveProfile(profile).then(res => {
+                profile = res;
+
+                expect(profile.id).to.be.a('string');
+                expect(profile.id).to.equal(userPayload.id);
+                expect(profile).to.contain.all.keys('id', 'isActive', 'updatedAt', 'createdAt');
+
+                originProfile = {...profile};
+                done();
+            }).catch(e => {
+                done(e);
+            });
+        }).catch(e => {
+            done(e)
+        });
+
+    });
+
+    it('should find profile by user id', done => {
+
+        findProfile(userPayload.id).then(res => {
+            profile = res;
+
+            expect(profile.id).to.be.a('string');
+            expect(profile.id).to.equal(userPayload.id);
+            expect(profile).to.contain.all.keys('id', 'isActive', 'updatedAt', 'createdAt');
+
+            done();
+
+        }).catch(e => {
+            console.log(e);
+            done(e);
+        });
+
+    });
+
+    it('should update profile isActive by user id', done => {
+
+        profile.isActive = false;
+
+        updateProfile(profile).then(res => {
+
+            expect(res.id).to.equal(profile.id);
+            expect(res.isActive).to.equal(false);
+            expect(res.isActive).to.not.equal(originProfile.isActive);
+            expect(res).to.contain.all.keys('id', 'isActive', 'updatedAt', 'createdAt');
+
+            profile = {...res};
+            done();
+
+        }).catch(e => {
+            console.log(e);
+            done(e);
+        });
+
+    });
+
+    it('should delete profile by user id', done => {
+
+        deleteProfile(userPayload.id).then(res => {
+            profile = res;
+
+            expect(profile).to.equal(1);
+            expect(profile).to.be.a('number');
+
+            done()
+        }).catch(e => {
+            done(e);
+        })
+    })
 
 });
 

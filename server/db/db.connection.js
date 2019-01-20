@@ -16,6 +16,7 @@ const sequelize = new Sequelize(KEYS.MYSQLURI, {
 
 // add models
 require('../models/index.models')(sequelize, Sequelize.DataTypes);
+require('../models/models.associate')(sequelize);
 
 
 // add UUID generator to sequelize
@@ -36,5 +37,5 @@ console.log('done syncing database ...');
 
 
 // export db
-console.log('done connecting to database ... ', '00001');
+console.log('done connecting to database ... ', '00003');
 module.exports = db;

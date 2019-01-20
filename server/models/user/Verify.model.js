@@ -1,12 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
-    const Model = sequelize.define('Verify',{
+    const Model = sequelize.define('Verify', {
 
         id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
-            primaryKey: true,
-        },
-        url: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
@@ -16,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
                 model: 'users',
                 key: 'id'
             },
+            onDelete: 'cascade',
+            onUpdate: 'cascade'
         },
     });
 
