@@ -7,6 +7,12 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
         },
+        industry: {
+            type: DataTypes.STRING
+        },
+        specialty: {
+            type: DataTypes.STRING
+        }
 
     });
 

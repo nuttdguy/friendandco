@@ -33,6 +33,20 @@ async function activateAccount(userId) {
 
 }
 
+async function deleteEducation() {
+    let deleteQty = 0;
+
+    try {
+        console.log('deleting profile by user id ...  ', id);
+        deleteQty = Education.destroy({where: {id: id}});
+
+        return deleteQty;
+    } catch (e) {
+        return e;
+    }
+}
+
+// delete profile
 async function deleteProfile(id) {
     let deleteQty = 0;
 
@@ -150,7 +164,7 @@ async function saveProfile(profile) {
 
         return profile.dataValues;
     } catch (e) {
-        return e
+        return e;
     }
 
 }
@@ -269,14 +283,18 @@ const buildVerify = function (payload) {
 const buildProfile = function (payload) {
     console.log('building profile using existing user id ... ', payload.id);
     return Profile.build({
-        id: payload.id,
+        id: genUUID4(),
+        userId: payload.id,
+        domainName: payload.domainName,
+        // domainName: genUUID4(),
         isActive: true
     });
+    /// TODO change domain name after creating table for it
 };
 
-const buildEducation = function () {
+const buildEducation = function (payload) {
     return Education.build({
-        id: genUUID4,
+        id: payload.id,
 
     })
 };
@@ -318,6 +336,7 @@ module.exports = {
     buildWork,
 
     activateAccount,
+    deleteEducation,
     deleteProfile,
     deleteUser,
     deleteVerify,

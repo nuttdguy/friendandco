@@ -8,7 +8,7 @@ module.exports = (sequelize) => {
 
 
     User.hasOne(Verify, { foreignKey: 'id' });
-    User.hasOne(Profile, { foreignKey: 'id' });
+    User.hasOne(Profile, { foreignKey: 'userId' });
 
     // Verify.belongsTo(User, {foreignKey: 'verify', sourceKey: 'id'});
     // Profile.belongsTo(User, {foreignKey: 'profile', sourceKey: 'id'});
