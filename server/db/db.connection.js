@@ -11,7 +11,7 @@ const pool = {max: 5, min: 0, acquire: 30000, idle: 10000};
 // connect to db
 const sequelize = new Sequelize(KEYS.MYSQLURI, {
     pool: pool,
-    logging: false
+    logging: true
 });
 
 // add models
@@ -29,13 +29,14 @@ db.sequelize = sequelize;
 
 
 // sync db
-
-sequelize.sync();
-// sequelize.sync({force: true});
-
-console.log('done syncing database ...');
+// sequelize.sync();
+// sequelize.sync({force: true})
+//     .then(res => {
+//         console.log('done connecting to database ... ', '00003');
+//     }).catch(err => {
+//         console.log('errors trying to connect to db ... ', err);
+// });
 
 
 // export db
-console.log('done connecting to database ... ', '00003');
 module.exports = db;

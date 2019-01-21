@@ -10,7 +10,7 @@ async function deleteBy(model, field, value) {
     let deleteQty = 0;
 
     try {
-        console.log('deleting domain type ...  ', value);
+        console.log(`deleting  ${model} by ${field} = ${value} `);
         deleteQty = $[model].destroy({where: {[field]: value}});
 
         return deleteQty;
@@ -24,7 +24,7 @@ async function deleteOne(model, id) {
     let deleteQty = 0;
 
     try {
-        console.log('deleting domain type ...  ', id);
+        console.log(`deleting  ${model} by id = ${id} `);
         deleteQty = $[model].destroy({where: {id: id}});
 
         return deleteQty;
@@ -48,11 +48,11 @@ async function findByPk(model, id) {
 }
 
 // find by model + id
-async function findBy(model, field, id) {
+async function findBy(model, field, value) {
 
     try {
-        console.log(`finding ${model} by ${field} => ${id}`);
-        model = await $[model].findOne({where: {[field]: id }});
+        console.log(`finding ${model} by ${field} => ${value}`);
+        model = await $[model].findOne({where: {[field]: value }});
 
         return model.dataValues;
     } catch (e) {
@@ -77,11 +77,10 @@ async function save(model, data) {
 
 // update model + data
 async function update(model, data) {
-    const Model = db.sequelize.models[model];
 
     try {
         console.log('updating model: ... ', model);
-        return await Model.update(
+        return await $[model].update(
             {...data},
             {where: {id: data.id}});
 
@@ -94,7 +93,7 @@ async function update(model, data) {
 // build model objects
 function buildModel(model, data) {
     return $[model].build({...data});
-};
+}
 
 // build join model
 function buildJoinModel(model, value1, value2, field1, field2) {
@@ -106,7 +105,7 @@ function buildJoinModel(model, value1, value2, field1, field2) {
         isActive: true
     });
     /// TODO change domain name after creating table for it
-};
+}
 
 
 module.exports = {

@@ -5,14 +5,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
-            foreignKey: true,
-            allowNull: false,
-            references: {
-                model: 'users',
-                key: 'id'
-            },
-            onDelete: 'cascade',
-            onUpdate: 'cascade'
+            // foreignKey: 'id',
+            // references: {
+            //     model: 'Users',
+            //     key: 'id'
+            // }
         },
     });
 

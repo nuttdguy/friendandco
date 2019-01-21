@@ -11,12 +11,12 @@ module.exports = (sequelize, DataTypes) => {
 
     // Profile Models
     require('./profile/Education.model')(sequelize, DataTypes);
-    require('./profile/History.model')(sequelize, DataTypes);
-    require('./profile/Hobby.model')(sequelize, DataTypes);
-    require('./profile/Interest.model')(sequelize, DataTypes);
-    require('./profile/Location.model')(sequelize, DataTypes);
-    require('./profile/Persona.model')(sequelize, DataTypes);
-    require('./profile/Photo.model')(sequelize, DataTypes);
+    // require('./profile/History.model')(sequelize, DataTypes);
+    // require('./profile/Hobby.model')(sequelize, DataTypes);
+    // require('./profile/Interest.model')(sequelize, DataTypes);
+    // require('./profile/Location.model')(sequelize, DataTypes);
+    // require('./profile/Persona.model')(sequelize, DataTypes);
+    // require('./profile/Photo.model')(sequelize, DataTypes);
     require('./profile/Profile.model')(sequelize, DataTypes);
     require('./profile/ProfileCategory.model')(sequelize, DataTypes);
     require('./profile/Work.model')(sequelize, DataTypes);
@@ -34,13 +34,6 @@ module.exports = (sequelize, DataTypes) => {
     require('./type/Domain.model')(sequelize, DataTypes);
 
     console.log('done adding database models ...');
-
-
-    // Object.keys(db).forEach(modelName => {
-    //   if (db[modelName].associate) {
-    //     db[modelName].associate(db);
-    //   }
-    // });
 
 };
 
