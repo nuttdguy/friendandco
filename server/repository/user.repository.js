@@ -5,24 +5,6 @@ const genUUID4 = db.genUUID4;
 // load models
 const $ = db.sequelize.models;
 
-
-// activate user account
-async function activateAccount(userId) {
-
-    try {
-        console.log('activating user account ... ', userId);
-
-        // update field of profile record
-        return await User.update(
-            {isActive: true},
-            {where: {id: userId}});
-
-    } catch (e) {
-        return e;
-    }
-
-}
-
 // delete by model + id
 async function deleteBy(model, field, value) {
     let deleteQty = 0;
@@ -93,7 +75,6 @@ async function save(model, data) {
 
 }
 
-
 // update model + data
 async function update(model, data) {
     const Model = db.sequelize.models[model];
@@ -110,39 +91,34 @@ async function update(model, data) {
 
 }
 
-
-// ENTITIES :: BUILD ; CREATE NEW
-///////////////////////////////
-
 // build model objects
-const buildModel = function(model, data) {
+function buildModel(model, data) {
     return $[model].build({...data});
 };
 
-
-const buildProfile = function (model = 'Profile', userId, domainId) {
-    console.log('building profile using user id: ... ' + userId + ' and domain id: ... ' + domainId);
+// build join model
+function buildJoinModel(model, value1, value2, field1, field2) {
+    console.log('building profile using user id: ... ' + value1 + ' and domain id: ... ' + value2);
     return $[model].build({
         id: genUUID4(),
-        userId: userId,
-        domainTypeId: domainId,
+        [field1]: value1,
+        [field2]: value2,
         isActive: true
     });
     /// TODO change domain name after creating table for it
 };
 
 
-
 module.exports = {
 
-    activateAccount,
     buildModel,
-    buildProfile,
-    deleteOne,
+    buildJoinModel,
+
     deleteBy,
-    findByPk,
+    deleteOne,
+
     findBy,
+    findByPk,
     save,
-    update,
     update,
 };

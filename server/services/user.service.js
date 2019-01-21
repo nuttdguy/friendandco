@@ -176,6 +176,24 @@ async function updateUser(dataToUpdate) {
     }
 }
 
+// TODO move this function into service layer
+// activate user account
+async function activateAccount(userId) {
+
+    try {
+        console.log('activating user account ... ', userId);
+
+        // update field of profile record
+        return await User.update(
+            {isActive: true},
+            {where: {id: userId}});
+
+    } catch (e) {
+        return e;
+    }
+
+}
+
 
 // EXPORT REFERENCES
 ///////////////////////////////

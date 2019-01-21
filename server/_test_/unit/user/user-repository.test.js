@@ -5,9 +5,7 @@ const expect = chai.expect;
 const {
 
     buildModel,
-    buildProfile,
-
-    activateAccount,
+    buildJoinModel,
 
     deleteOne,
     deleteBy,
@@ -474,7 +472,7 @@ describe('CRUD Profile', () => {
 
     it(`should build => ${ModelName} => preconditions: ${User} + ${DomainType}`, done => {
 
-        instance = buildProfile(ModelName, user.id, domainType.id); // send user payload
+        instance = buildJoinModel(ModelName, user.id, domainType.id, 'userId', 'domainTypeId'); // send user payload
 
         expect(instance.id).to.be.a('string');
         expect(instance.userId).to.equal(user.id);
@@ -486,7 +484,7 @@ describe('CRUD Profile', () => {
 
     });
 
-    it(`should build => ${ModelName} => preconditions: ${User} + ${DomainType}`, done => {
+    it(`should save => ${ModelName} => preconditions: ${User} + ${DomainType}`, done => {
 
         save(ModelName, instance).then(res => {
             copiedResponse = res;
@@ -870,12 +868,147 @@ describe('CRUD Education', () => {
 
 });
 
-
 // History
 // [1]. build a history object
 // [2]. save a history object
 // [3]. update a history object
 // [4]. delete a history object
+// describe('CRUD History', () => {
+//
+//     // TODO START HERE ...
+//     const ModelName = 'History';
+//     let db = null;
+//     let Model = null;
+//
+//     let instance = null;
+//     let copiedResponse = null;
+//     let copiedInstance = null;
+//
+//     before((done) => {
+//         db = require('../../../db/db.connection');
+//         Model = db.sequelize.models[ModelName];
+//
+//         instance = {
+//             industry: 'Education',
+//             specialty: 'Grade School Teacher',
+//         };
+//
+//         done();
+//     });
+//
+//     after(done => {
+//         deleteOne(ModelName, instance.id);
+//         done();
+//     });
+//
+//     it(`should build => ${ModelName}`, done => {
+//
+//         instance = buildModel(ModelName, instance);
+//
+//         expect(instance.id).to.be.a('string');
+//         expect(instance.dataValues).to.contain.all.keys('id', 'industry', 'specialty');
+//         expect(instance).to.be.instanceof(Model);
+//
+//         done();
+//     });
+//
+//     it(`should save => ${ModelName}`, done => {
+//
+//         save(ModelName, instance).then(res => {
+//             copiedResponse = res;
+//
+//             expect(copiedResponse.id).to.be.a('string');
+//             expect(copiedResponse).to.contain.all.keys('id', 'industry', 'specialty','createdAt', 'updatedAt');
+//
+//             // check for SQL exceptions
+//             expect(copiedResponse).to.not.have.property('original');
+//
+//             copiedInstance = {...res};
+//             done();
+//
+//         }).catch(e => {
+//             if (copiedResponse.hasOwnProperty('original')) {
+//                 console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+//             }
+//
+//             console.log(e);
+//             done(e);
+//         });
+//
+//     });
+//
+//     it(`should find => ${ModelName} by id`, done => {
+//
+//         findByPk(ModelName, instance.id).then(res => {
+//             copiedResponse = res;
+//
+//             expect(copiedResponse.id).to.be.a('string');
+//             expect(copiedResponse).to.contain.all.keys('id', 'industry', 'specialty','createdAt', 'updatedAt');
+//
+//             // check for SQL exceptions
+//             expect(copiedResponse).to.not.have.property('original');
+//
+//             done();
+//         }).catch(e => {
+//             if (copiedResponse.hasOwnProperty('original')) {
+//                 console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+//             }
+//
+//             console.log(e);
+//             done(e);
+//         });
+//
+//     });
+//
+//     it(`should update => ${ModelName} by id`, done => {
+//
+//         copiedInstance.industry = 'Update education';
+//         copiedInstance.specialty = 'Update specialty';
+//
+//         update(ModelName, copiedInstance).then(res => {
+//             copiedResponse = res;
+//
+//             expect(copiedResponse).to.eql([1]);
+//             expect(copiedResponse).to.be.a('array');
+//
+//             // check for SQL exceptions
+//             expect(copiedResponse).to.not.have.property('original');
+//
+//             done();
+//         }).catch(e => {
+//             if (copiedResponse.hasOwnProperty('original')) {
+//                 console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+//             }
+//             console.log(e);
+//             done(e);
+//         });
+//
+//     });
+//
+//     it(`should delete => ${ModelName} by id`, done => {
+//
+//         deleteOne(ModelName, instance.id).then(res => {
+//             copiedResponse = res;
+//
+//             expect(copiedResponse).to.equal(1);
+//             expect(copiedResponse).to.be.a('number');
+//
+//             // check for SQL exceptions
+//             expect(copiedResponse).to.not.have.property('original');
+//             done()
+//         }).catch(e => {
+//             if (copiedResponse.hasOwnProperty('original')) {
+//                 console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+//             }
+//             console.log(e);
+//             done(e);
+//         })
+//     })
+//
+// });
+
+
+
 
 // Persona
 // [1]. build a persona object

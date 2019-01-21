@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
         },
 
+
     });
 
     return Model;
