@@ -6,11 +6,13 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
-            allowNull: false,
+            onDelete: 'cascade',
+            onUpdate: 'cascade'
         },
         name: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
         desc: {
             type: DataTypes.STRING,
@@ -19,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         isActive: {
             type: DataTypes.BOOLEAN,
             defaultValue: true
-        }
+        },
     });
 
     return Model;

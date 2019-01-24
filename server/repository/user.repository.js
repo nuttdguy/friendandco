@@ -20,7 +20,7 @@ async function deleteBy(model, field, value) {
 }
 
 // delete by model + id
-async function deleteOne(model, id) {
+async function deleteByPk(model, id) {
     let deleteQty = 0;
 
     try {
@@ -40,7 +40,7 @@ async function findByPk(model, id) {
         console.log(`finding ${model} by pk => ${id}`);
         model = await $[model].findByPk(id);
 
-        return model.dataValues;
+        return model !== null ? model.dataValues : null;
     } catch (e) {
         return e;
     }
@@ -54,7 +54,7 @@ async function findBy(model, field, value) {
         console.log(`finding ${model} by ${field} => ${value}`);
         model = await $[model].findOne({where: {[field]: value }});
 
-        return model.dataValues;
+        return model !== null ? model.dataValues : null;
     } catch (e) {
         return e;
     }
@@ -95,26 +95,33 @@ function buildModel(model, data) {
     return $[model].build({...data});
 }
 
+// build model with id of another object
+function buildModelWithAssociatedId(model, idFieldName, id, data = {}) {
+    return $[model].build({...data, [idFieldName]: id});
+}
+
 // build join model
-function buildJoinModel(model, value1, value2, field1, field2) {
+function buildJoinModel(model, field1, value1, field2 = null, value2 = null,) {
     console.log('building profile using user id: ... ' + value1 + ' and domain id: ... ' + value2);
+    // if (field2 || value2) {}
+
     return $[model].build({
         id: genUUID4(),
         [field1]: value1,
         [field2]: value2,
-        isActive: true
+        isActive: true,
     });
-    /// TODO change domain name after creating table for it
 }
 
 
 module.exports = {
 
+    buildModelWithAssociatedId,
     buildModel,
     buildJoinModel,
 
     deleteBy,
-    deleteOne,
+    deleteByPk,
 
     findBy,
     findByPk,

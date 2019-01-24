@@ -28,15 +28,5 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 
-// sync db
-// sequelize.sync();
-// sequelize.sync({force: true})
-//     .then(res => {
-//         console.log('done connecting to database ... ', '00003');
-//     }).catch(err => {
-//         console.log('errors trying to connect to db ... ', err);
-// });
-
-
 // export db
 module.exports = db;

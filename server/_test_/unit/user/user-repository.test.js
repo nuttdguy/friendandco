@@ -1,33 +1,43 @@
-const chai = require('chai');
-const expect = chai.expect;
-
-// load user repository functions for testing
-const {
-
-    buildModel,
-    buildJoinModel,
-    deleteOne,
-    deleteBy,
-    findByPk,
-    findBy,
-    save,
-    update,
-
-} = require('../../../repository/user.repository');
-
-
-// User
-// [1]. find a user object
-// [2]. build a user object
-// [3]. save a user object
-// [4]. update a user object
-// [5]. delete a user object
-// describe('CRUD User', () => {
+// const chai = require('chai');
+// const expect = chai.expect;
 //
-//     let db = null;
+// // load user repository functions for testing
+// const {
+//
+//     buildModel,
+//     buildJoinModel,
+//     deleteByPk,
+//     deleteBy,
+//     findByPk,
+//     findBy,
+//     save,
+//     update,
+//
+// } = require('../../../repository/user.repository');
+//
+// // setup db connection and sync
+// let db = null;
+// before(done => {
+//
+//     db = require('../../../db/db.connection');
+//     db.sequelize.sync().then(res => {
+//         console.log('done connecting to database ... ', '00003');
+//         done();
+//
+//     }).catch(err => {
+//         console.log('errors trying to connect to db ... ', err);
+//         done(err);
+//     })
+// });
+//
+//
+// // User
+// describe('CRUD One User', () => {
+//
 //     const ModelName = 'User';
 //     let Model = null;
 //
+//     let counter = Math.random();
 //     let instance = null;
 //     let bcryptPassword = null;
 //     let copiedInstance = null;
@@ -35,23 +45,19 @@ const {
 //
 //
 //     before((done) => {
-//         db = require('../../../db/db.connection'); // get db connection
 //         Model = db.sequelize.models[ModelName];
 //         bcryptPassword = require('../../../services/common/common.service').bcryptPassword;
+//
 //         done();
+//
 //     });
 //
-//     after(done => {
-//         deleteOne(ModelName, instance.id);
-//         done()
-//     });
-//
-//     it(`should build => ${ModelName}` , done => {
+//     it(`should build => ${ModelName}`, done => {
 //         instance = {
-//             username: 'username',
-//             firstName: 'firstname',
-//             lastName: 'lastname',
-//             email: 'first@last.com',
+//             username: 'username' + counter,
+//             firstName: 'firstname' + counter,
+//             lastName: 'lastname' + counter,
+//             email: 'first@last.com' + counter,
 //             password: 'password-test'
 //         };
 //
@@ -63,7 +69,6 @@ const {
 //         expect(instance).to.have.property('lastName');
 //         expect(instance).to.have.property('email');
 //         expect(instance).to.have.property('password');
-//         // expect(User.password).to.equal('wrong');
 //         expect(instance).to.be.instanceof(Model);
 //         done();
 //
@@ -86,13 +91,12 @@ const {
 //                 console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
 //             }
 //
-//             console.log(e);
 //             done(e);
 //         });
 //
 //     });
 //
-//     it(`should save and enforce constraint => ${ModelName} `, done => {
+//     it(`should save => ${ModelName} `, done => {
 //
 //         save(ModelName, instance).then(res => {
 //             copiedResponse = res;
@@ -114,13 +118,12 @@ const {
 //                 console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
 //             }
 //
-//             console.log(e);
 //             done(e);
 //         });
 //
 //     });
 //
-//     it(`should find ${ModelName} by Pk`, done => {
+//     it(`should find => ${ModelName} by Pk`, done => {
 //
 //         findByPk(ModelName, instance.id).then(res => {
 //             copiedResponse = res;
@@ -136,14 +139,13 @@ const {
 //                 console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
 //             }
 //
-//             console.log(e);
 //             done(e);
 //         });
 //
 //
 //     });
 //
-//     it(`should find ${ModelName} email`, done => {
+//     it(`should find => ${ModelName} email`, done => {
 //
 //         findBy(ModelName, 'email', instance.email).then(res => {
 //             copiedResponse = res;
@@ -165,7 +167,7 @@ const {
 //         });
 //     });
 //
-//     it(`should find ${ModelName} username`, done => {
+//     it(`should find => ${ModelName} username`, done => {
 //
 //         findBy(ModelName, 'username', instance.username).then(res => {
 //             copiedResponse = res;
@@ -187,7 +189,7 @@ const {
 //         });
 //     });
 //
-//     it(`should update ${ModelName} by id`, done => {
+//     it(`should update => ${ModelName} by id`, done => {
 //         copiedInstance.username = 'changing username';
 //         copiedInstance.firstName = 'changing firstName';
 //         copiedInstance.lastName = 'changing lastName';
@@ -215,7 +217,7 @@ const {
 //     });
 //
 //     it(`should delete ${ModelName} id`, done => {
-//         deleteOne(ModelName, instance.id).then(res => {
+//         deleteByPk(ModelName, instance.id).then(res => {
 //             copiedResponse = res;
 //
 //             expect(copiedResponse).to.equal(1);
@@ -236,166 +238,213 @@ const {
 //     })
 //
 // });
-
-// Verify
-// [1]. build a verify email object
-// [2]. save a verify email object
-// [3]. update a verify email object
-// [4]. delete a verify email object
-describe('CRUD Verify', () => {
-
-    let db = null;
-    let user = null;
-    const User = 'User';
-    const ModelName = 'Verify';
-    let Model = null;
-
-    let instance = null;
-    let copiedResponse = null;
-    let copiedInstance = null;
-
-
-    before((done) => {
-        db = require('../../../db/db.connection');
-        db.sequelize.sync({force: true}).then(res => {
-            console.log('done connecting to database ... ', '00003');
-
-            Model = db.sequelize.models[ModelName];
-
-            user = buildModel(User, {
-                username: 'verifyUsername',
-                firstName: 'verifyName',
-                lastName: 'lastname',
-                email: 'first@verify.com',
-                password: 'verify-password-test'
-            });
-
-            save(User, user).then(res => {
-                copiedResponse = res;
-
-                // check for SQL exceptions
-                expect(copiedResponse).to.not.have.property('original');
-
-                user = {...res};
-                done();
-
-            }).catch(e => {
-                if (copiedResponse.hasOwnProperty('original')) {
-                    console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
-                }
-                console.log(e);
-                done(e);
-            })
-
-        }).catch(err => {
-            console.log('errors trying to connect to db ... ', err);
-        });
-
-
-    });
-
-    beforeEach(done => {
-        copiedResponse = null;
-        done();
-    });
-
-    after(done => {
-        // deleteOne(User, user.id);
-        done();
-    });
-
-    it(`should build => ${ModelName} => preconditions: ${User}`, done => {
-
-        instance = buildModel(ModelName, user); // send user payload
-
-        expect(instance.dataValues.id).to.be.a('string');
-        expect(instance.dataValues).to.contain.all.keys('id');
-        expect(instance).to.be.instanceof(Model);
-        done();
-
-    });
-
-    it(`should save and enforce constraint => ${ModelName} => preconditions: ${User}`, done => {
-
-        save(ModelName, instance).then(res => {
-            copiedResponse = res;
-
-            expect(copiedResponse.id).to.equal(user.id);
-            expect(copiedResponse).to.have.all.keys('id', 'createdAt', 'updatedAt');
-
-            // check for SQL exceptions
-            expect(copiedResponse).to.not.have.property('original');
-
-            // copy saved object on success
-            copiedInstance = {...res};
-            done();
-
-        }).catch(e => {
-            if (copiedResponse.hasOwnProperty('original')) {
-                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
-            }
-
-            console.log(e);
-            done(e);
-        })
-
-    });
-
-    it(`should find verify record ${ModelName} by associated user id`, done => {
-
-        findByPk(ModelName, instance.id).then(res => {
-            copiedResponse = res;
-
-            expect(copiedResponse.id).to.equal(user.id);
-            expect(copiedResponse).to.have.all.keys('id', 'createdAt', 'updatedAt');
-
-            // check for SQL exceptions
-            expect(copiedResponse).to.not.have.property('original');
-            done();
-
-        }).catch(e => {
-            if (copiedResponse.hasOwnProperty('original')) {
-                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
-            }
-
-            console.log(e);
-            done(e);
-        })
-
-    });
-
-    it(`should delete verify record ${ModelName} by associated user id`, done => {
-        deleteOne(ModelName, instance.id).then(res => {
-            copiedResponse = res;
-
-            expect(copiedResponse).to.equal(1);
-            expect(copiedResponse).to.be.a('number');
-
-            // check for SQL exceptions
-            expect(copiedResponse).to.not.have.property('original');
-            done();
-
-
-        }).catch(e => {
-            if (copiedResponse.hasOwnProperty('original')) {
-                console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
-            }
-
-            console.log(e);
-            done(e);
-        })
-    })
-
-});
-
-// Profile
-// [1]. build a profile object
-// [2]. save a profile object
-// [3]. update a profile object
-// [4]. delete a profile object
-// describe('CRUD Profile', () => {
+// describe('Enforcing User Constraints', () => {
+//     const ModelName = 'User';
+//     let Model = null;
 //
-//     let db = null;
+//     let counter = Math.random();
+//     let bcryptPassword = null;
+//     let instance1 = null;
+//     let instance2 = null;
+//     let copiedResponse = null;
+//
+//     before((done) => {
+//         Model = db.sequelize.models[ModelName];
+//         bcryptPassword = require('../../../services/common/common.service').bcryptPassword;
+//
+//         done();
+//
+//     });
+//
+//     afterEach(done => {
+//         deleteBy(ModelName, 'id', instance1.id);
+//         done();
+//     });
+//
+//     it(`should build => ${ModelName} and make a copy`, done => {
+//         const instance = {
+//             username: 'username' + counter,
+//             firstName: 'firstname' + counter,
+//             lastName: 'lastname' + counter,
+//             email: 'first@last.com' + counter,
+//             password: 'password-test'
+//         };
+//
+//         // build user instance
+//         instance1 = buildModel(ModelName, instance);
+//         instance2 = buildModel(ModelName, instance);
+//
+//         expect(instance1).to.be.instanceof(Model);
+//         expect(instance2).to.be.instanceof(Model);
+//
+//         expect(instance1.username).to.equal(instance2.username);
+//         expect(instance1.email).to.equal(instance2.email);
+//         done();
+//
+//     });
+//
+//     it(`should enforce username and email constraint`, done => {
+//
+//         // save instances
+//         save(ModelName, instance1).then(res => {
+//             save(ModelName, instance2).then(res => {
+//
+//                 expect(res['name']).to.equal(
+//                     'SequelizeUniqueConstraintError', 'SQL Error: Usernames must be unique');
+//
+//                 done();
+//             }).catch(e => {
+//                 done(e);
+//             })
+//         }).catch(e => {
+//             done(e);
+//         });
+//     });
+//
+// });
+//
+// // Verify
+// describe('CRUD One Verify', () => {
+//
+//     let user = null;
+//     const User = 'User';
+//     const ModelName = 'Verify';
+//     let Model = null;
+//
+//     let counter = Math.random();
+//     let instance = null;
+//     let copiedResponse = null;
+//     let copiedInstance = null;
+//
+//
+//     before((done) => {
+//         Model = db.sequelize.models[ModelName];
+//
+//         user = buildModel(User, {
+//             username: 'verifyUsername' + counter,
+//             firstName: 'verifyName' + counter,
+//             lastName: 'lastname' + counter,
+//             email: 'first@verify.com' + counter,
+//             password: 'verify-password-test'
+//         });
+//
+//         save(User, user).then(res => {
+//             copiedResponse = res;
+//
+//             // check for SQL exceptions
+//             expect(copiedResponse).to.not.have.property('original');
+//
+//             user = {...res};
+//             done();
+//
+//         }).catch(e => {
+//             if (copiedResponse.hasOwnProperty('original')) {
+//                 console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+//             }
+//             console.log(e);
+//             done(e);
+//         })
+//
+//     });
+//
+//     beforeEach(done => {
+//         copiedResponse = null;
+//         done();
+//     });
+//
+//     after(done => {
+//         // should cascade delete
+//         deleteByPk(User, user.id);
+//         done();
+//     });
+//
+//     it(`should build => ${ModelName} => preconditions: ${User}`, done => {
+//
+//         instance = buildModel(ModelName, user); // send user payload
+//
+//         expect(instance.dataValues.id).to.be.a('string');
+//         expect(instance.dataValues).to.contain.all.keys('id');
+//         expect(instance).to.be.instanceof(Model);
+//         done();
+//
+//     });
+//
+//     it(`should save and enforce constraint => ${ModelName} => preconditions: ${User}`, done => {
+//
+//         save(ModelName, instance).then(res => {
+//             copiedResponse = res;
+//
+//             expect(copiedResponse.id).to.equal(user.id);
+//             expect(copiedResponse).to.have.all.keys('id', 'createdAt', 'updatedAt');
+//
+//             // check for SQL exceptions
+//             expect(copiedResponse).to.not.have.property('original');
+//
+//             // copy saved object on success
+//             copiedInstance = {...res};
+//             done();
+//
+//         }).catch(e => {
+//             if (copiedResponse.hasOwnProperty('original')) {
+//                 console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+//             }
+//
+//             console.log(e);
+//             done(e);
+//         })
+//
+//     });
+//
+//     it(`should find verify record ${ModelName} by associated user id`, done => {
+//
+//         findByPk(ModelName, instance.id).then(res => {
+//             copiedResponse = res;
+//
+//             expect(copiedResponse.id).to.equal(user.id);
+//             expect(copiedResponse).to.have.all.keys('id', 'createdAt', 'updatedAt');
+//
+//             // check for SQL exceptions
+//             expect(copiedResponse).to.not.have.property('original');
+//             done();
+//
+//         }).catch(e => {
+//             if (copiedResponse.hasOwnProperty('original')) {
+//                 console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+//             }
+//
+//             console.log(e);
+//             done(e);
+//         })
+//
+//     });
+//
+//     it(`should delete verify record ${ModelName} by associated user id`, done => {
+//         deleteByPk(ModelName, instance.id).then(res => {
+//             copiedResponse = res;
+//
+//             expect(copiedResponse).to.equal(1);
+//             expect(copiedResponse).to.be.a('number');
+//
+//             // check for SQL exceptions
+//             expect(copiedResponse).to.not.have.property('original');
+//             done();
+//
+//
+//         }).catch(e => {
+//             if (copiedResponse.hasOwnProperty('original')) {
+//                 console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
+//             }
+//
+//             console.log(e);
+//             done(e);
+//         })
+//     })
+//
+// });
+//
+// // Profile
+// describe('CRUD One Profile', () => {
+//
 //     let user = null;
 //     let domainType = null;
 //     const User = 'User';
@@ -403,55 +452,63 @@ describe('CRUD Verify', () => {
 //     const ModelName = 'Profile';
 //     let Model = null;
 //
+//     let counter = Math.random();
 //     let instance = null;
 //     let copiedResponse = null;
 //     let copiedInstance = null;
 //
 //     before((done) => {
-//         db = require('../../../db/db.connection');
+//         // load model to test
 //         Model = db.sequelize.models[ModelName];
 //
+//         // build records to use for test
 //         user = buildModel(User, {
-//             username: 'profileUsername',
-//             firstName: 'profileName',
-//             lastName: 'lastname',
-//             email: 'first@profile.com',
+//             username: 'profileUsername' + counter,
+//             firstName: 'profileName' + counter,
+//             lastName: 'lastname' + counter,
+//             email: 'first@profile.com' + counter,
 //             password: 'profile-password-test'
 //         });
 //
 //         domainType = buildModel(DomainType, {
-//             name: 'Education',
+//             name: 'Education' + counter,
 //             desc: 'Identifies the domain type related to education',
 //             isActive: true
 //         });
 //
+//         // save records to use for test
 //         save(User, user)
 //             .then(res => {
+//                 copiedResponse = res;
+//
 //                 // check for SQL exceptions
 //                 expect(res).to.not.have.property('original');
-//
 //                 user = res;
+//
 //             })
 //             .catch(e => {
-//                 if (copiedResponse.hasOwnProperty('original')) {
+//                 if (copiedResponse.original.sqlMessage) {
 //                     console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
 //                 }
 //
-//                 console.log(e);
+//                 done(e);
 //             });
 //
 //         save(DomainType, domainType)
 //             .then(res => {
+//                 copiedResponse = res;
+//
 //                 // check for SQL exceptions
 //                 expect(res).to.not.have.property('original');
 //                 domainType = res;
+//
 //             })
 //             .catch(e => {
 //                 if (copiedResponse.hasOwnProperty('original')) {
 //                     console.log('SQL ERROR: ', copiedResponse.original.sqlMessage);
 //                 }
 //
-//                 console.log(e);
+//                 done(e);
 //             });
 //
 //         done();
@@ -463,19 +520,20 @@ describe('CRUD Verify', () => {
 //     });
 //
 //     after(done => {
-//         deleteOne(User, user.id);
+//         // delete user record and cascade
+//         deleteByPk(User, user.id);
+//         deleteByPk(DomainType, domainType.id);
 //         done();
 //     });
 //
 //     it(`should build => ${ModelName} => preconditions: ${User} + ${DomainType}`, done => {
 //
-//         instance = buildJoinModel(ModelName, user.id, domainType.id, 'userId', 'domainTypeId'); // send user payload
+//         instance = buildJoinModel(ModelName, 'userId', user.id, 'domainTypeId', domainType.id); // send user payload
 //
 //         expect(instance.id).to.be.a('string');
 //         expect(instance.userId).to.equal(user.id);
-//         expect(instance.domainTypeId).to.equal(domainType.id);
-//         expect(instance.dataValues).to.contain.all.keys('id', 'userId', 'domainTypeId', 'isActive');
-//         expect(instance).to.be.instanceof(Model);
+//         expect(instance.dataValues).to.contain.all.keys('id', 'userId', 'isActive');
+//         expect(instance).to.be.an.instanceof(Model);
 //
 //         done();
 //
@@ -489,13 +547,15 @@ describe('CRUD Verify', () => {
 //             expect(copiedResponse.id).to.be.a('string');
 //             expect(copiedResponse.userId).to.equal(user.id);
 //             expect(copiedResponse.domainTypeId).to.equal(domainType.id);
-//             expect(copiedResponse).to.contain.all.keys('id', 'userId', 'domainTypeId', 'isActive', 'updatedAt', 'createdAt');
+//             expect(copiedResponse).to.contain.all.keys('id', 'userId', 'isActive', 'updatedAt', 'createdAt');
 //
 //             // check for SQL exceptions
 //             expect(copiedResponse).to.not.have.property('original');
 //
 //             copiedInstance = {...res};
 //             done();
+//
+//
 //
 //         }).catch(e => {
 //             if (copiedResponse.hasOwnProperty('original')) {
@@ -585,28 +645,24 @@ describe('CRUD Verify', () => {
 //     })
 //
 // });
-
-// DomainType
-// [1]. build a domainType object
-// [2]. save a domainType object
-// [3]. update a domainType object
-// [4]. delete a domainType object
-// describe('CRUD Domain', () => {
+//
+// // DomainType
+// describe('CRUD One Domain', () => {
 //
 //     const ModelName = "DomainType";
-//     let db = null;
 //     let Model = null;
 //
+//     let counter = Math.random();
 //     let instance = null;
 //     let copiedResponse = null;
 //     let copiedInstance = null;
 //
 //     before((done) => {
-//         db = require('../../../db/db.connection');
+//
 //         Model = db.sequelize.models[ModelName];
 //
 //         instance = {
-//             name: 'Education',
+//             name: 'Education' + counter,
 //             desc: 'Identifies the domain type related to education',
 //             isActive: true
 //         };
@@ -615,7 +671,7 @@ describe('CRUD Verify', () => {
 //     });
 //
 //     after(done => {
-//         deleteOne(ModelName, instance.id);
+//         deleteByPk(ModelName, instance.id);
 //         done();
 //     });
 //
@@ -631,6 +687,7 @@ describe('CRUD Verify', () => {
 //     });
 //
 //     it(`should save => ${ModelName} by id`, done => {
+//
 //
 //         // console.log(instance);
 //         save(ModelName, instance).then(res => {
@@ -707,7 +764,7 @@ describe('CRUD Verify', () => {
 //
 //     it(`should delete => ${ModelName} by id`, done => {
 //
-//         deleteOne(ModelName, instance.id).then(res => {
+//         deleteByPk(ModelName, instance.id).then(res => {
 //             copiedResponse = res;
 //
 //             expect(copiedResponse).to.equal(1);
@@ -726,18 +783,15 @@ describe('CRUD Verify', () => {
 //     })
 //
 // });
-
-// Education: precondition => none
-// [1]. build an education object
-// [2]. save an education object
-// [3]. update an education object
-// [4]. delete an education object
-// describe('CRUD Education', () => {
+//
+// // Education: precondition => none
+// describe('CRUD One Education', () => {
 //
 //     const ModelName = 'Education';
 //     let db = null;
 //     let Model = null;
 //
+//     let counter = Math.random();
 //     let instance = null;
 //     let copiedResponse = null;
 //     let copiedInstance = null;
@@ -747,7 +801,7 @@ describe('CRUD Verify', () => {
 //         Model = db.sequelize.models[ModelName];
 //
 //         instance = {
-//             industry: 'Education',
+//             industry: 'Education' + counter,
 //             specialty: 'Grade School Teacher',
 //         };
 //
@@ -755,7 +809,7 @@ describe('CRUD Verify', () => {
 //     });
 //
 //     after(done => {
-//         deleteOne(ModelName, instance.id);
+//         deleteByPk(ModelName, instance.id);
 //         done();
 //     });
 //
@@ -845,7 +899,7 @@ describe('CRUD Verify', () => {
 //
 //     it(`should delete => ${ModelName} by id`, done => {
 //
-//         deleteOne(ModelName, instance.id).then(res => {
+//         deleteByPk(ModelName, instance.id).then(res => {
 //             copiedResponse = res;
 //
 //             expect(copiedResponse).to.equal(1);
@@ -864,36 +918,19 @@ describe('CRUD Verify', () => {
 //     })
 //
 // });
-
-// History
-// [1]. build a history object
-// [2]. save a history object
-// [3]. update a history object
-// [4]. delete a history object
-
-// Persona
-// [1]. build a persona object
-// [2]. save a persona object
-// [3]. update a persona object
-// [4]. delete a persona object
-
-// Photo
-// [1]. build a photo object
-// [2]. save a photo object
-// [3]. update a photo object
-// [4]. delete a photo object
-
-// Work
-// [1]. build a work object
-// [2]. save a work object
-// [3]. update a work object
-// [4]. delete a work object
-
-
-
-
-
-
-
-
-
+//
+// // History
+//
+// // Persona
+//
+// // Photo
+//
+// // Work
+//
+//
+//
+//
+//
+//
+//
+//

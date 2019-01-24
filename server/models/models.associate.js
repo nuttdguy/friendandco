@@ -8,17 +8,20 @@ module.exports = (sequelize) => {
     } = sequelize.models;
 
 
-    // User.hasOne(Verify, { foreignKey: 'userId' });
-    // User.hasOne(Profile, { foreignKey: 'userId' });
 
-    // User.hasOne(Verify, { foreignKey: 'id', targetKey: 'id' });
-    DomainType.hasOne(Profile, { foreignKey: 'domainTypeId'});
+    // user has 1 verify record
+    // User.hasOne(Verify, {foreignKey: 'id', onDelete: 'cascade'});
+
+    // User + Profile relationships
+    User.hasOne(Verify, {foreignKey: 'id', constraints: false});
+
+    // Profile relationships
+    Profile.hasMany(User, {foreignKey: 'id', sourceKey: 'userId', onDelete: 'cascade', constraints: true});
+    Profile.hasMany(DomainType, {foreignKey: 'id', sourceKey: 'domainTypeId'});
 
 
-    // Working relationship
-    User.hasOne(Verify, {foreignKey: 'id', onDelete: 'cascade'});
-    User.hasOne(Profile, { foreignKey: 'userId', onDelete: 'cascade'});
-    Verify.belongsTo(User, {foreignKey: 'id', targetKey: 'id'});
+    // Verify belongs
+    // Verify.belongsTo(User, {foreignKey: 'userId', targetKey: 'id'});
 
     console.log('done associating models ... 00000');
 };

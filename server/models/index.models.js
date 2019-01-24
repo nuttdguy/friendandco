@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     require('./user/Verify.model')(sequelize, DataTypes);
 
     // Type Models
-    require('./type/Domain.model')(sequelize, DataTypes);
+    require('./type/DomainType.model')(sequelize, DataTypes);
 
     console.log('done adding database models ...');
 

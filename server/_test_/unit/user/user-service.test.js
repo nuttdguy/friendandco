@@ -1,21 +1,63 @@
-// const chai = require('chai');
-// const expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
+
+const {
+    // activateUser,
+    // deleteUser,
+    buildVerifyRecord,
+    getModelBy,
+    // loginUser,
+    signup,
+    // resetPassword,
+    // updateUser
+} = require('../../../services/user.service');
+
+const {
+    buildModelWithAssociatedId,
+    buildModel,
+    deleteBy,
+    deleteByPk,
+    save
+} = require('../../../repository/user.repository');
+
+
+// setup db connection and sync
+let db = null;
+let user = null;
+const userData = {
+    username: 'username-service',
+    firstName: 'firstname-service',
+    lastName: 'lastname-service',
+    email: 'service-first@last.com',
+    password: 'password-test--service'
+};
+
+before(done => {
+
+    db = require('../../../db/db.connection');
+    db.sequelize.sync({force: true}).then(res => {
+        console.log('done connecting to database ... ', '00003');
+        done();
+
+    }).catch(err => {
+        console.log('error trying to connect to db ... ', err);
+        done(err);
+    })
+
+});
+
+
+// afterEach(done => {
+//     if (user.id) {
+//         deleteByPk(UserModelName, user.id).then(res => {
+//             done();
+//         });
+//     } else {
+//         done();
+//     }
 //
-// const {
-//     // activateUser,
-//     // deleteUser,
-//     getBy,
-//     // loginUser,
-//     // registerUser,
-//     // resetPassword,
-//     // updateUser
-// } = require('../../../services/user.service');
-//
-// const {
-//     buildModel,
-//     deleteOne,
-//     save
-// } = require('../../../repository/user.repository');
+// });
+
 
 // UNIT TEST FOR SIGN-UP AND LOGIN
 // new login
@@ -24,167 +66,224 @@
 // AFTER verified; always check for activated user flag
 
 
-// get by function
-// [1]. get a user by email
-// [2]. get a user by username
-// [3]. get a user by their id
-// describe('getBy function', () => {
+// Build and save user
+function buildAndSave(ModelName, modelData) {
+    const user = buildModel(ModelName, modelData);
+    return save(ModelName, user);
+}
+
+// Function: signup(data, modelName, field, value)
+describe('Register/Signup up a new user by username', () => {
+
+    const UserModelName = 'User';
+    let UserModel = null;
+
+    before(done => {
+        UserModel = db.sequelize.models[UserModelName];
+        done();
+    });
+
+
+
+    it('should return USER OBJECT when the USER IS FOUND', done => {
+
+        signup(userData, UserModelName, 'username', userData.username)
+            .then(res => {
+
+                expect(res).to.be.an('object');
+                expect(res).to.not.equal(null);
+
+                done();
+        }).catch(e => {
+            done(e);
+        });
+    });
+
+    it('should CREATE AND SAVE A USER when no existing user has been found', done => {
+
+        signup(userData, UserModelName, 'username', userData.username)
+            .then(res => {
+
+                expect(res).to.be.an('object');
+                expect(res.password).to.not.equal(userData.password);
+                expect(res.username).to.equal(userData.username);
+
+                user = {...res};
+                done();
+        }).catch(e => {
+            done(e);
+        });
+
+    });
+
+
+    // TODO OMIT THIS STEP
+    // it('should build a verify record with user id as key', done => {
+    //
+    //     buildVerifyRecord(userData).then(res => {
+    //
+    //         expect(res).to.be.instanceof(VerifyModel);
+    //         expect(res.id).to.equal(userData.id);
+    //
+    //         done();
+    //     }).catch(e => {
+    //         done();
+    //     })
+    // });
+
+
+});
+
+// Function: getModelBy(model, field, value)
+// describe('getModelBy function', () => {
 //
-//     let db = null;
+//     const counter = Math.random();
 //     const ModelName = 'User';
-//     let Model = null;
 //     let user = null;
 //
-//     let copiedResponse = null;
-//
 //     before(done => {
-//         db = require('../../../db/db.connection');
-//         Model = db.sequelize.models[ModelName];
 //
 //         user = buildModel(ModelName, {
-//             username: 'username',
-//             firstName: 'firstname',
-//             lastName: 'lastname',
-//             email: 'first@last.com',
-//             password: 'password-test'
+//             username: 'username-service',
+//             firstName: 'firstname-service',
+//             lastName: 'lastname-service',
+//             email: 'service-first@last.com',
+//             password: 'password-test--service'
 //         });
-//         save(ModelName, user).then(res => { user = res });
 //
-//         done();
+//         save(ModelName, user).then(res => {
+//             user = {...res};
+//             done();
+//         }).catch(e => {
+//             done(e);
+//         });
+//
 //     });
 //
 //     after(done => {
-//         Model.destroy({where: {id: user.id}});
+//         deleteBy(ModelName, 'id', user.id);
 //         done();
 //     });
 //
 //     it(`should get one ${ModelName} by email`, done => {
 //
-//         getBy(ModelName, 'email', user.email).then(res => {
-//             copiedResponse = res;
+//         getModelBy(ModelName, 'email', user.email).then(res => {
 //
-//             expect(copiedResponse).to.have.property('email');
-//             expect(copiedResponse.email).to.equal(user.email);
+//             expect(res).to.have.property('email');
+//             expect(res.email).to.equal(res.email);
 //
 //             done();
 //
 //         }).catch(e => {
-//
-//             console.log(e);
+//             deleteByPk(ModelName, user.id);
 //             done(e);
 //         });
 //
 //     });
 //
 //     it(`should get one ${ModelName} by username`, done => {
-//         getBy(ModelName, 'username', user.username).then(res => {
-//             copiedResponse = res;
+//         getModelBy(ModelName, 'username', user.username).then(res => {
 //
-//             expect(copiedResponse).to.have.property('username');
-//             expect(copiedResponse.username).to.equal(user.username);
+//             expect(res).to.have.property('username');
+//             expect(res.username).to.equal(user.username);
 //
 //             done();
 //
 //         }).catch(e => {
 //
-//             console.log(e);
 //             done(e);
 //         });
-//     })
+//     });
 //
 //     it(`should get one ${ModelName} by id`, done => {
-//         getBy(ModelName, 'id', user.id).then(res => {
-//             copiedResponse = res;
+//         getModelBy(ModelName, 'id', user.id).then(res => {
 //
-//             expect(copiedResponse).to.have.property('id');
-//             expect(copiedResponse.id).to.equal(user.id);
+//             expect(res).to.have.property('id');
+//             expect(res.id).to.equal(user.id);
 //
 //             done();
 //
 //         }).catch(e => {
 //
-//             console.log(e);
 //             done(e);
 //         });
 //     })
 //
 // });
 
-// verify function
-// [1]. find verify record by user id
+// Function: newVerifyRecord() function
 // describe('verify function', () => {
 //
-//     let db = null;
 //     const User = 'User';
 //     const TestModelName = 'Verify';
-//
-//     let ReqModel = null;
-//     let TestModel = null;
 //     let user = null;
 //     let verify = null;
 //
-//     let copiedResponse = null;
-//
 //     before(done => {
-//         db = require('../../../db/db.connection');
-//
-//         // required model for testing
-//         ReqModel = db.sequelize.models[User];
-//
-//         // required model for this test
-//         TestModel = db.sequelize.models[TestModelName];
 //
 //         // build required models for test
 //         user = buildModel(User, {
-//             username: 'username',
-//             firstName: 'firstname',
-//             lastName: 'lastname',
-//             email: 'first@last.com',
-//             password: 'password-test'
+//             username: 'username-service',
+//             firstName: 'firstname-service',
+//             lastName: 'lastname-service',
+//             email: 'service-first@last.com',
+//             password: 'password-test--service'
 //         });
 //
-//         verify = buildModel(TestModelName, ReqModel);
+//         verify = buildModelWithAssociatedId(TestModelName, 'id', user.id);
 //
 //         // save required models for test
 //         user.save().then(userRecord => {
 //             verify.save().then(verifyRecord => {
 //                 user = userRecord;
 //                 verify = verifyRecord;
+//
+//                 done();
 //             }).catch(e => {
-//                 console.log(e);
 //                 done(e);
 //             })
 //         }).catch(e => {
-//             console.log(e);
 //             done(e);
 //         });
 //
 //     });
 //
 //     after(done => {
-//         deleteOne(User, user.id);
-//         deleteOne(TestModelName, user.id);
 //         done();
 //     });
 //
-//     // it(`should get one ${TestModelName} record by id`, done => {
-//     //
-//     //
-//     //     getBy(TestModelName, 'id', user.id).then(res => {
-//     //         copiedResponse = res;
-//     //
-//     //         expect(copiedResponse).to.have.property('id');
-//     //         expect(copiedResponse.id).to.equal(user.id);
-//     //
-//     //         done();
-//     //
-//     //     }).catch(e => {
-//     //
-//     //         console.log(e);
-//     //         done(e);
-//     //     });
-//     //
-//     // });
+//     it(`should save one ${TestModelName} record by id`, done => {
+//
+//         done();
+//     });
+//
+//     it(`should get one ${TestModelName} record by id`, done => {
+//
+//         getModelBy(TestModelName, 'id', user.id).then(res => {
+//
+//             expect(res).to.have.property('id');
+//             expect(res.id).to.equal(user.id);
+//
+//             done();
+//
+//         }).catch(e => {
+//
+//             done(e);
+//         });
+//
+//     });
+//
+//     it(`should delete one ${TestModelName} record by user id`, done => {
+//         deleteByPk(TestModelName, user.id).then(res => {
+//
+//             expect(res).to.equal(1);
+//             expect(res).to.be.a('number');
+//
+//             done();
+//         }).catch(e => {
+//             done(e);
+//         });
+//     })
 //
 // });
 

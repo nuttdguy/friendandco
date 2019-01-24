@@ -6,9 +6,7 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             validate: {
                 isUUID: 4
-            },
-            onDelete: 'cascade',
-            onUpdate: 'cascade'
+            }
         },
         username: {
             type: DataTypes.STRING,
@@ -26,10 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         email: {
             type: DataTypes.STRING,
             allowNull: false,
-            // unique: true,
-            validate: {
-                isEmail: true
-            }
+            unique: true,
         },
         password: {
             type: DataTypes.STRING,
@@ -39,7 +34,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             defaultValue: false
         },
-
     });
 
     return Model;

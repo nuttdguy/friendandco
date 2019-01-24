@@ -11,11 +11,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
-            allowNull: false,
-            references: {
-                model: 'users',
-                key: 'id'
-            },
             onDelete: 'cascade',
             onUpdate: 'cascade'
         },
@@ -23,11 +18,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
-            allowNull: false,
-            references: {
-                model: 'domainTypes',
-                key: 'id'
-            },
             onDelete: 'cascade',
             onUpdate: 'cascade'
         },
