@@ -7,6 +7,7 @@ const {
     createTempRecord,
     getModelBy,
     // loginUser,
+    sendVerificationMail,
     signup,
     // resetPassword,
     // updateUser
@@ -27,10 +28,10 @@ const UserModelName = 'User';
 const VerifyModelName = 'Verify';
 
 const userData = {
-    username: 'username-service',
-    firstName: 'firstname-service',
-    lastName: 'lastname-service',
-    email: 'service-first@last.com',
+    username: 'pygnasak-service',
+    firstName: 'phouthalang-service',
+    lastName: 'phouthalang-service',
+    email: 'pygnasak@yahoo.com',
     password: 'password-test--service'
 };
 
@@ -163,7 +164,38 @@ describe('creates a temporary record that associates user id that record', () =>
 
 });
 
-// Function:
+// TODO ... leave this test disabled so it does not send emails
+// Function: sendVerificationMail(userId, userEmail)
+// describe('send a verification email to users email address', () => {
+//
+//     before(done => {
+//         signup(userData, UserModelName, 'username', userData.username).then(savedUser => {
+//             userInstance = {...savedUser};
+//             createTempRecord(VerifyModelName, userInstance, 'verify').then(res => {
+//                 verifyInstance = {...res};
+//                 done();
+//             }).catch(e => {
+//                 done(e);
+//             })
+//
+//         }).catch(e => {
+//             done(e);
+//         })
+//     });
+//
+//     it('should send an email to the user email account with a verification link', done => {
+//
+//         sendVerificationMail(userInstance.id, userInstance.email).then(res => {
+//
+//             expect(res).to.be.an('object');
+//             expect(res).to.have.any.keys('response', 'messageId', 'envelope', 'accepted');
+//             done();
+//         }).catch(e => {
+//             done(e);
+//         })
+//
+//     })
+// });
 
 
 // Function: getModelBy(model, field, value)

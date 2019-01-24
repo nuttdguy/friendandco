@@ -151,7 +151,29 @@ async function createTempRecord(modelName, data, type = 'verify') {
 
 }
 
-async function sendVerificationMail() {
+// create and send a verification email
+function sendVerificationMail(userId, userEmail) {
+    let html = null, mailOptions = null;
+
+    html = `
+         <html>
+             <body>
+                <p>Please confirm your registration by clicking this link</p> <br>
+                <a href="http://localhost:5000/api/auth/user/verify/${userId}">
+                Click to confirm your account</a>
+            </body>
+        </html>`;
+
+    // setup email data with unicode symbols
+    mailOptions = {
+            from: 'friendandcompany1@gmail.com',
+            to: userEmail,
+            subject: 'Please confirm your account',
+            html: html
+        };
+
+
+    return sendMail(mailOptions);
 
 }
 
@@ -182,17 +204,15 @@ async function _buildAndSave(modelName, data) {
     return model;
 }
 
-
-
 // update profile
-async function updateUser(dataToUpdate) {
-
-    try {
-        return await userRepository.updateUser(dataToUpdate);
-    } catch (e) {
-        return e;
-    }
-}
+// async function updateUser(dataToUpdate) {
+//
+//     try {
+//         return await userRepository.updateUser(dataToUpdate);
+//     } catch (e) {
+//         return e;
+//     }
+// }
 
 
 // TODO move this function into service layer
@@ -225,6 +245,7 @@ module.exports = {
     // buildAndSave,
     getModelBy,
     // loginUser,
+    sendVerificationMail,
     signup,
     // resetPassword,
     // updateUser
