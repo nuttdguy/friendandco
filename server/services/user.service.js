@@ -103,6 +103,7 @@ async function loginUser(user) {
 
 }
 
+// TODO CONTROLLER :: ADD LOGIC TO HANDLE USERNAME EXIST && REDIRECT TO VERIFY EMAIL
 // registers new profile
 async function signup(data = null, modelName, field, value) {
     let user = null;
@@ -119,11 +120,10 @@ async function signup(data = null, modelName, field, value) {
         if (user === null) {
 
             // build and save user
-            return buildAndSave(modelName, data);
+            return _buildAndSave(modelName, data);
 
         }
 
-        // TODO CONTROLLER :: HANDLE USERNAME EXIST && REDIRECT TO VERIFY EMAIL
         return user;
 
     } catch (e) {
@@ -132,18 +132,48 @@ async function signup(data = null, modelName, field, value) {
 
 }
 
-// build and save user
-async function buildAndSave(modelName, data) {
+// create a temp record to associate
+async function createTempRecord(modelName, data, type = 'verify') {
     let model = null;
 
-    // build model
-    model = await userRepository.buildModel(modelName, data);
+    switch (type) {
+        case 'verify':
+
+            // build and save verify record
+            return await _buildAndSave(modelName, data);
+        case 'password':
+
+            // TODO create password reset
+            return model;
+        default:
+            return model;
+    }
+
+}
+
+async function sendVerificationMail() {
+
+}
+
+// build and save user
+async function _buildAndSave(modelName, data) {
+    let model = null;
 
     if (modelName === 'User') {
-    // generate & assign token as password
+
+        // build model
+        model = await userRepository.buildModel(modelName, data);
+
+        // generate & assign token as password
         await bcryptPassword(model).then(hash => {
             model.password = hash;
         });
+    }
+
+    if (modelName === 'Verify') {
+
+        // build model
+        model = await userRepository.buildModelWithAssociatedId(modelName, 'id', data.id, data);
     }
 
     // save user
@@ -153,39 +183,6 @@ async function buildAndSave(modelName, data) {
 }
 
 
-async function buildVerifyRecord(user) {
-
-    // // build verify record
-    // let email = await userRepository.buildVerify(user);
-
-    // save verify record
-    //     email = await userRepository.email.save(email);
-    //
-    //
-    //     return {user: user, email: email};
-    //
-    //     // send verify email
-    //     // return sendMail(profile);
-    //
-    // if email exists, return error response
-    // errors.error = 'Email already exists';
-    // return errors;
-}
-
-// reset password
-async function resetPassword(username) {
-
-    try {
-        const user = await userRepository.findByUsername(username);
-
-        if (user !== null) {
-
-            // TODO complete reset password; decide on how to handle it
-        }
-    } catch (e) {
-        return e;
-    }
-}
 
 // update profile
 async function updateUser(dataToUpdate) {
@@ -224,8 +221,8 @@ async function updateUser(dataToUpdate) {
 module.exports = {
     // activateUser,
     // deleteUser,
-    buildAndSave,
-    buildVerifyRecord,
+    createTempRecord,
+    // buildAndSave,
     getModelBy,
     // loginUser,
     signup,

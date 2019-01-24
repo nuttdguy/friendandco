@@ -4,7 +4,7 @@ const expect = chai.expect;
 const {
     // activateUser,
     // deleteUser,
-    buildVerifyRecord,
+    createTempRecord,
     getModelBy,
     // loginUser,
     signup,
@@ -22,8 +22,10 @@ const {
 
 
 // setup db connection and sync
-let db = null;
-let user = null;
+
+const UserModelName = 'User';
+const VerifyModelName = 'Verify';
+
 const userData = {
     username: 'username-service',
     firstName: 'firstname-service',
@@ -32,11 +34,19 @@ const userData = {
     password: 'password-test--service'
 };
 
+
+let db = null;
+let userInstance = null;
+let verifyInstance = null;
+let UserModel = null;
+let VerifyModel = null;
 before(done => {
 
     db = require('../../../db/db.connection');
     db.sequelize.sync({force: true}).then(res => {
         console.log('done connecting to database ... ', '00003');
+
+        UserModel = db.sequelize.models[UserModelName];
         done();
 
     }).catch(err => {
@@ -47,16 +57,19 @@ before(done => {
 });
 
 
-// afterEach(done => {
-//     if (user.id) {
-//         deleteByPk(UserModelName, user.id).then(res => {
-//             done();
-//         });
-//     } else {
-//         done();
-//     }
-//
-// });
+afterEach(done => {
+
+    if (userInstance !== null) {
+        deleteByPk(UserModelName, userInstance.id);
+        userInstance = null;
+    }
+    if (verifyInstance !== null) {
+        deleteByPk(VerifyModelName, verifyInstance.id);
+        verifyInstance = null;
+    }
+    done();
+
+});
 
 
 // UNIT TEST FOR SIGN-UP AND LOGIN
@@ -73,17 +86,7 @@ function buildAndSave(ModelName, modelData) {
 }
 
 // Function: signup(data, modelName, field, value)
-describe('Register/Signup up a new user by username', () => {
-
-    const UserModelName = 'User';
-    let UserModel = null;
-
-    before(done => {
-        UserModel = db.sequelize.models[UserModelName];
-        done();
-    });
-
-
+describe('register / sign-up up a new user; looking up existing by username', () => {
 
     it('should return USER OBJECT when the USER IS FOUND', done => {
 
@@ -108,7 +111,7 @@ describe('Register/Signup up a new user by username', () => {
                 expect(res.password).to.not.equal(userData.password);
                 expect(res.username).to.equal(userData.username);
 
-                user = {...res};
+                userInstance = {...res};
                 done();
         }).catch(e => {
             done(e);
@@ -133,6 +136,35 @@ describe('Register/Signup up a new user by username', () => {
 
 
 });
+
+// Function: createTempRecord(modelName, userData) function
+describe('creates a temporary record that associates user id that record', () => {
+
+    // requires a saved user record
+    before(done => {
+         buildAndSave(UserModelName, userData).then(res => {
+             userInstance = {...res};
+             done();
+         });
+    });
+
+    it(`should CREATE AND SAVE ONE ${VerifyModelName} record and associating USER ID AS ID`, done => {
+
+        createTempRecord(VerifyModelName, userInstance, 'verify').then(res => {
+
+            expect(res.id).to.equal(userInstance.id);
+
+            verifyInstance = {...res};
+            done();
+        }).catch(e => {
+            done(e);
+        })
+    });
+
+});
+
+// Function:
+
 
 // Function: getModelBy(model, field, value)
 // describe('getModelBy function', () => {
@@ -205,82 +237,6 @@ describe('Register/Signup up a new user by username', () => {
 //
 //         }).catch(e => {
 //
-//             done(e);
-//         });
-//     })
-//
-// });
-
-// Function: newVerifyRecord() function
-// describe('verify function', () => {
-//
-//     const User = 'User';
-//     const TestModelName = 'Verify';
-//     let user = null;
-//     let verify = null;
-//
-//     before(done => {
-//
-//         // build required models for test
-//         user = buildModel(User, {
-//             username: 'username-service',
-//             firstName: 'firstname-service',
-//             lastName: 'lastname-service',
-//             email: 'service-first@last.com',
-//             password: 'password-test--service'
-//         });
-//
-//         verify = buildModelWithAssociatedId(TestModelName, 'id', user.id);
-//
-//         // save required models for test
-//         user.save().then(userRecord => {
-//             verify.save().then(verifyRecord => {
-//                 user = userRecord;
-//                 verify = verifyRecord;
-//
-//                 done();
-//             }).catch(e => {
-//                 done(e);
-//             })
-//         }).catch(e => {
-//             done(e);
-//         });
-//
-//     });
-//
-//     after(done => {
-//         done();
-//     });
-//
-//     it(`should save one ${TestModelName} record by id`, done => {
-//
-//         done();
-//     });
-//
-//     it(`should get one ${TestModelName} record by id`, done => {
-//
-//         getModelBy(TestModelName, 'id', user.id).then(res => {
-//
-//             expect(res).to.have.property('id');
-//             expect(res.id).to.equal(user.id);
-//
-//             done();
-//
-//         }).catch(e => {
-//
-//             done(e);
-//         });
-//
-//     });
-//
-//     it(`should delete one ${TestModelName} record by user id`, done => {
-//         deleteByPk(TestModelName, user.id).then(res => {
-//
-//             expect(res).to.equal(1);
-//             expect(res).to.be.a('number');
-//
-//             done();
-//         }).catch(e => {
 //             done(e);
 //         });
 //     })
