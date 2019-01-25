@@ -2,9 +2,8 @@ const chai = require('chai');
 const expect = chai.expect;
 
 const {
-    // activateUser,
-    // deleteUser,
     createTempRecord,
+    deleteBy,
     findModelBy,
     isPasswordMatch,
     login,
@@ -17,7 +16,6 @@ const {
 
 const {
     buildModel,
-    deleteByPk,
     save
 } = require('../../../repository/user.repository');
 
@@ -63,11 +61,11 @@ before(done => {
 afterEach(done => {
 
     if (userInstance !== null) {
-        deleteByPk(UserModelName, userInstance.id);
+        deleteBy(UserModelName, 'id', userInstance.id);
         userInstance = null;
     }
     if (verifyInstance !== null) {
-        deleteByPk(VerifyModelName, verifyInstance.id);
+        deleteBy(VerifyModelName, 'id', verifyInstance.id);
         verifyInstance = null;
     }
     done();
@@ -302,8 +300,8 @@ describe('logging in with an invalid user password', () => {
     });
 
     it('should be an invalid password', done => {
-        userData.password = 'invalid-password'; // set an invalid password
-        isPasswordMatch(userData, userInstance).then(res => {
+        const diffUser = {...userData, password: 'invalid-password'}; // set an invalid password
+        isPasswordMatch(diffUser, userInstance).then(res => {
 
             expect(res).to.not.exist;
 
@@ -342,7 +340,7 @@ describe('activating a users account by verify record id', () => {
 });
 
 // Function: findModelBy(model, field, value)
-describe('findModelBy function', () => {
+describe('finds a record by email, username or id', () => {
 
     beforeEach(done => {
         buildAndSave(UserModelName, userData).then(res => {
@@ -398,7 +396,60 @@ describe('findModelBy function', () => {
 
 });
 
-// TODO ... test passes, but is disabled so that it does not send emails
+// Function: deleteBy(modelName, field, value)
+describe('delete a record by model-name, field, and value', () => {
+
+    beforeEach(done => {
+        buildAndSave(UserModelName, userData).then(res => {
+            userInstance = {...res};
+            done();
+        }).catch(e => {
+            done(e);
+        })
+    });
+
+    it('should delete by username', done => {
+
+        deleteBy(UserModelName, 'username', userData.username).then(res => {
+
+            expect(res).to.be.a('number');
+            expect(res).to.equal(1);
+
+            done();
+        }).catch(e => {
+            done(e);
+        });
+    });
+
+    it('should delete by email', done => {
+
+        deleteBy(UserModelName, 'email', userData.email).then(res => {
+
+            expect(res).to.be.a('number');
+            expect(res).to.equal(1);
+
+            done();
+        }).catch(e => {
+            done(e);
+        });
+    });
+
+    it('should delete by id', done => {
+
+        deleteBy(UserModelName, 'id', userInstance.id).then(res => {
+
+            expect(res).to.be.a('number');
+            expect(res).to.equal(1);
+
+            done();
+        }).catch(e => {
+            done(e);
+        });
+    });
+
+});
+
+// TODO note ... test passes, but is disabled so that it does not send emails
 // Function: sendVerificationMail(userId, userEmail)
 describe('sending a verification email to the users email address', () => {
 

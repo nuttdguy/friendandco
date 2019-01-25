@@ -39,14 +39,14 @@ const shapeInput = require('../validation/shapeInput.utils');
 //     }
 // }
 
-// delete profile
-// async function deleteUser(userId) {
-//     try {
-//         return await userRepository.deleteUser(userId);
-//     } catch (e) {
-//
-//     }
-// }
+// delete by model-name, field and value
+async function deleteBy(modelName, field, value) {
+    try {
+        return await userRepository.deleteBy(modelName, field, value);
+    } catch (e) {
+
+    }
+}
 
 
 // find by model and field
@@ -219,10 +219,8 @@ async function _buildAndSave(modelName, data) {
 
 
 module.exports = {
-    // activateUser,
-    // deleteUser,
     createTempRecord,
-    // buildAndSave,
+    deleteBy,
     findModelBy,
     isPasswordMatch,
     login,

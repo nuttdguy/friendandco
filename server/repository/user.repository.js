@@ -10,8 +10,8 @@ async function deleteBy(model, field, value) {
     let deleteQty = 0;
 
     try {
-        console.log(`deleting  ${model} by ${field} = ${value} `);
-        deleteQty = $[model].destroy({where: {[field]: value}});
+        console.log(`deleteBy ${model} by ${field} = ${value} `);
+        deleteQty = await $[model].destroy({where: {[field]: value}});
 
         return deleteQty;
     } catch (e) {
@@ -24,8 +24,8 @@ async function deleteByPk(model, id) {
     let deleteQty = 0;
 
     try {
-        console.log(`deleting  ${model} by id = ${id} `);
-        deleteQty = $[model].destroy({where: {id: id}});
+        console.log(`deleteByPk ${model} by id = ${id} `);
+        deleteQty = await $[model].destroy({where: {id: id}});
 
         return deleteQty;
     } catch (e) {
