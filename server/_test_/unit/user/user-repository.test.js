@@ -46,7 +46,7 @@
 //
 //     before((done) => {
 //         Model = db.sequelize.models[ModelName];
-//         bcryptPassword = require('../../../services/common/common.service').bcryptPassword;
+//         bcryptPassword = require('../../../services/crypt/crypt.service').bcryptPassword;
 //
 //         done();
 //
@@ -250,7 +250,7 @@
 //
 //     before((done) => {
 //         Model = db.sequelize.models[ModelName];
-//         bcryptPassword = require('../../../services/common/common.service').bcryptPassword;
+//         bcryptPassword = require('../../../services/crypt/crypt.service').bcryptPassword;
 //
 //         done();
 //

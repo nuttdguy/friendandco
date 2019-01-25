@@ -1,14 +1,10 @@
 // LOAD MODULES
-const { bcryptCompare, signJwt, bcryptPassword } = require('./common/common.service');
-const { sendMail } = require('./mail/mail.service');
+// const { sendMail } = require('./mail/mail.service');
+// const { bcryptCompare, signJwt, bcryptPassword } = require('./crypt/crypt.service');
 
 
 // LOAD REPOSITORY
 const { userRepository } = require('../repository/index.repository');
-
-// Models to use
-const UserModel = 'User';
-const VerifyModel = 'Verify';
 
 
 // LOAD VALIDATORS
@@ -62,49 +58,64 @@ async function getModelBy(model, field, value) {
 }
 
 // // login profile
-async function loginUser(user) {
+async function login(modelName = 'User', field = 'username', value, payload) {
+    let userAccount, isMatch = null;
 
     // validate login input; // return if errors
-    let {errors, isValid} = validateLoginInput(user);
-    if (!isValid) return errors;
+    // let {errors, isValid} = validateLoginInput(user);
+    // if (!isValid) return errors;
+
+    // check that profile exists; // return error if profile was not found
+    userAccount = await userRepository.findBy(modelName, field, value);
+    if (userAccount === null) return null; // TODO this should return or redirect to signup view
 
     try {
 
-        // check that profile exists; // return error if profile was not found
-        let foundUser = await userRepository.findByUsername(user.username);
-        if (foundUser === null) return errors.error = 'Username does not exist ...';
+        // payload should have original password, userAccount hashed version
+        isMatch = await isPasswordMatch(payload, userAccount);
+
+        // console.log(isMatch, payload.password, userAccount.password, ' =========>> PP001');
+        // // handle correct response when match
+        // if (isMatch && userAccount.isActive) {
+        //     // user is registered and active; sign token
+        //     return {token: 'Bearer ' + await signJwt(userAccount)}
+        // } else if (isMatch && !userAccount.isActive) {
+        //
+        //     // send user account data back
+        //     return userAccount;
+        // }
 
 
-        const isMatch = await isPasswordMatch(user, foundUser);
-        if (isMatch && foundUser.isActive) {
-
-            // profile is registered and active; sign token
-            return {token: 'Bearer ' + await signJwt(foundUser) };
-
-        } else if (isMatch && !foundUser.isActive) {
-
-            // email has not been verified, send error
-            errors.error = 'Your email has not been verified. Please verify by clicking the link in verify email and then try logging in again';
-            return errors;
-        } else {
-
-            // password is incorrect, send error
-            errors.error = 'Password or username is incorrect';
-            return errors;
-        }
+        // if (isMatch && account.isActive) {
+        //
+        //     // profile is registered and active; sign token
+        //     return {token: 'Bearer ' + await signJwt(foundUser) };
+        //
+        // } else if (isMatch && !account.isActive) {
+        //
+        //     // email has not been verified, send error
+        //     errors.error = 'Your email has not been verified. Please verify by clicking the link in verify email and then try logging in again';
+        //     return errors;
+        // } else {
+        //
+        //     // password is incorrect, send error
+        //     errors.error = 'Password or username is incorrect';
+        //     return errors;
+        // }
+        return userAccount;
     } catch (e) {
         return e;
     }
 
     // compare entered password with users existing password token
-    function isPasswordMatch(user, foundUser) {
-        return bcryptCompare(user, foundUser);
-    }
+    // function isPasswordMatch(user, foundUser) {
+    //     return bcryptCompare(user, foundUser);
+    // }
 
 }
 
 // TODO CONTROLLER :: ADD LOGIC TO HANDLE USERNAME EXIST && REDIRECT TO VERIFY EMAIL
-// registers new profile
+// register / sign-up new user
 async function signup(data = null, modelName, field, value) {
     let user = null;
 
@@ -113,7 +124,6 @@ async function signup(data = null, modelName, field, value) {
     // if (!isValid) return errors;
 
     try {
-
         // find profile by field; return null to controller to handle redirect
         user = await userRepository.findBy(modelName, field, value);
 
@@ -121,9 +131,7 @@ async function signup(data = null, modelName, field, value) {
 
             // build and save user
             return _buildAndSave(modelName, data);
-
         }
-
         return user;
 
     } catch (e) {
@@ -131,6 +139,7 @@ async function signup(data = null, modelName, field, value) {
     }
 
 }
+
 
 // create a temp record to associate
 async function createTempRecord(modelName, data, type = 'verify') {
@@ -151,34 +160,18 @@ async function createTempRecord(modelName, data, type = 'verify') {
 
 }
 
-// create and send a verification email
-function sendVerificationMail(userId, userEmail) {
-    let html = null, mailOptions = null;
 
-    html = `
-         <html>
-             <body>
-                <p>Please confirm your registration by clicking this link</p> <br>
-                <a href="http://localhost:5000/api/auth/user/verify/${userId}">
-                Click to confirm your account</a>
-            </body>
-        </html>`;
+// compare password with inputted password
+async function isPasswordMatch(payload, userAccount) {
+    const { bcryptCompare } = require('./crypt/crypt.service');
 
-    // setup email data with unicode symbols
-    mailOptions = {
-            from: 'friendandcompany1@gmail.com',
-            to: userEmail,
-            subject: 'Please confirm your account',
-            html: html
-        };
-
-
-    return sendMail(mailOptions);
-
+    return await bcryptCompare(payload, userAccount);
 }
+
 
 // build and save user
 async function _buildAndSave(modelName, data) {
+    const { bcryptPassword } = require('./crypt/crypt.service');
     let model = null;
 
     if (modelName === 'User') {
@@ -196,6 +189,7 @@ async function _buildAndSave(modelName, data) {
 
         // build model
         model = await userRepository.buildModelWithAssociatedId(modelName, 'id', data.id, data);
+        // console.log(' ===========>>> ', model.id, ' ======= ', data.id);
     }
 
     // save user
@@ -204,15 +198,35 @@ async function _buildAndSave(modelName, data) {
     return model;
 }
 
-// update profile
-// async function updateUser(dataToUpdate) {
-//
-//     try {
-//         return await userRepository.updateUser(dataToUpdate);
-//     } catch (e) {
-//         return e;
-//     }
-// }
+
+// create and send a verification email
+async function sendVerificationMail(userId, userEmail) {
+    const Mail = require('../services/mail/mail.service');
+    const KEYS = require('../config/keys');
+    const mail = new Mail();
+
+    // create transporter
+    await mail.createTransporter(
+        KEYS.EMAIL_HOST,
+        KEYS.PORT,
+        KEYS.SECURE,
+        KEYS.AUTH_USER_GMAIL,
+        KEYS.AUTH_USER_PASS,
+        KEYS.REJECT_UNAUTHORIZED);
+
+    // set html
+    await mail.setHtml(userId);
+
+    // set email options
+    await mail.setEmailOptions(
+        'friendandcompany1@gmail.com',
+        userEmail,
+        'Please confirm your account');
+
+    return await mail.sendEmail();
+
+}
+
 
 
 // TODO move this function into service layer
@@ -244,7 +258,8 @@ module.exports = {
     createTempRecord,
     // buildAndSave,
     getModelBy,
-    // loginUser,
+    isPasswordMatch,
+    login,
     sendVerificationMail,
     signup,
     // resetPassword,

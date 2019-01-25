@@ -6,7 +6,8 @@ const {
     // deleteUser,
     createTempRecord,
     getModelBy,
-    // loginUser,
+    isPasswordMatch,
+    login,
     sendVerificationMail,
     signup,
     // resetPassword,
@@ -40,7 +41,6 @@ let db = null;
 let userInstance = null;
 let verifyInstance = null;
 let UserModel = null;
-let VerifyModel = null;
 before(done => {
 
     db = require('../../../db/db.connection');
@@ -58,13 +58,13 @@ before(done => {
 });
 
 
-afterEach(done => {
+after(done => {
 
-    if (userInstance !== null) {
+    if (userInstance !== null ) {
         deleteByPk(UserModelName, userInstance.id);
         userInstance = null;
     }
-    if (verifyInstance !== null) {
+    if (verifyInstance !== null ) {
         deleteByPk(VerifyModelName, verifyInstance.id);
         verifyInstance = null;
     }
@@ -74,17 +74,31 @@ afterEach(done => {
 
 
 // UNIT TEST FOR SIGN-UP AND LOGIN
-// new login
-// signup => send verify email; url is user id
 // => login => find user => check if activated user => if not, respond with verify email=
 // AFTER verified; always check for activated user flag
-
 
 // Build and save user
 function buildAndSave(ModelName, modelData) {
     const user = buildModel(ModelName, modelData);
     return save(ModelName, user);
 }
+
+// signup and create temp record
+function signupAndCreateTempRecord(done) {
+    signup(userData, UserModelName, 'username', userData.username).then(savedUser => {
+        userInstance = {...savedUser};
+
+        createTempRecord(VerifyModelName, userInstance, 'verify').then(res => {
+            verifyInstance = {...res};
+            done();
+        }).catch(e => {
+            done(e);
+        })
+    }).catch(e => {
+        done(e);
+    })
+}
+
 
 // Function: signup(data, modelName, field, value)
 describe('register / sign-up up a new user; looking up existing by username', () => {
@@ -120,33 +134,14 @@ describe('register / sign-up up a new user; looking up existing by username', ()
 
     });
 
-
-    // TODO OMIT THIS STEP
-    // it('should build a verify record with user id as key', done => {
-    //
-    //     buildVerifyRecord(userData).then(res => {
-    //
-    //         expect(res).to.be.instanceof(VerifyModel);
-    //         expect(res.id).to.equal(userData.id);
-    //
-    //         done();
-    //     }).catch(e => {
-    //         done();
-    //     })
-    // });
-
-
 });
 
-// Function: createTempRecord(modelName, userData) function
+// Function: createTempRecord(modelName, userData)
 describe('creates a temporary record that associates user id that record', () => {
 
     // requires a saved user record
     before(done => {
-         buildAndSave(UserModelName, userData).then(res => {
-             userInstance = {...res};
-             done();
-         });
+        done();
     });
 
     it(`should CREATE AND SAVE ONE ${VerifyModelName} record and associating USER ID AS ID`, done => {
@@ -169,18 +164,9 @@ describe('creates a temporary record that associates user id that record', () =>
 // describe('send a verification email to users email address', () => {
 //
 //     before(done => {
-//         signup(userData, UserModelName, 'username', userData.username).then(savedUser => {
-//             userInstance = {...savedUser};
-//             createTempRecord(VerifyModelName, userInstance, 'verify').then(res => {
-//                 verifyInstance = {...res};
-//                 done();
-//             }).catch(e => {
-//                 done(e);
-//             })
-//
-//         }).catch(e => {
-//             done(e);
-//         })
+//         signupAndCreateTempRecord(done, res => {
+//             done(res);
+//         });
 //     });
 //
 //     it('should send an email to the user email account with a verification link', done => {
@@ -196,6 +182,87 @@ describe('creates a temporary record that associates user id that record', () =>
 //
 //     })
 // });
+
+// Function: login(modelName, data)
+describe('finds user having an inactive account', () => {
+
+    before(done => {
+        signupAndCreateTempRecord(done, res => {
+            userInstance = {...res};
+
+            // set the generated password hash to the original password for testing
+            userInstance.password = userData.password;
+            done(res);
+        })
+    });
+
+    it('should find user by username', done => {
+        login(UserModelName, 'username', userInstance.username, userInstance).then(res => {
+
+            expect(res).to.be.an('object');
+            expect(res.username).to.equal(userData.username);
+
+            userInstance = {...res};
+            done();
+        }).catch(e => {
+            done(e);
+        })
+    });
+
+    it('should not be active and return found user', done => {
+
+        // console.log(userInstance.password, userData.password, ' <<======= PP0002');
+        login(UserModelName, 'username', userInstance.username, userInstance).then(res => {
+
+            expect(res).to.be.an('object');
+            expect(res).to.have.any.keys('id', 'email', 'username');
+            expect(res.isActive).to.equal(false);
+
+            userInstance = {...res};
+            done();
+
+        }).catch(e => {
+            done(e);
+        })
+
+    });
+});
+
+//
+describe('logging in with a user password', done => {
+
+    before(done => {
+        signupAndCreateTempRecord(done, res => {
+            userInstance = {...res};
+
+            // set the generated password hash to the original password for testing
+            userInstance.password = userData.password;
+            done(res);
+        })
+    });
+
+    it('should be a valid password', done => {
+        isPasswordMatch(userData, userInstance).then(res => {
+            expect(res).to.equal(true);
+
+            done();
+        }).catch(e => {
+            done(e);
+        })
+    });
+
+    it('should be an invalid password', done => {
+
+        isPasswordMatch(userInstance, userInstance).then(res => {
+
+            expect(res).to.equal(false);
+            done();
+        }).catch(e => {
+            done(e);
+        })
+    })
+
+});
 
 
 // Function: getModelBy(model, field, value)
@@ -275,10 +342,3 @@ describe('creates a temporary record that associates user id that record', () =>
 //
 // });
 
-
-// login user
-// [1]. get the user by their username
-// [2]. get the user by their email
-// [3].
-// [4].
-// [5].

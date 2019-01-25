@@ -1,40 +1,56 @@
-const nodemailer = require('nodemailer');
-const KEYS = require('../../config/keys');
+module.exports = class Mail  {
 
+    constructor() {
+        this.nodeMailer = require('nodemailer');
+        this.transporter = null;
+        this.emailOptions = null;
+        this.html = null;
+    }
 
-// create reusable transporter object using the default SMTP transport
-const createTransporter = () => {
+    createTransporter(host, port, secure, authEmail, authPass, isTls) {
+        this.transporter = this.nodeMailer.createTransport({
+            host: host,
+            port: port,
+            secure: secure, // true for 465, false for other ports
+            auth: {
+                user: authEmail, // generated ethereal profile
+                pass: authPass  // generated ethereal password
+            },
+            tls: {
+                rejectUnauthorized: isTls
+            }
+        });
+    }
 
-    return nodemailer.createTransport({
-        host: KEYS.EMAIL_HOST,
-        port: KEYS.PORT,
-        secure: KEYS.SECURE, // true for 465, false for other ports
-        auth: {
-            user: KEYS.AUTH_USER_GMAIL, // generated ethereal profile
-            pass: KEYS.AUTH_USER_PASS  // generated ethereal password
-        },
-        tls: {
-            rejectUnauthorized: KEYS.REJECT_UNAUTHORIZED
+    // set the html template
+    setHtml(userId, html = null) {
+
+        if (html !== null) {
+            this.html = `
+             <html>
+                 <body>
+                    <p>Please confirm your registration by clicking this link</p> <br>
+                    <a href="http://localhost:5000/api/auth/user/verify/${userId}">
+                    Click to confirm your account</a>
+                </body>
+            </html>`
+        } else {
+            this.html = html;
         }
-    })
+    }
+
+    // set mail options
+    setEmailOptions(from, to, subject) {
+        this.emailOptions = {
+            from: from,
+            to: to,
+            subject: subject,
+            html: this.html
+        }
+    }
+
+    // send the email
+    sendEmail() {
+        return this.transporter.sendMail(this.emailOptions);
+    }
 };
-
-
-// send verify email
-const sendMail = async (mailOptions) => {
-    let result = null;
-
-    const transporter = await createTransporter();
-    // const mailOptions = await setMailOptions(payload);
-    result = await transporter.sendMail(mailOptions);
-
-    console.log('Done sending email verification ...');
-    return result;
-};
-
-
-
-module.exports = {
-    sendMail
-};
-
