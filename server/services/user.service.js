@@ -118,7 +118,6 @@ async function createTempRecord(modelName, data, type = 'Verify') {
 
     switch (type) {
         case 'Verify':
-
             // build and save verify record
             return await _buildAndSave(modelName, data);
         case 'Password':
@@ -146,35 +145,6 @@ async function isPasswordMatch(payload, userAccount) {
     }
     return token;
 
-}
-
-
-// build and save user
-async function _buildAndSave(modelName, data) {
-    const { bcryptPassword } = require('./crypt/crypt.service');
-    let model = null;
-
-    if (modelName === 'User') {
-
-        model = await userRepository.buildModel(modelName, data); // build model
-
-        // generate & assign token as password
-        await bcryptPassword(model).then(hash => {
-            model.password = hash;
-        });
-    }
-
-    if (modelName === 'Verify') {
-
-        // build model
-        model = await userRepository.buildModelWithAssociatedId(modelName, 'id', data.id, data);
-        // console.log(' ===========>>> ', model.id, ' ======= ', data.id);
-    }
-
-    // save user
-    model = await userRepository.save(modelName, model);
-
-    return model;
 }
 
 
@@ -207,19 +177,12 @@ async function sendVerificationMail(userId, userEmail) {
 }
 
 
-
 // TODO use this function within the controller layer
 // activate user account after they click on url
-async function activateAccount(userId) {
+async function verifyRecord(modelName = 'Verify', field = 'id', value) {
 
     try {
-        console.log('activating user account ... ', userId);
-
-        // update field of profile record
-        return await User.update(
-            {isActive: true},
-            {where: {id: userId}});
-
+        return userRepository.deleteBy(modelName, field, value)
     } catch (e) {
         return e;
     }
@@ -227,8 +190,32 @@ async function activateAccount(userId) {
 }
 
 
-// EXPORT REFERENCES
-///////////////////////////////
+// build and save user
+async function _buildAndSave(modelName, data) {
+    const { bcryptPassword } = require('./crypt/crypt.service');
+    let model = null;
+
+    if (modelName === 'User') {
+
+        model = await userRepository.buildModel(modelName, data); // build model
+
+        // generate & assign token as password
+        await bcryptPassword(model).then(hash => {
+            model.password = hash;
+        });
+    }
+
+    if (modelName === 'Verify') {
+
+        // build model
+        model = await userRepository.buildModelWithAssociatedId(modelName, 'id', data.id, data);
+    }
+
+    // save user
+    model = await userRepository.save(modelName, model);
+
+    return model;
+}
 
 
 module.exports = {
@@ -241,6 +228,7 @@ module.exports = {
     login,
     sendVerificationMail,
     signup,
+    verifyRecord,
     // resetPassword,
     // updateUser
 };
