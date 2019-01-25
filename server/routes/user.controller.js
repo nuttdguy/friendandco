@@ -2,7 +2,7 @@
 const { userService } = require('../services/index.service');
 
 
-// activate profile account
+// activate user account
 async function activateUser(req, res, next) {
     const userId = req.params.userId;
 
@@ -14,19 +14,22 @@ async function activateUser(req, res, next) {
     }
 }
 
-// delete profile
-async function deleteUser(req, res, next) {
-    const userId = req.params.userId;
+// delete user
+async function deleteBy(req, res, next) {
+    const id = req.params.userId;
+    let modelName = 'User';
+    let field = 'id';
 
     try {
-        const result = await userService.deleteUser(userId);
+        const result = await userService.deleteBy(modelName, field, id);
         res.status(200).json(result);
+        next();
     } catch (e) {
-        return e;
+        next(e);
     }
 }
 
-// get profile
+// get user
 async function getUser(req, res, next) {
     const userId = req.params.userId;
 
@@ -43,7 +46,7 @@ async function getUser(req, res, next) {
     }
 }
 
-// login profile
+// login user
 async function loginUser(req, res, next) {
     let user = req.body;
 
@@ -55,7 +58,7 @@ async function loginUser(req, res, next) {
     }
 }
 
-// register new profile
+// register new user
 async function registerUser(req, res, next) {
     let user = req.body;
 
@@ -100,7 +103,7 @@ console.log('done loading profile routes ...');
 
 module.exports = {
     activateUser,
-    deleteUser,
+    deleteBy,
     getUser,
     loginUser,
     registerUser,

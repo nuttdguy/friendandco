@@ -10,34 +10,11 @@ const { userRepository } = require('../repository/index.repository');
 // LOAD VALIDATORS
 ///////////////////////////////
 
+// TODO ... move validators into controller
 const validateRegisterInput = require('../validation/register.validate');
 const validateLoginInput = require('../validation/login');
 const shapeInput = require('../validation/shapeInput.utils');
 
-
-
-// activate user account
-// async function activateUser(userId) {
-//     try {
-//         // find record in verify email
-//         const hasVerified = await userRepository.findBy(userId);
-//
-//
-//         if (hasVerified !== null) {
-//
-//             // activate profile account
-//             const user =  await userRepository.activateAccount(userId);
-//
-//             // delete verify record
-//             userRepository.deleteVerify(userId);
-//             return user;
-//         }
-//
-//         return 'Your email has already been verified';
-//     } catch (e) {
-//         return e;
-//     }
-// }
 
 // delete by model-name, field and value
 async function deleteBy(modelName, field, value) {

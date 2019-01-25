@@ -10,8 +10,6 @@ const {
     sendVerificationMail,
     signup,
     verifyRecord
-    // resetPassword,
-    // updateUser
 } = require('../../../services/user.service');
 
 const {

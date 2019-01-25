@@ -113,7 +113,7 @@ module.exports = (app) => {
 
 
     /*****
-     * [profile ops]
+     * [user ops]
      * get one users info -- (pending test)
      * add one profile -- (pending test)
      * update one profile info -- (pending test)
@@ -128,7 +128,7 @@ module.exports = (app) => {
     app.post(api_user+'/reset-password', userController.resetPassword); // TODO finish
     app.get(api_user+'/activate/:userId', userController.activateUser); // TODO create + link profile to profile
     app.get(api_user+'/:userId', userController.getUser);
-    app.delete(api_user+'/:userId', userController.deleteUser);
+    app.delete(api_user+'/:userId', userController.deleteBy);
     app.put(api_user+'/update', userController.updateUser);
 
 
