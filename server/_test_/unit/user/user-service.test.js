@@ -5,7 +5,7 @@ const {
     // activateUser,
     // deleteUser,
     createTempRecord,
-    getModelBy,
+    findModelBy,
     isPasswordMatch,
     login,
     sendVerificationMail,
@@ -23,7 +23,11 @@ const {
 } = require('../../../repository/user.repository');
 
 
-// setup db connection and sync
+
+
+/*******************************************
+                SETUP
+ *******************************************/
 
 const UserModelName = 'User';
 const VerifyModelName = 'Verify';
@@ -33,7 +37,8 @@ const userData = {
     firstName: 'phouthalang-service',
     lastName: 'phouthalang-service',
     email: 'pygnasak@yahoo.com',
-    password: 'password-test--service'
+    password: 'password-test--service',
+    isActive: false
 };
 
 
@@ -58,13 +63,13 @@ before(done => {
 });
 
 
-after(done => {
+afterEach(done => {
 
     if (userInstance !== null ) {
         deleteByPk(UserModelName, userInstance.id);
         userInstance = null;
     }
-    if (verifyInstance !== null ) {
+    if (verifyInstance !== null) {
         deleteByPk(VerifyModelName, verifyInstance.id);
         verifyInstance = null;
     }
@@ -73,9 +78,9 @@ after(done => {
 });
 
 
-// UNIT TEST FOR SIGN-UP AND LOGIN
-// => login => find user => check if activated user => if not, respond with verify email=
-// AFTER verified; always check for activated user flag
+/*******************************************
+                TESTS
+*******************************************/
 
 // Build and save user
 function buildAndSave(ModelName, modelData) {
@@ -85,39 +90,25 @@ function buildAndSave(ModelName, modelData) {
 
 // signup and create temp record
 function signupAndCreateTempRecord(done) {
-    signup(userData, UserModelName, 'username', userData.username).then(savedUser => {
-        userInstance = {...savedUser};
-
-        createTempRecord(VerifyModelName, userInstance, 'verify').then(res => {
-            verifyInstance = {...res};
-            done();
+    signup(userData, UserModelName, 'username', userData.username)
+        .then(savedUser => {
+            createTempRecord(VerifyModelName, savedUser, 'verify')
+                .then(res => {
+                    userInstance = savedUser;
+                    verifyInstance = res;
+                    done();
+                }).catch(e => {
+                    done(e);
+                })
         }).catch(e => {
-            done(e);
-        })
-    }).catch(e => {
         done(e);
     })
 }
 
-
 // Function: signup(data, modelName, field, value)
-describe('register / sign-up up a new user; looking up existing by username', () => {
+describe('signing up user with a username', () => {
 
-    it('should return USER OBJECT when the USER IS FOUND', done => {
-
-        signup(userData, UserModelName, 'username', userData.username)
-            .then(res => {
-
-                expect(res).to.be.an('object');
-                expect(res).to.not.equal(null);
-
-                done();
-        }).catch(e => {
-            done(e);
-        });
-    });
-
-    it('should CREATE AND SAVE A USER when no existing user has been found', done => {
+    it('should create and save user when username is not found', done => {
 
         signup(userData, UserModelName, 'username', userData.username)
             .then(res => {
@@ -136,21 +127,52 @@ describe('register / sign-up up a new user; looking up existing by username', ()
 
 });
 
-// Function: createTempRecord(modelName, userData)
-describe('creates a temporary record that associates user id that record', () => {
+// Function: signup(data, modelName, field, value)
+describe('signing up user with a username, but user is already registered', () => {
 
-    // requires a saved user record
     before(done => {
-        done();
+        buildAndSave(UserModelName, userData).then(res => {
+            userInstance = {...res};
+            done();
+        }).catch(e => {
+            done(e);
+        })
     });
 
-    it(`should CREATE AND SAVE ONE ${VerifyModelName} record and associating USER ID AS ID`, done => {
+    it('should return user that has signed up', done => {
 
-        createTempRecord(VerifyModelName, userInstance, 'verify').then(res => {
+        signup(userData, UserModelName, 'username', userData.username)
+            .then(res => {
+
+                expect(res).to.be.an('object');
+                expect(res.username).to.equal(userData.username);
+
+                done();
+            }).catch(e => {
+            done(e);
+        });
+    });
+
+});
+
+// Function: createTempRecord(modelName, userData)
+describe('creating a temporary record that associates a user id that record', () => {
+
+    before(done => {
+        buildAndSave(UserModelName, userData).then(res => {
+            userInstance = {...res};
+            done();
+        }).catch(e => {
+            done(e);
+        })
+    });
+
+    it(`should create and save ${VerifyModelName} record and associating user id as its id`, done => {
+
+        createTempRecord(VerifyModelName, userInstance).then(res => {
 
             expect(res.id).to.equal(userInstance.id);
 
-            verifyInstance = {...res};
             done();
         }).catch(e => {
             done(e);
@@ -161,58 +183,42 @@ describe('creates a temporary record that associates user id that record', () =>
 
 // TODO ... leave this test disabled so it does not send emails
 // Function: sendVerificationMail(userId, userEmail)
-// describe('send a verification email to users email address', () => {
-//
-//     before(done => {
-//         signupAndCreateTempRecord(done, res => {
-//             done(res);
-//         });
-//     });
-//
-//     it('should send an email to the user email account with a verification link', done => {
-//
-//         sendVerificationMail(userInstance.id, userInstance.email).then(res => {
-//
-//             expect(res).to.be.an('object');
-//             expect(res).to.have.any.keys('response', 'messageId', 'envelope', 'accepted');
-//             done();
-//         }).catch(e => {
-//             done(e);
-//         })
-//
-//     })
-// });
+describe('sending a verification email to the users email address', () => {
+
+    before(done => {
+        signupAndCreateTempRecord(done, res => {
+            done(res);
+        });
+    });
+
+    // it('should send an email to the user email account with a verification link', done => {
+    //
+    //     sendVerificationMail(userInstance.id, userInstance.email).then(res => {
+    //
+    //         expect(res).to.be.an('object');
+    //         expect(res).to.have.any.keys('response', 'messageId', 'envelope', 'accepted');
+    //         done();
+    //     }).catch(e => {
+    //         done(e);
+    //     })
+    //
+    // })
+});
 
 // Function: login(modelName, data)
-describe('finds user having an inactive account', () => {
+describe('logging in a user with inactive flag set to FALSE', () => {
 
     before(done => {
         signupAndCreateTempRecord(done, res => {
             userInstance = {...res};
-
-            // set the generated password hash to the original password for testing
-            userInstance.password = userData.password;
+            console.log(userInstance);
             done(res);
         })
     });
 
-    it('should find user by username', done => {
-        login(UserModelName, 'username', userInstance.username, userInstance).then(res => {
+    it('should find a valid user that has an isActive flag set to FALSE', done => {
 
-            expect(res).to.be.an('object');
-            expect(res.username).to.equal(userData.username);
-
-            userInstance = {...res};
-            done();
-        }).catch(e => {
-            done(e);
-        })
-    });
-
-    it('should not be active and return found user', done => {
-
-        // console.log(userInstance.password, userData.password, ' <<======= PP0002');
-        login(UserModelName, 'username', userInstance.username, userInstance).then(res => {
+        login(UserModelName, 'username', userData.username, userData).then(res => {
 
             expect(res).to.be.an('object');
             expect(res).to.have.any.keys('id', 'email', 'username');
@@ -226,24 +232,13 @@ describe('finds user having an inactive account', () => {
         })
 
     });
-});
 
-//
-describe('logging in with a user password', done => {
+    it('should not find a valid user', done => {
 
-    before(done => {
-        signupAndCreateTempRecord(done, res => {
-            userInstance = {...res};
+        const username = 'invalid-username'; // set username as an invalid username
+        login(UserModelName, 'username', username, userData).then(res => {
 
-            // set the generated password hash to the original password for testing
-            userInstance.password = userData.password;
-            done(res);
-        })
-    });
-
-    it('should be a valid password', done => {
-        isPasswordMatch(userData, userInstance).then(res => {
-            expect(res).to.equal(true);
+            expect(res).to.not.exist;
 
             done();
         }).catch(e => {
@@ -251,94 +246,160 @@ describe('logging in with a user password', done => {
         })
     });
 
-    it('should be an invalid password', done => {
+});
 
-        isPasswordMatch(userInstance, userInstance).then(res => {
+// Function: login(modelName, data)
+describe('logging in a user with inactive flag set to TRUE', () => {
 
-            expect(res).to.equal(false);
+    before(done => {
+        userData.isActive = true;  // set isActive Flag to true
+        signup(userData, UserModelName, 'username', userData.username).then(savedUser => {
+            createTempRecord(VerifyModelName, savedUser, 'verify').then(res => {
+                done();
+            }).catch(e => {
+                done(e);
+            })
+        }).catch(e => {
+            done(e);
+        })
+    });
+
+    it('should find a valid user with activated account', done => {
+
+        // console.log(userInstance);
+        login(UserModelName, 'username', userData.username, userData).then(res => {
+
+            expect(res).to.be.an('object');
+            expect(res).to.have.any.keys('id', 'email', 'username');
+            expect(res.isActive).to.equal(true);
+
             done();
+        }).catch(e => {
+            done(e);
+        })
+    });
+
+    it('should sign token of a user with an isActive flag set to TRUE', done => {
+
+        login(UserModelName, 'username', userData.username, userData).then(res => {
+
+            expect(res).to.be.an('object');
+            expect(res).to.have.any.keys('id', 'email', 'username', 'authToken');
+            expect(res.isActive).to.equal(true);
+
+            done();
+
         }).catch(e => {
             done(e);
         })
     })
+});
+
+// Function: isPasswordMatch(payload, userAccount)
+describe('logging in with a valid user password', () => {
+
+    before(done => {
+        signupAndCreateTempRecord(done, res => {
+            done(res);
+        })
+    });
+    it('should be a valid password', done => {
+        isPasswordMatch(userData, userInstance).then(res => {
+            expect(res).to.exist;
+            expect(res).to.be.a('string');
+
+            done();
+        }).catch(e => {
+            done(e);
+        })
+    });
+
+});
+
+// Function: isPasswordMatch(payload, userAccount)
+describe('logging in with an invalid user password', () => {
+
+    before(done => {
+        signupAndCreateTempRecord(done, res => {
+            done(res);
+        })
+    });
+
+    it('should be an invalid password', done => {
+        userData.password = 'invalid-password'; // set an invalid password
+        isPasswordMatch(userData, userInstance).then(res => {
+
+            expect(res).to.not.exist;
+
+            done();
+        }).catch(e => {
+            done(e);
+        })
+    });
+});
+
+// Function:
+describe('activating a users account by verify record id', () => {
+
+
 
 });
 
 
-// Function: getModelBy(model, field, value)
-// describe('getModelBy function', () => {
-//
-//     const counter = Math.random();
-//     const ModelName = 'User';
-//     let user = null;
-//
-//     before(done => {
-//
-//         user = buildModel(ModelName, {
-//             username: 'username-service',
-//             firstName: 'firstname-service',
-//             lastName: 'lastname-service',
-//             email: 'service-first@last.com',
-//             password: 'password-test--service'
-//         });
-//
-//         save(ModelName, user).then(res => {
-//             user = {...res};
-//             done();
-//         }).catch(e => {
-//             done(e);
-//         });
-//
-//     });
-//
-//     after(done => {
-//         deleteBy(ModelName, 'id', user.id);
-//         done();
-//     });
-//
-//     it(`should get one ${ModelName} by email`, done => {
-//
-//         getModelBy(ModelName, 'email', user.email).then(res => {
-//
-//             expect(res).to.have.property('email');
-//             expect(res.email).to.equal(res.email);
-//
-//             done();
-//
-//         }).catch(e => {
-//             deleteByPk(ModelName, user.id);
-//             done(e);
-//         });
-//
-//     });
-//
-//     it(`should get one ${ModelName} by username`, done => {
-//         getModelBy(ModelName, 'username', user.username).then(res => {
-//
-//             expect(res).to.have.property('username');
-//             expect(res.username).to.equal(user.username);
-//
-//             done();
-//
-//         }).catch(e => {
-//
-//             done(e);
-//         });
-//     });
-//
-//     it(`should get one ${ModelName} by id`, done => {
-//         getModelBy(ModelName, 'id', user.id).then(res => {
-//
-//             expect(res).to.have.property('id');
-//             expect(res.id).to.equal(user.id);
-//
-//             done();
-//
-//         }).catch(e => {
-//
-//             done(e);
-//         });
-//     })
-//
-// });
+// Function: findModelBy(model, field, value)
+describe('findModelBy function', () => {
+
+    // before(done => {
+    //     buildAndSave(UserModelName, userData).then(res => {
+    //         userInstance = {...res};
+    //         done();
+    //     }).catch(e => {
+    //         done(e);
+    //     })
+    // });
+
+
+    // it(`should get one user by email`, done => {
+    //
+    //     findModelBy(UserModelName, 'email', userInstance.email).then(res => {
+    //
+    //         expect(res).to.have.property('email');
+    //         expect(res.email).to.equal(res.email);
+    //
+    //         done();
+    //     }).catch(e => {
+    //         done(e);
+    //     });
+    //
+    // });
+
+    // it(`should get one ${ModelName} by username`, done => {
+    //     findModelBy(ModelName, 'username', user.username).then(res => {
+    //
+    //         expect(res).to.have.property('username');
+    //         expect(res.username).to.equal(user.username);
+    //
+    //         done();
+    //
+    //     }).catch(e => {
+    //
+    //         done(e);
+    //     });
+    // });
+    //
+    // it(`should get one ${ModelName} by id`, done => {
+    //     findModelBy(ModelName, 'id', user.id).then(res => {
+    //
+    //         expect(res).to.have.property('id');
+    //         expect(res.id).to.equal(user.id);
+    //
+    //         done();
+    //
+    //     }).catch(e => {
+    //
+    //         done(e);
+    //     });
+    // })
+
+});
 

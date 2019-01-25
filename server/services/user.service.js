@@ -48,8 +48,9 @@ const shapeInput = require('../validation/shapeInput.utils');
 //     }
 // }
 
-// get user
-async function getModelBy(model, field, value) {
+
+// find by model and field
+async function findModelBy(model, field, value) {
     try {
         return await userRepository.findBy(model, field, value)
     } catch (e) {
@@ -57,65 +58,36 @@ async function getModelBy(model, field, value) {
     }
 }
 
-// // login profile
+
+//  login user
 async function login(modelName = 'User', field = 'username', value, payload) {
-    let userAccount, isMatch = null;
+    let userAccount = null;
 
     // validate login input; // return if errors
     // let {errors, isValid} = validateLoginInput(user);
     // if (!isValid) return errors;
 
-    // check that profile exists; // return error if profile was not found
-    userAccount = await userRepository.findBy(modelName, field, value);
-    if (userAccount === null) return null; // TODO this should return or redirect to signup view
-
     try {
 
-        // payload should have original password, userAccount hashed version
-        isMatch = await isPasswordMatch(payload, userAccount);
+        // check that the user exists; // return null if not found
+        userAccount = await userRepository.findBy(modelName, field, value);
 
-        // console.log(isMatch, payload.password, userAccount.password, ' =========>> PP001');
-        // // handle correct response when match
-        // if (isMatch && userAccount.isActive) {
-        //     // user is registered and active; sign token
-        //     return {token: 'Bearer ' + await signJwt(userAccount)}
-        // } else if (isMatch && !userAccount.isActive) {
-        //
-        //     // send user account data back
-        //     return userAccount;
-        // }
+        if ( userAccount === null )
+            return null; // TODO this should return or redirect to signup view
+        else if (userAccount.isActive === false)
+            return userAccount;
+        else if (userAccount.isActive === true )
+            userAccount.authToken = await isPasswordMatch(payload, userAccount);
 
-
-        // if (isMatch && account.isActive) {
-        //
-        //     // profile is registered and active; sign token
-        //     return {token: 'Bearer ' + await signJwt(foundUser) };
-        //
-        // } else if (isMatch && !account.isActive) {
-        //
-        //     // email has not been verified, send error
-        //     errors.error = 'Your email has not been verified. Please verify by clicking the link in verify email and then try logging in again';
-        //     return errors;
-        // } else {
-        //
-        //     // password is incorrect, send error
-        //     errors.error = 'Password or username is incorrect';
-        //     return errors;
-        // }
         return userAccount;
     } catch (e) {
         return e;
     }
 
-    // compare entered password with users existing password token
-    // function isPasswordMatch(user, foundUser) {
-    //     return bcryptCompare(user, foundUser);
-    // }
-
 }
 
-// TODO CONTROLLER :: ADD LOGIC TO HANDLE USERNAME EXIST && REDIRECT TO VERIFY EMAIL
-// register / sign-up new user
+
+//  sign-up new user
 async function signup(data = null, modelName, field, value) {
     let user = null;
 
@@ -128,11 +100,10 @@ async function signup(data = null, modelName, field, value) {
         user = await userRepository.findBy(modelName, field, value);
 
         if (user === null) {
-
             // build and save user
             return _buildAndSave(modelName, data);
         }
-        return user;
+        return user; // TODO controller to handle user already exists, login instead
 
     } catch (e) {
         return e;
@@ -142,15 +113,15 @@ async function signup(data = null, modelName, field, value) {
 
 
 // create a temp record to associate
-async function createTempRecord(modelName, data, type = 'verify') {
+async function createTempRecord(modelName, data, type = 'Verify') {
     let model = null;
 
     switch (type) {
-        case 'verify':
+        case 'Verify':
 
             // build and save verify record
             return await _buildAndSave(modelName, data);
-        case 'password':
+        case 'Password':
 
             // TODO create password reset
             return model;
@@ -163,9 +134,18 @@ async function createTempRecord(modelName, data, type = 'verify') {
 
 // compare password with inputted password
 async function isPasswordMatch(payload, userAccount) {
-    const { bcryptCompare } = require('./crypt/crypt.service');
+    const { bcryptCompare, signJwt } = require('./crypt/crypt.service');
+    let token = null;
 
-    return await bcryptCompare(payload, userAccount);
+    // payload should have original password, userAccount hashed version
+    const isMatch = await bcryptCompare(payload, userAccount);
+
+    if (isMatch) {
+        token = 'Bearer ' + await signJwt(userAccount);
+        return token; // password is a match, return token
+    }
+    return token;
+
 }
 
 
@@ -176,8 +156,7 @@ async function _buildAndSave(modelName, data) {
 
     if (modelName === 'User') {
 
-        // build model
-        model = await userRepository.buildModel(modelName, data);
+        model = await userRepository.buildModel(modelName, data); // build model
 
         // generate & assign token as password
         await bcryptPassword(model).then(hash => {
@@ -229,23 +208,23 @@ async function sendVerificationMail(userId, userEmail) {
 
 
 
-// TODO move this function into service layer
-// activate user account
-// async function activateAccount(userId) {
-//
-//     try {
-//         console.log('activating user account ... ', userId);
-//
-//         // update field of profile record
-//         return await User.update(
-//             {isActive: true},
-//             {where: {id: userId}});
-//
-//     } catch (e) {
-//         return e;
-//     }
-//
-// }
+// TODO use this function within the controller layer
+// activate user account after they click on url
+async function activateAccount(userId) {
+
+    try {
+        console.log('activating user account ... ', userId);
+
+        // update field of profile record
+        return await User.update(
+            {isActive: true},
+            {where: {id: userId}});
+
+    } catch (e) {
+        return e;
+    }
+
+}
 
 
 // EXPORT REFERENCES
@@ -257,7 +236,7 @@ module.exports = {
     // deleteUser,
     createTempRecord,
     // buildAndSave,
-    getModelBy,
+    findModelBy,
     isPasswordMatch,
     login,
     sendVerificationMail,

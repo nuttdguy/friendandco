@@ -32,7 +32,7 @@ async function bcryptCompare(payload, userAccount) {
 
 // sign payload using an available jwt library function
 async function signJwt(payload) {
-    return await jwt.sign(payload.dataValues, KEYS.SECRET_JWT_KEY, {expiresIn: 3600});
+    return await jwt.sign(payload, KEYS.SECRET_JWT_KEY, {expiresIn: 3600});
 }
 
 
