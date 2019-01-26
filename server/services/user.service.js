@@ -37,26 +37,27 @@ async function findModelBy(model, field, value) {
 
 
 //  login user
-async function login(modelName = 'User', field = 'username', value, payload) {
-    let userAccount = null;
-
-    // validate login input; // return if errors
-    // let {errors, isValid} = validateLoginInput(user);
-    // if (!isValid) return errors;
+async function login(payload, modelName = 'User', field = 'username', value) {
 
     try {
 
         // check that the user exists; // return null if not found
-        userAccount = await userRepository.findBy(modelName, field, value);
+        const userAccount = await userRepository.findBy(modelName, field, value);
 
+        // if no user is found,
         if ( userAccount === null )
-            return null; // TODO this should return or redirect to signup view
+            return {...userAccount, message: `account with ${field} ${value} not found`};
+
+        // else if, user found but is not verified
         else if (userAccount.isActive === false)
-            return userAccount;
+            return {...userAccount, message: `please verify your email to activate your account`};
+
+        // account is active, sign auth token
         else if (userAccount.isActive === true )
             userAccount.authToken = await isPasswordMatch(payload, userAccount);
 
         return userAccount;
+
     } catch (e) {
         return e;
     }
@@ -66,21 +67,18 @@ async function login(modelName = 'User', field = 'username', value, payload) {
 
 //  sign-up new user
 async function signup(data = null, modelName, field, value) {
-    let user = null;
-
-    // trim, lowercase, validate data; // return if errors
-    // let { errors, isValid } = await validateRegisterInput(shapeInput(user));
-    // if (!isValid) return errors;
 
     try {
-        // find profile by field; return null to controller to handle redirect
-        user = await userRepository.findBy(modelName, field, value);
+        // find the user
+        const user = await userRepository.findBy(modelName, field, value);
 
-        if (user === null) {
-            // build and save user
+        // if found, add message that user exists
+        if (user !== null )
+            return {...user, message: 'username exists'};
+
+        // if not found, create and save the new user
+        else if (user === null)
             return _buildAndSave(modelName, data);
-        }
-        return user; // TODO controller to handle user already exists, login instead
 
     } catch (e) {
         return e;

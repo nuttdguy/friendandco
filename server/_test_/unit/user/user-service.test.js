@@ -84,8 +84,10 @@
 // // signup and create temp record
 // async function signupAndCreateTempRecord() {
 //     try {
+//
 //         userInstance = await signup(userData, UserModelName, 'username', userData.username);
 //         verifyInstance = await createTempRecord(VerifyModelName, userInstance);
+//
 //         console.log('done signing up and creating temp record ... ');
 //     } catch (e) {
 //         return e;
@@ -131,12 +133,13 @@
 //         })
 //     });
 //
-//     it('should return user that has signed up', done => {
+//     it('should return message that user has already signed up', done => {
 //
 //         signup(userData, UserModelName, 'username', userData.username)
 //             .then(res => {
 //
 //                 expect(res).to.be.an('object');
+//                 expect(res).to.have.property('message');
 //                 expect(res.username).to.equal(userData.username);
 //
 //                 done();
@@ -185,10 +188,10 @@
 //     });
 //
 //     it('should find a valid user that has an isActive flag set to FALSE', done => {
-//         login(UserModelName, 'username', userData.username, userData).then(res => {
+//         login(userData, UserModelName, 'username', userData.username).then(res => {
 //
 //             expect(res).to.be.an('object');
-//             expect(res).to.have.any.keys('id', 'email', 'username');
+//             expect(res).to.have.any.keys('id', 'email', 'username', 'message');
 //             expect(res.isActive).to.equal(false);
 //
 //             userInstance = {...res};
@@ -205,7 +208,7 @@
 //         const username = 'invalid-username'; // set username as an invalid username
 //         login(UserModelName, 'username', username, userData).then(res => {
 //
-//             expect(res).to.not.exist;
+//             expect(res).to.have.property('message');
 //
 //             done();
 //         }).catch(e => {
@@ -234,7 +237,7 @@
 //     it('should find a valid user with activated account', done => {
 //
 //         // console.log(userInstance);
-//         login(UserModelName, 'username', userData.username, userData).then(res => {
+//         login(userData, UserModelName, 'username', userData.username).then(res => {
 //
 //             expect(res).to.be.an('object');
 //             expect(res).to.have.any.keys('id', 'email', 'username');
@@ -248,7 +251,7 @@
 //
 //     it('should sign token of a user with an isActive flag set to TRUE', done => {
 //
-//         login(UserModelName, 'username', userData.username, userData).then(res => {
+//         login(userData, UserModelName, 'username', userData.username).then(res => {
 //
 //             expect(res).to.be.an('object');
 //             expect(res).to.have.any.keys('id', 'email', 'username', 'authToken');
@@ -274,6 +277,7 @@
 //     });
 //
 //     it('should be a valid password', done => {
+//
 //         isPasswordMatch(userData, userInstance).then(res => {
 //             expect(res).to.exist;
 //             expect(res).to.be.a('string');
