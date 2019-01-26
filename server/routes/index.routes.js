@@ -123,7 +123,7 @@ module.exports = (app) => {
      * delete a users account -- (pending test)
      * ****/
     const api_user = '/api/users';
-    app.post(api_user+'/register', userController.registerUser);
+    app.post(api_user+'/signup', userController.signup);
     app.post(api_user+'/login', userController.loginUser);
     app.post(api_user+'/reset-password', userController.resetPassword); // TODO finish
     app.get(api_user+'/activate/:userId', userController.activateUser); // TODO create + link profile to profile

@@ -1,18 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const expect = chai.expect;
-const app = require('../../testing-server');
-
-module.exports = {
-    createTempRecord,
-    deleteBy,
-    findModelBy,
-    isPasswordMatch,
-    login,
-    sendVerificationMail,
-    signup,
-    verifyRecord,
-} = require('../../../routes/user.controller');
+chai.use(chaiHttp);
 
 
 /*******************************************
@@ -34,6 +23,8 @@ const userData = {
 
 
 let db = null;
+let server = null;
+
 before(done => {
 
     db = require('../../../db/db.connection');
@@ -48,18 +39,17 @@ before(done => {
 
 });
 
-// afterEach(done => {
-//
-//     request(app)
-//         .delete('/api/users/')
-//         .send(responseData.id)
-//         .end((err, res) => {
-//             if (err) {
-//                 console.log('/api/users/:id  => Delete =>  ', err)
-//             }
-//             done(res);
-//         })
-// });
+
+beforeEach(done => {
+    server = require('../../../server');
+    done();
+});
+
+
+afterEach(done => {
+    server.close();
+    done();
+});
 
 
 /*******************************************
@@ -68,20 +58,19 @@ before(done => {
 
 
 
-
-
-describe('Route: /api/users/register ', () => {
+describe('Route: /api/users/signup ', () => {
 
     it('should register the user', done => {
-        request(app)
-            .post('/api/users/register')
+
+        chai.request(server)
+            .post('/api/users/signup')
             .send(userData)
             .end( (err, res) => {
                 if (err) {
-                    console.log('/api/users/register ', err)
+                    console.log('/api/users/signup ', err)
                 }
-                // console.log(res.body );
-                expect(res.statusCode).to.equal(200);
+                console.log(res.body );
+                expect(res.status).to.equal(200);
                 expect(res.body.firstName).to.equal(userData.firstName);
                 expect(res.body.lastName).to.equal(userData.lastName);
 
@@ -90,9 +79,41 @@ describe('Route: /api/users/register ', () => {
             });
     });
 
+    it('should register the user', done => {
+
+        chai.request(server)
+            .post('/api/users/signup')
+            .send(userData)
+            .end( (err, res) => {
+                if (err) {
+                    console.log('/api/users/signup ', err)
+                }
+                console.log(res.body );
+                expect(res.status).to.equal(200);
+                expect(res.body.firstName).to.equal(userData.firstName);
+                expect(res.body.lastName).to.equal(userData.lastName);
+
+                responseData = res.body;
+                done();
+            });
+    });
+
+
+    it('should delete the registered user', done => {
+        chai.request(server)
+            .delete('/api/users/'+responseData.id)
+            .end((err, res) => {
+                if (err) {
+                    console.log('/api/users/:id  => Delete =>  ', err)
+                }
+
+                expect(res.status).to.equal(200);
+                expect(res.body).to.equal(1);
+
+                done();
+            })
+    })
+
 });
 
-//
-//
-//
-//
+

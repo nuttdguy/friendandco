@@ -58,13 +58,17 @@ async function loginUser(req, res, next) {
     }
 }
 
-// register new user
-async function registerUser(req, res, next) {
-    let user = req.body;
+// signup new user
+async function signup(req, res, next) {
+    const value = req.body.username;
+    let modelName = 'User';
+    let field = 'username'; // TODO add switch between email or username
+    let data = req.body;
 
     try {
-        const result = await userService.registerUser(user, next);
+        const result = await userService.signup(data, modelName, field, value);
         res.status(200).json(result);
+        next();
     } catch (e) {
         next(e);
     }
@@ -106,7 +110,7 @@ module.exports = {
     deleteBy,
     getUser,
     loginUser,
-    registerUser,
+    signup,
     resetPassword,
     updateUser,
 };

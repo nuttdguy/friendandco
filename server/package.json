@@ -2,9 +2,9 @@
   "name": "client-friend-and-co",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "test": "mocha _test_/unit/*",
+    "test": "mocha -w _test_/unit/*",
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm run start --prefix _client",
@@ -34,9 +34,6 @@
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
     "mocha": "^5.2.0",
-    "nodemon": "^1.18.6",
-    "superagent": "^4.0.0",
-    "supertest": "^3.3.0",
-    "supervisor": "^0.12.0"
+    "nodemon": "^1.18.6"
   }
 }
