@@ -3,12 +3,15 @@ const { userService } = require('../services/index.service');
 
 
 // activate user account
-async function activateUser(req, res, next) {
-    const userId = req.params.userId;
+async function activate(req, res, next) {
+    const value = req.params.userId;
+    let modelName = 'Verify';
+    let field = 'id';
 
     try {
-        const result = await userService.activateUser(userId);
+        const result = await userService.verifyRecord(modelName, field, value);
         res.status(200).json(result);
+        next();
     } catch (e) {
         next(e);
     }
@@ -110,7 +113,7 @@ console.log('done loading profile routes ...');
 ///////////////////////////////
 
 module.exports = {
-    activateUser,
+    activate,
     deleteBy,
     // getUser,
     login,

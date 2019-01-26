@@ -168,22 +168,26 @@ async function verifyRecord(modelName = 'Verify', field = 'id', value) {
 // build and save user
 async function _buildAndSave(modelName, data) {
     const { bcryptPassword } = require('./crypt/crypt.service');
-    let model = null;
+    let model, model2 = null;
 
     if (modelName === 'User') {
 
         model = await userRepository.buildModel(modelName, data); // build model
+        model2 = await userRepository.buildModelWithAssociatedId('Verify', 'id', data.id, data);
+
+        await userRepository.save('Verify', model2);
 
         // generate & assign token as password
         await bcryptPassword(model).then(hash => {
             model.password = hash;
         });
+        return await userRepository.save(modelName, model);
     }
 
     if (modelName === 'Verify') {
 
         // build model
-        model = await userRepository.buildModelWithAssociatedId(modelName, 'id', data.id, data);
+        return await userRepository.buildModelWithAssociatedId(modelName, 'id', data.id, data);
     }
 
     // save user
@@ -191,6 +195,7 @@ async function _buildAndSave(modelName, data) {
 
     return model;
 }
+
 
 
 module.exports = {

@@ -11,7 +11,7 @@ const pool = {max: 5, min: 0, acquire: 30000, idle: 10000};
 // connect to db
 const sequelize = new Sequelize(KEYS.MYSQLURI, {
     pool: pool,
-    logging: true
+    logging: false
 });
 
 // add models
