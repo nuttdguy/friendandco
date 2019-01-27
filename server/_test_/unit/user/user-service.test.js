@@ -3,6 +3,7 @@ const expect = chai.expect;
 
 const {
     createTempRecord,
+    _buildAndSave,
     deleteBy,
     findModelBy,
     isPasswordMatch,
@@ -63,6 +64,8 @@ afterEach(done => {
         deleteBy(VerifyModelName, 'id', userInstance.id);
         userInstance = null;
         verifyInstance = null;
+    } else if (verifyInstance !== null) {
+        deleteBy(VerifyModelName, 'id', userInstance.id);
     }
     done();
 
@@ -73,10 +76,14 @@ afterEach(done => {
             BUILD AND SAVE HELPERS
  *******************************************/
 
-// Build and save user
+// build model only
+function build(ModelName, modelData) {
+    return buildModel(ModelName, modelData);
+}
+
+// build and save user
 function buildAndSave(ModelName, modelData) {
-    const user = buildModel(ModelName, modelData);
-    return save(ModelName, user);
+    return _buildAndSave(ModelName, modelData);
 }
 
 // signup and create temp record
@@ -108,7 +115,6 @@ describe('signing up user with a username', () => {
                 expect(res).to.be.an('object');
                 expect(res.password).to.not.equal(userData.password);
                 expect(res.username).to.equal(userData.username);
-                console.log(res.body);
 
                 userInstance = {...res};
                 done();
@@ -153,12 +159,9 @@ describe('signing up user with a username, but user is already registered', () =
 describe('creating a temporary record that associates a user id that record', () => {
 
     before(done => {
-        buildAndSave(UserModelName, userData).then(res => {
-            userInstance = {...res};
-            done();
-        }).catch(e => {
-            done(e);
-        })
+        // only requires the instance of user, not persisted object
+        userInstance = build(UserModelName, userData);
+        done();
     });
 
     it(`should create and save ${VerifyModelName} record and associating user id as its id`, done => {
@@ -179,7 +182,8 @@ describe('creating a temporary record that associates a user id that record', ()
 describe('logging in a user with inactive flag set to FALSE', () => {
 
     before(done => {
-        signupAndCreateTempRecord().then(res => {
+        buildAndSave(UserModelName, userData).then(res => {
+            userInstance = {...res};
             done();
         }).catch(e => {
             console.log(e);
@@ -193,7 +197,6 @@ describe('logging in a user with inactive flag set to FALSE', () => {
             expect(res).to.have.any.keys('id', 'email', 'username', 'message');
             expect(res.isActive).to.equal(false);
 
-            userInstance = {...res};
             done();
 
         }).catch(e => {
@@ -205,9 +208,10 @@ describe('logging in a user with inactive flag set to FALSE', () => {
     it('should not find a valid user', done => {
 
         const username = 'invalid-username'; // set username as an invalid username
-        login(UserModelName, 'username', username, userData).then(res => {
+        login(userData, UserModelName, 'username', username).then(res => {
 
             expect(res).to.have.property('message');
+            expect(res).to.not.have.keys(['id', 'username']);
 
             done();
         }).catch(e => {
@@ -222,20 +226,16 @@ describe('logging in a user with inactive flag set to TRUE', () => {
 
     before(done => {
         userData.isActive = true;  // set isActive Flag to true
-        signup(userData, UserModelName, 'username', userData.username).then(savedUser => {
-            createTempRecord(VerifyModelName, savedUser, 'verify').then(res => {
-                done();
-            }).catch(e => {
-                done(e);
-            })
+        buildAndSave(UserModelName, userData).then(res => {
+            userInstance = {...res};
+            done();
         }).catch(e => {
-            done(e);
-        })
+            console.log(e);
+        });
     });
 
     it('should find a valid user with activated account', done => {
 
-        // console.log(userInstance);
         login(userData, UserModelName, 'username', userData.username).then(res => {
 
             expect(res).to.be.an('object');
@@ -265,10 +265,12 @@ describe('logging in a user with inactive flag set to TRUE', () => {
 });
 
 // Function: isPasswordMatch(payload, userAccount)
-describe('logging in with a valid user password', () => {
+describe('logging in with a valid user password; inactive flag set to true', () => {
 
     before(done => {
-        signupAndCreateTempRecord().then(res => {
+        userData.isActive = true;  // set isActive Flag to true
+        buildAndSave(UserModelName, userData).then(res => {
+            userInstance = {...res};
             done();
         }).catch(e => {
             console.log(e);
@@ -277,7 +279,10 @@ describe('logging in with a valid user password', () => {
 
     it('should be a valid password', done => {
 
+        expect(userData.password).to.not.equal(userInstance.password);
+
         isPasswordMatch(userData, userInstance).then(res => {
+
             expect(res).to.exist;
             expect(res).to.be.a('string');
 
@@ -289,11 +294,13 @@ describe('logging in with a valid user password', () => {
 
 });
 
-// Function: isPasswordMatch(payload, userAccount)
+// // Function: isPasswordMatch(payload, userAccount)
 describe('logging in with an invalid user password', () => {
 
     before(done => {
-        signupAndCreateTempRecord().then(res => {
+        userData.isActive = true;  // set isActive Flag to true
+        buildAndSave(UserModelName, userData).then(res => {
+            userInstance = {...res};
             done();
         }).catch(e => {
             console.log(e);
@@ -317,16 +324,18 @@ describe('logging in with an invalid user password', () => {
 describe('activating a users account by verify record id', () => {
 
     before(done => {
-        signupAndCreateTempRecord().then(res => {
+        userData.isActive = true;  // set isActive Flag to true
+        buildAndSave(UserModelName, userData).then(res => {
+            userInstance = {...res};
             done();
         }).catch(e => {
             console.log(e);
         });
     });
 
-    it('should delete verify record by its id', done => {
+    it('should delete verify record by its id which is the users id', done => {
 
-        verifyRecord(VerifyModelName, 'id', verifyInstance.id).then(res => {
+        verifyRecord(VerifyModelName, 'id', userInstance.id).then(res => {
 
             expect(res).to.equal(1);
             expect(res).to.be.a('number');
@@ -341,15 +350,16 @@ describe('activating a users account by verify record id', () => {
 });
 
 // Function: findModelBy(model, field, value)
-describe('finds a record by email, username or id', () => {
+describe('finds a record by email', () => {
 
-    beforeEach(done => {
+    before(done => {
+        userData.isActive = true;  // set isActive Flag to true
         buildAndSave(UserModelName, userData).then(res => {
             userInstance = {...res};
             done();
         }).catch(e => {
-            done(e);
-        })
+            console.log(e);
+        });
     });
 
 
@@ -367,6 +377,21 @@ describe('finds a record by email, username or id', () => {
 
     });
 
+});
+
+// Function: findModelBy(model, field, value)
+describe('finds a record by username', () => {
+
+    before(done => {
+        userData.isActive = true;  // set isActive Flag to true
+        buildAndSave(UserModelName, userData).then(res => {
+            userInstance = {...res};
+            done();
+        }).catch(e => {
+            console.log(e);
+        });
+    });
+
     it(`should get one user by username`, done => {
         findModelBy(UserModelName, 'username', userData.username).then(res => {
 
@@ -378,6 +403,21 @@ describe('finds a record by email, username or id', () => {
         }).catch(e => {
 
             done(e);
+        });
+    });
+
+});
+
+// Function: findModelBy(model, field, value)
+describe('finds a record by id', () => {
+
+    before(done => {
+        userData.isActive = true;  // set isActive Flag to true
+        buildAndSave(UserModelName, userData).then(res => {
+            userInstance = {...res};
+            done();
+        }).catch(e => {
+            console.log(e);
         });
     });
 
@@ -450,35 +490,36 @@ describe('delete a record by model-name, field, and value', () => {
 
 });
 
-// TODO note ... test passes, but is disabled so that it does not send emails
+// Disabled to prevent emails being sent
 // Function: sendVerificationMail(userId, userEmail)
-describe('sending a verification email to the users email address', () => {
+// describe('sending a verification email to the users email address', () => {
+//
+//     beforeEach(done => {
+//         buildAndSave(UserModelName, userData).then(res => {
+//             userInstance = {...res};
+//             done();
+//         }).catch(e => {
+//             done(e);
+//         })
+//     });
+//
+//     it('should send an email to the user email account with a verification link', done => {
+//
+//         sendVerificationMail(userInstance.id, userInstance.email)
+//             .then(res => {
+//
+//                 expect(res).to.be.an('object');
+//                 expect(res).to.have.any.keys('response', 'messageId', 'envelope', 'accepted');
+//
+//                 done();
+//             }).catch(e => {
+//                 done(e);
+//             });
+//
+//     }).timeout(4000);
+//
+// });
 
-    before(done => {
-        signupAndCreateTempRecord().then(res => {
-            done();
-        }).catch(e => {
-            console.log(e);
-        });
-    });
-
-    it('should send an email to the user email account with a verification link', done => {
-
-        // sendVerificationMail(userInstance.id, userInstance.email)
-        //     .then(res => {
-        //
-        //         expect(res).to.be.an('object');
-        //         expect(res).to.have.any.keys('response', 'messageId', 'envelope', 'accepted');
-        //
-        //         done();
-        //     }).catch(e => {
-        //         done(e);
-        //     })
-        done();
-
-    }).timeout(4000);
-
-});
 
 
 

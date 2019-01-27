@@ -36,6 +36,16 @@ async function findModelBy(model, field, value) {
 }
 
 
+// delete by model-name, field and value
+async function updateOne(modelName, data) {
+    try {
+        return await userRepository.update(modelName, data);
+    } catch (e) {
+
+    }
+}
+
+
 //  login user
 async function login(payload, modelName = 'User', field = 'username', value) {
 
@@ -82,25 +92,6 @@ async function signup(data = null, modelName, field, value) {
 
     } catch (e) {
         return e;
-    }
-
-}
-
-
-// create a temp record to associate
-async function createTempRecord(modelName, data, type = 'Verify') {
-    let model = null;
-
-    switch (type) {
-        case 'Verify':
-            // build and save verify record
-            return await _buildAndSave(modelName, data);
-        case 'Password':
-
-            // TODO create password reset
-            return model;
-        default:
-            return model;
     }
 
 }
@@ -173,32 +164,57 @@ async function _buildAndSave(modelName, data) {
     if (modelName === 'User') {
 
         model = await userRepository.buildModel(modelName, data); // build model
-        model2 = await userRepository.buildModelWithAssociatedId('Verify', 'id', data.id, data);
-
-        await userRepository.save('Verify', model2);
+        // model2 = await userRepository.buildModelWithAssociatedId('Verify', 'id', model.id, model);
 
         // generate & assign token as password
         await bcryptPassword(model).then(hash => {
             model.password = hash;
         });
-        return await userRepository.save(modelName, model);
+
+        model = await userRepository.save(modelName, model);
+        // await userRepository.save('Verify', model2);
+        model2 = await createTempRecord('Verify', model, 'Verify');
+
+        return model;
     }
 
     if (modelName === 'Verify') {
 
         // build model
-        return await userRepository.buildModelWithAssociatedId(modelName, 'id', data.id, data);
+        model2 = await userRepository.buildModelWithAssociatedId(modelName, 'id', data.id, data);
+        model2 = await userRepository.save(modelName, model2);
+        return model2;
     }
 
-    // save user
-    model = await userRepository.save(modelName, model);
+    // // save user
+    // model = await userRepository.save(modelName, model);
 
     return model;
 }
 
 
+// create a temp record to associate
+async function createTempRecord(modelName, data, type = 'Verify') {
+    let model = null;
+
+    switch (type) {
+        case 'Verify':
+            // build and save verify record
+            return await _buildAndSave(modelName, data);
+        case 'Password':
+
+            // TODO create password reset
+            return model;
+        default:
+            return model;
+    }
+
+}
+
+
 
 module.exports = {
+    _buildAndSave,
     createTempRecord,
     deleteBy,
     findModelBy,
@@ -208,5 +224,5 @@ module.exports = {
     signup,
     verifyRecord,
     // resetPassword,
-    // updateUser
+    updateOne
 };

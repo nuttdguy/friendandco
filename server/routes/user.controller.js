@@ -9,9 +9,23 @@ async function activate(req, res, next) {
     let field = 'id';
 
     try {
-        const result = await userService.verifyRecord(modelName, field, value);
-        res.status(200).json(result);
-        next();
+        let result = await userService.verifyRecord(modelName, field, value);
+
+        // TODO move into service layer, write tests
+        if (result === 1) {
+            result = await userService.findModelBy('User', field, value);
+
+            // set user account to active
+            result.isActive = true;
+            await userService.updateOne('User', result);
+
+            res.status(200).json(result);
+            next();
+        } else {
+            res.status(200).json(result);
+            next();
+        }
+
     } catch (e) {
         next(e);
     }
