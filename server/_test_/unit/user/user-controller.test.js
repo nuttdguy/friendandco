@@ -138,7 +138,7 @@ describe('Route: /api/users/signup => when username exists', () => {
     });
 });
 
-describe('Route: /api/users/login => when user + username does not exist', () => {
+describe('Route: /api/users/login => when user w/ username does not exist', () => {
 
     it('should not find a user', done => {
 
@@ -167,7 +167,7 @@ describe('Route: /api/users/login => when user + username does not exist', () =>
 
 });
 
-describe('Route: /api/users/login => when user has an account, but is not active / verified => find by username', () => {
+describe('Route: /api/users/login => when user has an account, but has not verified => logging in by username', () => {
 
     before(done => {
 
@@ -218,7 +218,7 @@ describe('Route: /api/users/login => when user has an account, but is not active
 
 });
 
-describe('Route: /api/users/activate/:userId => when user confirms verification link', () => {
+describe('Route: /api/users/activate/:userId => sets user account to active after confirming verification link', () => {
 
     before(done => {
         chai.request(server)
@@ -240,7 +240,7 @@ describe('Route: /api/users/activate/:userId => when user confirms verification 
             });
     });
 
-    it('should delete verify record', done => {
+    it('should activate user account and delete verification record', done => {
 
         chai.request(server)
             .get('/api/users/activate/'+userInstance.id)
@@ -260,41 +260,73 @@ describe('Route: /api/users/activate/:userId => when user confirms verification 
 
 });
 
+describe('Route: /api/users/login when user account has been verified and is active => by username', () => {
 
-// TODO activate account, then login when account is active
-// describe('Route: /api/users/login find by username and return', () => {
-//
-//     before(done => {
-//         signupUser().then(res => {
-//             done();
-//         });
-//     });
-//
-//     it('should find a user having an active account', done => {
-//
-//         chai.request(server)
-//             .post('/api/users/login')
-//             .send({
-//                 username: userData.username,
-//                 password: userData.password,
-//                 passwordConfirm: userData.passwordConfirm
-//             })
-//             .end( (err, res) => {
-//                 if (err) {
-//                     console.log('/api/users/login =>  ', err);
-//                     done();
-//                 }
-//
-//                 expect(res.status).to.equal(200);
-//                 expect(res.body).to.have.property('message');
-//                 expect(res.body.isActive).to.equal(false);
-//
-//                 responseData = res.body;
-//                 done();
-//
-//             })
-//
-//
-//     });
-//
-// });
+    before(done => {
+        // signup the user
+        chai.request(server)
+            .post('/api/users/signup')
+            .send(userData)
+            .end( (err, res) => {
+                if (err) {
+                    console.log('/api/users/signup ', err);
+                    done();
+                }
+
+                expect(res.status).to.equal(200);
+                expect(res.body.firstName).to.equal(userData.firstName);
+                expect(res.body.lastName).to.equal(userData.lastName);
+                expect(res.body.username).to.equal(userData.username);
+
+                userInstance = res.body;
+
+                // activate the account
+                chai.request(server)
+                    .get('/api/users/activate/'+userInstance.id)
+                    .end( (err, res) => {
+                        if (err) {
+                            console.log(err);
+                            done();
+                        }
+
+                        expect(res.status).to.equal(200);
+                        expect(res.body.isActive).to.equal(true);
+                        expect(res.body).to.have.any.keys(['id', 'username', 'isActive']);
+
+                        done();
+                    });
+
+            });
+
+    });
+
+
+    it('should find a user with an active account and return authToken', done => {
+
+        // login the user
+        chai.request(server)
+            .post('/api/users/login')
+            .send({
+                username: userData.username,
+                password: userData.password,
+                passwordConfirm: userData.passwordConfirm
+            })
+            .end( (err, res) => {
+                if (err) {
+                    console.log('/api/users/login =>  ', err);
+                    done();
+                }
+
+                expect(res.status).to.equal(200);
+                expect(res.body).to.have.property('authToken');
+                expect(res.body).to.have.property('password');
+                expect(res.body.isActive).to.equal(true);
+
+                done();
+
+            })
+
+
+    });
+
+});
