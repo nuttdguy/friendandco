@@ -47,7 +47,16 @@ async function updateOne(modelName, data) {
 
 
 //  login user
-async function login(payload, modelName = 'User', field = 'username', value) {
+async function login(data) {
+    const modelName = 'User';
+    const field = 'username';
+    let value = data.username;
+
+    // if no username is specified, username is email
+    if (data.username === undefined) {
+        data.username = data.email;
+        value = data.username;
+    }
 
     try {
 
@@ -64,7 +73,7 @@ async function login(payload, modelName = 'User', field = 'username', value) {
 
         // account is active, sign auth token
         else if (userAccount.isActive === true )
-            userAccount.authToken = await isPasswordMatch(payload, userAccount);
+            userAccount.authToken = await isPasswordMatch(data, userAccount);
 
         return userAccount;
 
@@ -76,7 +85,17 @@ async function login(payload, modelName = 'User', field = 'username', value) {
 
 
 //  sign-up new user
-async function signup(data = null, modelName, field, value) {
+async function signup(data) {
+    const modelName = 'User';
+    const field = 'username';
+    let value = data.username;
+
+    // if no username is specified, username is email
+    if (data.username === undefined) {
+        data.username = data.email;
+        value = data.username;
+    }
+
 
     try {
         // find the user

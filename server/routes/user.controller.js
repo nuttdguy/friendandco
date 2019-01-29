@@ -46,32 +46,12 @@ async function deleteBy(req, res, next) {
     }
 }
 
-// get user
-// async function getUser(req, res, next) {
-//     const userId = req.params.userId;
-//
-//     try {
-//         const result = await userService.getUser(userId);
-//
-//         if (result !== null) {
-//             return res.status(200).json(result);
-//         }
-//
-//         return res.status(200).json({result: 'profile was not found ...'});
-//     } catch (e) {
-//         next(e);
-//     }
-// }
-
 // login user
 async function login(req, res, next) {
-    const value = req.body.username;
-    let modelName = 'User';
-    let field = 'username'; // TODO add switch between email or username
     let data = req.body;
 
     try {
-        const result = await userService.login(data, modelName, field, value);
+        const result = await userService.login(data);
         res.status(200).json(result);
         next();
     } catch (e) {
@@ -81,13 +61,10 @@ async function login(req, res, next) {
 
 // signup new user
 async function signup(req, res, next) {
-    const value = req.body.username;
-    let modelName = 'User';
-    let field = 'username'; // TODO add switch between email or username
     let data = req.body;
 
     try {
-        const result = await userService.signup(data, modelName, field, value);
+        const result = await userService.signup(data);
         res.status(200).json(result);
         next();
     } catch (e) {
@@ -96,8 +73,7 @@ async function signup(req, res, next) {
 
 }
 
-// TODO forget password recovery
-// //=====|| forget password route
+// reset password
 async function resetPassword(req, res, next) {
     const username = req.body.username;
 
@@ -118,6 +94,22 @@ async function updateUser(req, res, next) {
     }
 }
 
+// get user
+// async function getUser(req, res, next) {
+//     const userId = req.params.userId;
+//
+//     try {
+//         const result = await userService.getUser(userId);
+//
+//         if (result !== null) {
+//             return res.status(200).json(result);
+//         }
+//
+//         return res.status(200).json({result: 'profile was not found ...'});
+//     } catch (e) {
+//         next(e);
+//     }
+// }
 
 console.log('done loading profile routes ...');
 
@@ -132,6 +124,4 @@ module.exports = {
     // getUser,
     login,
     signup,
-    resetPassword,
-    updateUser,
 };

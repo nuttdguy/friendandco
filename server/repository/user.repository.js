@@ -15,7 +15,7 @@ async function deleteBy(model, field, value) {
 
         return deleteQty;
     } catch (e) {
-        return e;
+        return e.errors;
     }
 }
 
@@ -29,7 +29,7 @@ async function deleteByPk(model, id) {
 
         return deleteQty;
     } catch (e) {
-        return e;
+        return e.errors;
     }
 }
 
@@ -42,7 +42,7 @@ async function findByPk(model, id) {
 
         return model !== null ? model.dataValues : null;
     } catch (e) {
-        return e;
+        return e.errors;
     }
 
 }
@@ -51,26 +51,25 @@ async function findByPk(model, id) {
 async function findBy(model, field, value) {
 
     try {
-        console.log(`finding ${model} by ${field} => ${value}`);
+        // console.log(`finding ${model} by ${field} => ${value}`);
         model = await $[model].findOne({where: {[field]: value }});
 
         return model !== null ? model.dataValues : null;
     } catch (e) {
-        return e;
+        return e.errors;
     }
 
 }
 
 // save build type
 async function save(model, data) {
-
     try {
         console.log(`saving ${model} with ${data.id}`);
         data = await data.save();
 
         return data.dataValues;
     } catch (e) {
-        return e;
+        return e.errors;
     }
 
 }
@@ -79,20 +78,22 @@ async function save(model, data) {
 async function update(model, data) {
 
     try {
-        console.log('updating model: ... ', model);
+        // console.log('updating model: ... ', model);
         return await $[model].update(
             {...data},
             {where: {id: data.id}});
 
     } catch (e) {
-        return e;
+        return e.errors;
     }
 
 }
 
 // build model objects
 function buildModel(model, data) {
-    return $[model].build({...data});
+    console.log(`building type: ${model}`);
+    // return $[model].build({...data});
+    return $[model].build({...data, id: data.id});
 }
 
 // build model with id of another object

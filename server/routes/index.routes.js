@@ -125,11 +125,11 @@ module.exports = (app) => {
     const api_user = '/api/users';
     app.post(api_user+'/signup', userController.signup);
     app.post(api_user+'/login', userController.login);
-    app.post(api_user+'/reset-password', userController.resetPassword); // TODO finish
+    // app.post(api_user+'/reset-password', userController.resetPassword); // TODO finish
     app.get(api_user+'/activate/:userId', userController.activate); // TODO create + link profile to profile
     // app.get(api_user+'/:userId', userController.getUser);
     app.delete(api_user+'/:userId', userController.deleteBy);
-    app.put(api_user+'/update', userController.updateUser);
+    // app.put(api_user+'/update', userController.updateUser);
 
 
     /*****

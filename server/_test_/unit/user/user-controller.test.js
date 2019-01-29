@@ -15,8 +15,9 @@ const VerifyModelName = 'Verify';
 let userInstance = null;
 let verifyInstance = null;
 
+// omit username, username is assigned as email within route
 const userData = {
-    username: 'pygnasak-controller',
+    // username: 'pygnasak-controller',
     firstName: 'phouthalang-controller',
     lastName: 'phouthalang-controller',
     email: 'pygnasak@yahoo.com',
@@ -68,7 +69,6 @@ afterEach(done => {
  *******************************************/
 
 
-
 describe('Route: /api/users/signup => when username does not exist', () => {
 
     it('should signup and create the user', done => {
@@ -83,9 +83,9 @@ describe('Route: /api/users/signup => when username does not exist', () => {
                 }
 
                 expect(res.status).to.equal(200);
-                expect(res.body.firstName).to.equal(userData.firstName);
-                expect(res.body.lastName).to.equal(userData.lastName);
-                expect(res.body.username).to.equal(userData.username);
+                expect(res.body).to.not.have.property('errors');
+                expect(res.body).to.have.property('username');
+                expect(res.body).to.have.property('email');
 
                 userInstance = res.body;
                 done();
@@ -108,9 +108,9 @@ describe('Route: /api/users/signup => when username exists', () => {
                 }
 
                 expect(res.status).to.equal(200);
-                expect(res.body.firstName).to.equal(userData.firstName);
-                expect(res.body.lastName).to.equal(userData.lastName);
-                expect(res.body.username).to.equal(userData.username);
+                expect(res.body).to.not.have.property('errors');
+                expect(res.body).to.have.property('username');
+                expect(res.body).to.have.property('email');
 
                 userInstance = res.body;
                 done();
@@ -130,7 +130,10 @@ describe('Route: /api/users/signup => when username exists', () => {
 
                 expect(res.status).to.equal(200);
                 expect(res.body).to.have.property('message');
-                expect(res.body.username).to.equal(userData.username);
+
+                expect(res.body).to.not.have.property('errors');
+                expect(res.body).to.have.property('username');
+                expect(res.body).to.have.property('email');
 
                 userInstance = res.body;
                 done();
@@ -155,10 +158,11 @@ describe('Route: /api/users/login => when user w/ username does not exist', () =
                     done();
                 }
 
-                console.log(res.body);
                 expect(res.status).to.equal(200);
                 expect(res.body).to.have.property('message');
+                expect(res.body).to.not.have.property('errors');
                 expect(res.body).to.not.have.property('username');
+                expect(res.body).to.not.have.property('email');
 
                 done();
 
@@ -181,9 +185,9 @@ describe('Route: /api/users/login => when user has an account, but has not verif
                 }
 
                 expect(res.status).to.equal(200);
-                expect(res.body.firstName).to.equal(userData.firstName);
-                expect(res.body.lastName).to.equal(userData.lastName);
-                expect(res.body.username).to.equal(userData.username);
+                expect(res.body).to.not.have.property('errors');
+                expect(res.body).to.have.property('username');
+                expect(res.body).to.have.property('email');
 
                 userInstance = res.body;
                 done();
@@ -196,6 +200,7 @@ describe('Route: /api/users/login => when user has an account, but has not verif
             .post('/api/users/login')
             .send({
                 username: userData.username,
+                email: userData.email,
                 password: userData.password,
                 passwordConfirm: userData.passwordConfirm
             })
@@ -208,6 +213,9 @@ describe('Route: /api/users/login => when user has an account, but has not verif
                 expect(res.status).to.equal(200);
                 expect(res.body).to.have.property('message');
                 expect(res.body.isActive).to.equal(false);
+                expect(res.body).to.not.have.property('errors');
+                expect(res.body).to.have.property('username');
+                expect(res.body).to.have.property('email');
 
                 done();
 
@@ -231,9 +239,9 @@ describe('Route: /api/users/activate/:userId => sets user account to active afte
                 }
 
                 expect(res.status).to.equal(200);
-                expect(res.body.firstName).to.equal(userData.firstName);
-                expect(res.body.lastName).to.equal(userData.lastName);
-                expect(res.body.username).to.equal(userData.username);
+                expect(res.body).to.not.have.property('errors');
+                expect(res.body).to.have.property('username');
+                expect(res.body).to.have.property('email');
 
                 userInstance = res.body;
                 done();
@@ -253,6 +261,9 @@ describe('Route: /api/users/activate/:userId => sets user account to active afte
                 expect(res.status).to.equal(200);
                 expect(res.body.isActive).to.equal(true);
                 expect(res.body).to.have.any.keys(['id', 'username', 'isActive']);
+                expect(res.body).to.not.have.property('errors');
+                expect(res.body).to.have.property('username');
+                expect(res.body).to.have.property('email');
 
                 done();
             });
@@ -274,9 +285,9 @@ describe('Route: /api/users/login when user account has been verified and is act
                 }
 
                 expect(res.status).to.equal(200);
-                expect(res.body.firstName).to.equal(userData.firstName);
-                expect(res.body.lastName).to.equal(userData.lastName);
-                expect(res.body.username).to.equal(userData.username);
+                expect(res.body).to.not.have.property('errors');
+                expect(res.body).to.have.property('username');
+                expect(res.body).to.have.property('email');
 
                 userInstance = res.body;
 
@@ -292,6 +303,9 @@ describe('Route: /api/users/login when user account has been verified and is act
                         expect(res.status).to.equal(200);
                         expect(res.body.isActive).to.equal(true);
                         expect(res.body).to.have.any.keys(['id', 'username', 'isActive']);
+                        expect(res.body).to.not.have.property('errors');
+                        expect(res.body).to.have.property('username');
+                        expect(res.body).to.have.property('email');
 
                         done();
                     });
@@ -308,6 +322,7 @@ describe('Route: /api/users/login when user account has been verified and is act
             .post('/api/users/login')
             .send({
                 username: userData.username,
+                email: userData.email,
                 password: userData.password,
                 passwordConfirm: userData.passwordConfirm
             })
@@ -321,6 +336,10 @@ describe('Route: /api/users/login when user account has been verified and is act
                 expect(res.body).to.have.property('authToken');
                 expect(res.body).to.have.property('password');
                 expect(res.body.isActive).to.equal(true);
+
+                expect(res.body).to.not.have.property('errors');
+                expect(res.body).to.have.property('username');
+                expect(res.body).to.have.property('email');
 
                 done();
 
