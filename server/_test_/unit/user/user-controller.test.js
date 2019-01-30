@@ -259,11 +259,8 @@ describe('Route: /api/users/activate/:userId => sets user account to active afte
                 }
 
                 expect(res.status).to.equal(200);
-                expect(res.body.isActive).to.equal(true);
-                expect(res.body).to.have.any.keys(['id', 'username', 'isActive']);
                 expect(res.body).to.not.have.property('errors');
-                expect(res.body).to.have.property('username');
-                expect(res.body).to.have.property('email');
+                expect(res.body).to.contain(1);
 
                 done();
             });
@@ -301,11 +298,8 @@ describe('Route: /api/users/login when user account has been verified and is act
                         }
 
                         expect(res.status).to.equal(200);
-                        expect(res.body.isActive).to.equal(true);
-                        expect(res.body).to.have.any.keys(['id', 'username', 'isActive']);
                         expect(res.body).to.not.have.property('errors');
-                        expect(res.body).to.have.property('username');
-                        expect(res.body).to.have.property('email');
+                        expect(res.body).to.contain(1);
 
                         done();
                     });

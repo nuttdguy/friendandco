@@ -167,7 +167,20 @@ async function sendVerificationMail(userId, userEmail) {
 async function verifyRecord(modelName = 'Verify', field = 'id', value) {
 
     try {
-        return userRepository.deleteBy(modelName, field, value)
+        let result = await userRepository.deleteBy(modelName, field, value);
+
+        console.log(result);
+        if (result === 1) {
+            result = await userRepository.findBy('User', field, value);
+
+            // set user account to active
+            result.isActive = true;
+            result = await userRepository.update('User', result);
+
+        }
+
+        return result;
+
     } catch (e) {
         return e;
     }
