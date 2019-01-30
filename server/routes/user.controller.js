@@ -1,9 +1,6 @@
 // import services
 const { userService } = require('../services/index.service');
 
-// TODO ... move validators into controller
-const shapeInput = require('../validation/shapeInput.utils');
-
 // activate user account
 async function activate(req, res, next) {
     const value = req.params.id;
@@ -34,7 +31,7 @@ async function deleteBy(req, res, next) {
 
 // login user
 async function login(req, res, next) {
-    const validate = require('../validation/login');
+    const validate = require('../validation/login.validate');
     let data = req.body;
     let isValid = null;
 
@@ -115,9 +112,6 @@ async function updateUser(req, res, next) {
 //         next(e);
 //     }
 // }
-
-console.log('done loading profile routes ...');
-
 
 
 // EXPORT REFERENCES

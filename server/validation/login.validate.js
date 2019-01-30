@@ -1,8 +1,11 @@
 const Validator = require('validator');
 const isEmpty = require('./is-empty');
+const shape = require('./shape.input');
 
 const validateLoginInput = (data) => {
     let errors = {};
+
+    data = shape(data);
 
     if (data.username === undefined) {
         data.username = data.email;
