@@ -28,7 +28,7 @@
 //     username: 'pygnasak-service',
 //     firstName: 'phouthalang-service',
 //     lastName: 'phouthalang-service',
-//     email: 'pygnasak@yahoo.com',
+//     email: 'enrollmi@gmail.com',
 //     password: 'password-test--service',
 //     isActive: false
 // };
