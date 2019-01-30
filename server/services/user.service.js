@@ -1,19 +1,5 @@
-// LOAD MODULES
-// const { sendMail } = require('./mail/mail.service');
-// const { bcryptCompare, signJwt, bcryptPassword } = require('./crypt/crypt.service');
-
-
 // LOAD REPOSITORY
 const { userRepository } = require('../repository/index.repository');
-
-
-// LOAD VALIDATORS
-///////////////////////////////
-
-// TODO ... move validators into controller
-const validateRegisterInput = require('../validation/register.validate');
-const validateLoginInput = require('../validation/login');
-const shapeInput = require('../validation/shapeInput.utils');
 
 
 // delete by model-name, field and value
@@ -26,7 +12,6 @@ async function deleteBy(value, field = 'id', modelName = 'User') {
     }
 }
 
-
 // find by model and field
 async function findModelBy(model, field, value) {
     try {
@@ -36,7 +21,6 @@ async function findModelBy(model, field, value) {
     }
 }
 
-
 // delete by model-name, field and value
 async function updateOne(modelName, data) {
     try {
@@ -45,7 +29,6 @@ async function updateOne(modelName, data) {
 
     }
 }
-
 
 //  login user
 async function login(data) {
@@ -84,7 +67,6 @@ async function login(data) {
 
 }
 
-
 //  sign-up new user
 async function signup(data) {
     const modelName = 'User';
@@ -115,7 +97,6 @@ async function signup(data) {
 
 }
 
-
 // compare password with inputted password
 async function isPasswordMatch(payload, userAccount) {
     const { bcryptCompare, signJwt } = require('./crypt/crypt.service');
@@ -131,7 +112,6 @@ async function isPasswordMatch(payload, userAccount) {
     return token;
 
 }
-
 
 // create and send a verification email
 async function sendVerificationMail(userId, userEmail) {
@@ -161,7 +141,6 @@ async function sendVerificationMail(userId, userEmail) {
 
 }
 
-
 // activate user account when url is clicked by user
 async function verifyRecord(value) {
     let modelName = 'Verify';
@@ -187,7 +166,6 @@ async function verifyRecord(value) {
     }
 
 }
-
 
 // build and save user
 async function buildAndSave(modelName, data) {
@@ -215,7 +193,6 @@ async function buildAndSave(modelName, data) {
     }
 
 }
-
 
 // create a temp record to associate
 async function createTempRecord(modelName, data, type = 'Verify') {

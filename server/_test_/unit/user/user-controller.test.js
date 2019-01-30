@@ -20,7 +20,7 @@ const userData = {
     // username: 'pygnasak-controller',
     firstName: 'phouthalang-controller',
     lastName: 'phouthalang-controller',
-    email: 'pygnasak@yahoo.com',
+    email: 'enrollmi@gmail.com',
     password: 'password-test--controller',
     passwordConfirm: 'password-test--controller',
     isActive: false
@@ -32,11 +32,9 @@ let server = null;
 
 before(done => {
 
-    db = require('../../../db/db.connection');
-    db.sequelize.sync({force: true}).then(res => {
+    connectDb().then(() => {
         console.log('done connecting to database ... ', '00003');
         done();
-
     }).catch(err => {
         console.log('error trying to connect to db ... ', err);
         done(err);
@@ -51,16 +49,19 @@ beforeEach(done => {
 
 afterEach(done => {
 
-    deleteInstances().then(()=> {
+    deleteInstances().then(() => {
+        userInstance = null;
+        verifyInstance = null;
+        server.close();
         done();
     });
+
 });
 
-after(done => {
-
-    server.close();
-    done();
-});
+async function connectDb() {
+    db = require('../../../db/db.connection');
+    await db.sequelize.sync({force: true});
+}
 
 async function deleteInstances() {
     if (userInstance !== null) {
@@ -70,16 +71,12 @@ async function deleteInstances() {
 }
 
 async function saveAndValidate() {
-    userInstance = null;
-    verifyInstance = null;
     userInstance = await signup(userData);
     await verifyRecord(userInstance.id);
     return userInstance;
 }
 
 async function signupUser() {
-    userInstance = null;
-    verifyInstance = null;
     userInstance = await signup(userData);
     return userInstance;
 }
@@ -97,7 +94,7 @@ describe('Post: /api/users/signup => when username does not exist', () => {
         chai.request(server)
             .post('/api/users/signup')
             .send(userData)
-            .end( (err, res) => {
+            .end((err, res) => {
                 if (err) {
                     console.log('/api/users/signup ', err);
                     done();
@@ -123,7 +120,7 @@ describe('Post: /api/users/signup => when username exists', () => {
             chai.request(server)
                 .post('/api/users/signup')
                 .send(userData)
-                .end( (err, res) => {
+                .end((err, res) => {
                     if (err) {
                         console.log('/api/users/signup ', err);
                         done();
@@ -152,8 +149,8 @@ describe('Get: /api/users/activate/:id => sets user account to active after conf
         signupUser().then((user) => {
 
             chai.request(server)
-                .get('/api/users/activate/'+user.id)
-                .end( (err, res) => {
+                .get('/api/users/activate/' + user.id)
+                .end((err, res) => {
                     if (err) {
                         console.log(err);
                         done();
@@ -168,7 +165,7 @@ describe('Get: /api/users/activate/:id => sets user account to active after conf
                     done();
                 });
 
-        }).catch(e=> {
+        }).catch(e => {
             done(e);
         })
     });
@@ -186,7 +183,7 @@ describe('Post: /api/users/login => when user w/ username does not exist', () =>
                 password: userData.password,
                 passwordConfirm: userData.passwordConfirm
             })
-            .end( (err, res) => {
+            .end((err, res) => {
                 if (err) {
                     console.log('/api/users/login =>  ', err);
                     done();
@@ -219,7 +216,7 @@ describe('Post: /api/users/login => when user has an account, but has not verifi
                     password: userData.password,
                     passwordConfirm: userData.passwordConfirm
                 })
-                .end( (err, res) => {
+                .end((err, res) => {
                     if (err) {
                         console.log('/api/users/login =>  ', err);
                         done();
@@ -282,30 +279,29 @@ describe('Post: /api/users/login when user account has been verified and is acti
     });
 });
 
+describe('Delete: /api/users/:id delete a user by id', () => {
 
-// describe('Delete: /api/users/:id delete a user by id', () => {
-//
-//     it('should delete the user by its id', done => {
-//
-//         saveAndValidate().then((user) => {
-//
-//             // login the user
-//             chai.request(server)
-//                 .delete('/api/users/' + user.id)
-//                 .end((err, res) => {
-//                     if (err) {
-//                         console.log('/api/users/login =>  ', err);
-//                         done();
-//                     }
-//
-//                     expect(res.status).to.equal(200);
-//                     expect(res.body).to.not.have.property('errors');
-//                     expect(res.body).to.equal(1);
-//
-//                     done();
-//
-//                 })
-//         });
-//     });
-//
-// });
+    it('should delete the user by its id', done => {
+
+        saveAndValidate().then((user) => {
+
+            // login the user
+            chai.request(server)
+                .delete('/api/users/' + user.id)
+                .end((err, res) => {
+                    if (err) {
+                        console.log('/api/users/login =>  ', err);
+                        done();
+                    }
+
+                    expect(res.status).to.equal(200);
+                    expect(res.body).to.not.have.property('errors');
+                    expect(res.body).to.equal(1);
+
+                    done();
+
+                })
+        });
+    });
+
+});

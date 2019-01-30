@@ -6,6 +6,9 @@ module.exports = function validateRegisterInput(data) {
     let errors = {};
     const min = 2, max = 30, passMin = 6, passMax = 30;
 
+    if (data.username === undefined) {
+        data.username = data.email;
+    }
 
     data.username = !isEmpty(data.username) ? data.username : '';
     data.firstName = !isEmpty(data.firstName) ? data.firstName : '';

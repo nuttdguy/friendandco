@@ -1,6 +1,8 @@
 // import services
 const { userService } = require('../services/index.service');
 
+// TODO ... move validators into controller
+const shapeInput = require('../validation/shapeInput.utils');
 
 // activate user account
 async function activate(req, res, next) {
@@ -32,12 +34,22 @@ async function deleteBy(req, res, next) {
 
 // login user
 async function login(req, res, next) {
+    const validate = require('../validation/login');
     let data = req.body;
+    let isValid = null;
 
     try {
-        const result = await userService.login(data);
-        res.status(200).json(result);
-        next();
+
+        isValid = validate(data);
+        if (isValid.isValid) {
+            const result = await userService.login(data);
+            res.status(200).json(result);
+            next();
+        } else {
+            res.status(200).json(isValid.errors);
+            next();
+        }
+
     } catch (e) {
         next(e);
     }
@@ -45,12 +57,21 @@ async function login(req, res, next) {
 
 // signup new user
 async function signup(req, res, next) {
+    const validate = require('../validation/signup.validate');
     let data = req.body;
+    let isValid = null;
 
     try {
-        const result = await userService.signup(data);
-        res.status(200).json(result);
-        next();
+
+        isValid = validate(data);
+        if (isValid) {
+            const result = await userService.signup(data);
+            res.status(200).json(result);
+            next();
+        } else {
+            res.status(200).json(isValid.errors);
+            next();
+        }
     } catch (e) {
         next(e);
     }

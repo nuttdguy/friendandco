@@ -4,12 +4,13 @@ const isEmpty = require('./is-empty');
 const validateLoginInput = (data) => {
     let errors = {};
 
+    if (data.username === undefined) {
+        data.username = data.email;
+        data.email = data.username;
+    }
+
     data.username = !isEmpty(data.username) ? data.username : '';
     data.password = !isEmpty(data.password) ? data.password : '';
-
-    // if (!Validator.isEmail(data.username)) {
-    //     errors.email = 'Email is invalid';
-    // }
 
     if (Validator.isEmpty(data.username)) {
         errors.username = 'Username field is required';
