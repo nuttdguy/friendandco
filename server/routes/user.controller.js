@@ -5,11 +5,9 @@ const { userService } = require('../services/index.service');
 // activate user account
 async function activate(req, res, next) {
     const value = req.params.userId;
-    let modelName = 'Verify';
-    let field = 'id';
 
     try {
-        let result = await userService.verifyRecord(modelName, field, value);
+        let result = await userService.verifyRecord(value);
 
         res.status(200).json(result);
         next();

@@ -164,7 +164,9 @@ async function sendVerificationMail(userId, userEmail) {
 
 // TODO use this function within the controller layer
 // activate user account after they click on url
-async function verifyRecord(modelName = 'Verify', field = 'id', value) {
+async function verifyRecord(value) {
+    let modelName = 'Verify';
+    let field = 'id';
 
     try {
         let result = await userRepository.deleteBy(modelName, field, value);
