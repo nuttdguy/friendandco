@@ -58,8 +58,8 @@ before(done => {
 afterEach(done => {
 
     if (userInstance !== null) {
-        deleteBy(UserModelName, 'id', userInstance.id);
-        deleteBy(VerifyModelName, 'id', userInstance.id);
+        deleteBy(userInstance.id, 'id' ,UserModelName);
+        deleteBy(userInstance.id, 'id' ,VerifyModelName);
         userInstance = null;
         verifyInstance = null;
     } else if (verifyInstance !== null) {
@@ -168,7 +168,7 @@ describe('creating a temporary record that associates a user id that record', ()
 
 });
 
-// Function: login(modelName, data)
+// Function: login(data)
 describe('logging in a user with inactive flag set to FALSE', () => {
 
     before(done => {
@@ -215,7 +215,7 @@ describe('logging in a user with inactive flag set to FALSE', () => {
 
 });
 
-// Function: login(modelName, data)
+// Function: login(data)
 describe('logging in a user with inactive flag set to TRUE', () => {
 
     before(done => {
@@ -230,7 +230,7 @@ describe('logging in a user with inactive flag set to TRUE', () => {
 
     it('should find a valid user with activated account', done => {
 
-        login(userData, UserModelName, 'username', userData.username).then(res => {
+        login(userData).then(res => {
 
             expect(res).to.be.an('object');
             expect(res).to.not.have.property('errors');
@@ -245,7 +245,7 @@ describe('logging in a user with inactive flag set to TRUE', () => {
 
     it('should sign token of a user with an isActive flag set to TRUE', done => {
 
-        login(userData, UserModelName, 'username', userData.username).then(res => {
+        login(userData).then(res => {
 
             expect(res).to.be.an('object');
             expect(res).to.not.have.property('errors');
@@ -450,7 +450,7 @@ describe('delete a record by model-name, field, and value', () => {
 
     it('should delete by username', done => {
 
-        deleteBy(UserModelName, 'username', userData.username).then(res => {
+        deleteBy(userInstance.id).then(res => {
 
             expect(res).to.be.a('number');
             expect(res).to.equal(1);
@@ -463,7 +463,7 @@ describe('delete a record by model-name, field, and value', () => {
 
     it('should delete by email', done => {
 
-        deleteBy(UserModelName, 'email', userData.email).then(res => {
+        deleteBy(userInstance.email, 'email').then(res => {
 
             expect(res).to.be.a('number');
             expect(res).to.equal(1);
@@ -476,7 +476,7 @@ describe('delete a record by model-name, field, and value', () => {
 
     it('should delete by id', done => {
 
-        deleteBy(UserModelName, 'id', userInstance.id).then(res => {
+        deleteBy(userInstance.id ).then(res => {
 
             expect(res).to.be.a('number');
             expect(res).to.equal(1);

@@ -51,7 +51,7 @@ async function findByPk(model, id) {
 async function findBy(model, field, value) {
 
     try {
-        // console.log(`finding ${model} by ${field} => ${value}`);
+        console.log(`finding ${model} by ${field} => ${value}`);
         model = await $[model].findOne({where: {[field]: value }});
 
         return model !== null ? model.dataValues : null;

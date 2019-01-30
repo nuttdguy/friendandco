@@ -128,7 +128,7 @@ module.exports = (app) => {
     // app.post(api_user+'/reset-password', userController.resetPassword); // TODO finish
     app.get(api_user+'/activate/:userId', userController.activate); // TODO create + link profile to profile
     // app.get(api_user+'/:userId', userController.getUser);
-    app.delete(api_user+'/:userId', userController.deleteBy);
+    app.delete(api_user+'/:id', userController.deleteBy);
     // app.put(api_user+'/update', userController.updateUser);
 
 

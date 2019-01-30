@@ -17,7 +17,8 @@ const shapeInput = require('../validation/shapeInput.utils');
 
 
 // delete by model-name, field and value
-async function deleteBy(modelName, field, value) {
+async function deleteBy(value, field = 'id', modelName = 'User') {
+
     try {
         return await userRepository.deleteBy(modelName, field, value);
     } catch (e) {
@@ -243,7 +244,5 @@ module.exports = {
     login,
     sendVerificationMail,
     signup,
-    verifyRecord,
-    // resetPassword,
-    updateOne
+    verifyRecord
 };

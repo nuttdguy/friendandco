@@ -137,6 +137,8 @@ function formatSQLErrorMessages(err) {
             errorMessage = `${i + 1}: Message = ${message} // type: ${type} // ${path}::${value}`;
             errorMessages.push(errorMessage);
         });
+    } else {
+        errorMessages.push(err);
     }
 }
 

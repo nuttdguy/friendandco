@@ -52,8 +52,8 @@ beforeEach(done => {
 afterEach(done => {
 
     if (userInstance !== null) {
-        deleteBy(UserModelName, 'id', userInstance.id);
-        deleteBy(VerifyModelName, 'id', userInstance.id);
+        deleteBy(userInstance.id, 'id', 'User');
+        deleteBy(userInstance.id, 'id', 'Verify');
         userInstance = null;
         verifyInstance = null;
     }
@@ -141,6 +141,48 @@ describe('Route: /api/users/signup => when username exists', () => {
     });
 });
 
+describe('Route: /api/users/activate/:id => sets user account to active after confirming verification link', () => {
+
+    before(done => {
+        chai.request(server)
+            .post('/api/users/signup')
+            .send(userData)
+            .end( (err, res) => {
+                if (err) {
+                    console.log('/api/users/signup ', err);
+                    done();
+                }
+
+                expect(res.status).to.equal(200);
+                expect(res.body).to.not.have.property('errors');
+                expect(res.body).to.have.property('username');
+                expect(res.body).to.have.property('email');
+
+                userInstance = res.body;
+                done();
+            });
+    });
+
+    it('should activate user account and delete verification record', done => {
+
+        chai.request(server)
+            .get('/api/users/activate/'+userInstance.id)
+            .end( (err, res) => {
+                if (err) {
+                    console.log(err);
+                    done();
+                }
+
+                expect(res.status).to.equal(200);
+                expect(res.body).to.not.have.property('errors');
+                expect(res.body).to.contain(1);
+
+                done();
+            });
+    });
+
+});
+
 describe('Route: /api/users/login => when user w/ username does not exist', () => {
 
     it('should not find a user', done => {
@@ -222,48 +264,6 @@ describe('Route: /api/users/login => when user has an account, but has not verif
             })
 
 
-    });
-
-});
-
-describe('Route: /api/users/activate/:userId => sets user account to active after confirming verification link', () => {
-
-    before(done => {
-        chai.request(server)
-            .post('/api/users/signup')
-            .send(userData)
-            .end( (err, res) => {
-                if (err) {
-                    console.log('/api/users/signup ', err);
-                    done();
-                }
-
-                expect(res.status).to.equal(200);
-                expect(res.body).to.not.have.property('errors');
-                expect(res.body).to.have.property('username');
-                expect(res.body).to.have.property('email');
-
-                userInstance = res.body;
-                done();
-            });
-    });
-
-    it('should activate user account and delete verification record', done => {
-
-        chai.request(server)
-            .get('/api/users/activate/'+userInstance.id)
-            .end( (err, res) => {
-                if (err) {
-                    console.log(err);
-                    done();
-                }
-
-                expect(res.status).to.equal(200);
-                expect(res.body).to.not.have.property('errors');
-                expect(res.body).to.contain(1);
-
-                done();
-            });
     });
 
 });

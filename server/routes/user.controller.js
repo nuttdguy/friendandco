@@ -19,12 +19,10 @@ async function activate(req, res, next) {
 
 // delete user
 async function deleteBy(req, res, next) {
-    const id = req.params.userId;
-    let modelName = 'User';
-    let field = 'id';
+    const value = req.params.id;
 
     try {
-        const result = await userService.deleteBy(modelName, field, id);
+        const result = await userService.deleteBy(value);
         res.status(200).json(result);
         next();
     } catch (e) {
