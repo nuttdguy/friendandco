@@ -15,7 +15,6 @@ app.use(bodyParser.json());
 // Passport: initialize instance
 app.use(passport.initialize());
 
-
 // Passport: configure
 // require('./config/passport')(passport);
 
