@@ -3,7 +3,7 @@ const expect = chai.expect;
 
 const {
     createTempRecord,
-    _buildAndSave,
+    buildAndSave,
     deleteBy,
     findModelBy,
     isPasswordMatch,
@@ -80,8 +80,8 @@ function build(ModelName, modelData) {
 }
 
 // build and save user
-function buildAndSave(ModelName, modelData) {
-    return _buildAndSave(ModelName, modelData);
+function buildAndSaveTestInstance(ModelName, modelData) {
+    return buildAndSave(ModelName, modelData);
 }
 
 
@@ -118,7 +118,7 @@ describe('signing up user with a username', () => {
 describe('signing up user with a username, but user is already registered', () => {
 
     before(done => {
-        buildAndSave(UserModelName, userData).then(res => {
+        buildAndSaveTestInstance(UserModelName, userData).then(res => {
             userInstance = {...res};
             done();
         }).catch(e => {
@@ -172,7 +172,7 @@ describe('creating a temporary record that associates a user id that record', ()
 describe('logging in a user with inactive flag set to FALSE', () => {
 
     before(done => {
-        buildAndSave(UserModelName, userData).then(res => {
+        buildAndSaveTestInstance(UserModelName, userData).then(res => {
             userInstance = {...res};
             done();
         }).catch(e => {
@@ -220,7 +220,7 @@ describe('logging in a user with inactive flag set to TRUE', () => {
 
     before(done => {
         userData.isActive = true;  // set isActive Flag to true
-        buildAndSave(UserModelName, userData).then(res => {
+        buildAndSaveTestInstance(UserModelName, userData).then(res => {
             userInstance = {...res};
             done();
         }).catch(e => {
@@ -265,7 +265,7 @@ describe('logging in with a valid user password; inactive flag set to true', () 
 
     before(done => {
         userData.isActive = true;  // set isActive Flag to true
-        buildAndSave(UserModelName, userData).then(res => {
+        buildAndSaveTestInstance(UserModelName, userData).then(res => {
             userInstance = {...res};
             done();
         }).catch(e => {
@@ -296,7 +296,7 @@ describe('logging in with an invalid user password', () => {
 
     before(done => {
         userData.isActive = true;  // set isActive Flag to true
-        buildAndSave(UserModelName, userData).then(res => {
+        buildAndSaveTestInstance(UserModelName, userData).then(res => {
             userInstance = {...res};
             done();
         }).catch(e => {
@@ -323,7 +323,7 @@ describe('activating a users account by verify record id', () => {
 
     before(done => {
         userData.isActive = true;  // set isActive Flag to true
-        buildAndSave(UserModelName, userData).then(res => {
+        buildAndSaveTestInstance(UserModelName, userData).then(res => {
             userInstance = {...res};
             done();
         }).catch(e => {
@@ -353,7 +353,7 @@ describe('finds a record by email', () => {
 
     before(done => {
         userData.isActive = true;  // set isActive Flag to true
-        buildAndSave(UserModelName, userData).then(res => {
+        buildAndSaveTestInstance(UserModelName, userData).then(res => {
             userInstance = {...res};
             done();
         }).catch(e => {
@@ -383,7 +383,7 @@ describe('finds a record by username', () => {
 
     before(done => {
         userData.isActive = true;  // set isActive Flag to true
-        buildAndSave(UserModelName, userData).then(res => {
+        buildAndSaveTestInstance(UserModelName, userData).then(res => {
             userInstance = {...res};
             done();
         }).catch(e => {
@@ -412,7 +412,7 @@ describe('finds a record by id', () => {
 
     before(done => {
         userData.isActive = true;  // set isActive Flag to true
-        buildAndSave(UserModelName, userData).then(res => {
+        buildAndSaveTestInstance(UserModelName, userData).then(res => {
             userInstance = {...res};
             done();
         }).catch(e => {
@@ -440,7 +440,7 @@ describe('finds a record by id', () => {
 describe('delete a record by model-name, field, and value', () => {
 
     beforeEach(done => {
-        buildAndSave(UserModelName, userData).then(res => {
+        buildAndSaveTestInstance(UserModelName, userData).then(res => {
             userInstance = {...res};
             done();
         }).catch(e => {

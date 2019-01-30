@@ -107,7 +107,7 @@ async function signup(data) {
 
         // if not found, create and save the new user
         else if (user === null)
-            return _buildAndSave(modelName, data);
+            return buildAndSave(modelName, data);
 
     } catch (e) {
         return e;
@@ -162,8 +162,7 @@ async function sendVerificationMail(userId, userEmail) {
 }
 
 
-// TODO use this function within the controller layer
-// activate user account after they click on url
+// activate user account when url is clicked by user
 async function verifyRecord(value) {
     let modelName = 'Verify';
     let field = 'id';
@@ -171,7 +170,6 @@ async function verifyRecord(value) {
     try {
         let result = await userRepository.deleteBy(modelName, field, value);
 
-        console.log(result);
         if (result === 1) {
             result = await userRepository.findBy('User', field, value);
 
@@ -191,39 +189,30 @@ async function verifyRecord(value) {
 
 
 // build and save user
-async function _buildAndSave(modelName, data) {
+async function buildAndSave(modelName, data) {
     const { bcryptPassword } = require('./crypt/crypt.service');
-    let model, model2 = null;
 
-    if (modelName === 'User') {
+    try {
 
-        model = await userRepository.buildModel(modelName, data); // build model
-        // model2 = await userRepository.buildModelWithAssociatedId('Verify', 'id', model.id, model);
+        // build and save user
+        let model = await userRepository.buildModel(modelName, data); // build model
 
         // generate & assign token as password
         await bcryptPassword(model).then(hash => {
             model.password = hash;
         });
-
         model = await userRepository.save(modelName, model);
-        // await userRepository.save('Verify', model2);
-        model2 = await createTempRecord('Verify', model, 'Verify');
+
+        // build and save verify record
+        let model2 = await userRepository.buildModelWithAssociatedId('Verify', 'id', model.id, model);
+        await userRepository.save('Verify', model2);
 
         return model;
+
+    } catch (e) {
+        return e;
     }
 
-    if (modelName === 'Verify') {
-
-        // build model
-        model2 = await userRepository.buildModelWithAssociatedId(modelName, 'id', data.id, data);
-        model2 = await userRepository.save(modelName, model2);
-        return model2;
-    }
-
-    // // save user
-    // model = await userRepository.save(modelName, model);
-
-    return model;
 }
 
 
@@ -233,12 +222,10 @@ async function createTempRecord(modelName, data, type = 'Verify') {
 
     switch (type) {
         case 'Verify':
-            // build and save verify record
-            return await _buildAndSave(modelName, data);
-        case 'Password':
-
-            // TODO create password reset
+            model = await userRepository.buildModelWithAssociatedId(modelName, 'id', data.id, data);
+            model = await userRepository.save(modelName, model);
             return model;
+
         default:
             return model;
     }
@@ -248,7 +235,7 @@ async function createTempRecord(modelName, data, type = 'Verify') {
 
 
 module.exports = {
-    _buildAndSave,
+    buildAndSave,
     createTempRecord,
     deleteBy,
     findModelBy,
