@@ -204,7 +204,7 @@ async function buildAndSave(modelName, data) {
         model = await userRepository.save(modelName, model);
 
         // build and save verify record
-        let model2 = await userRepository.buildModelWithAssociatedId('Verify', 'id', model.id, model);
+        let model2 = await userRepository.buildRelationType('Verify', 'id', model.id, model);
         await userRepository.save('Verify', model2);
 
         return model;
@@ -222,7 +222,7 @@ async function createTempRecord(modelName, data, type = 'Verify') {
 
     switch (type) {
         case 'Verify':
-            model = await userRepository.buildModelWithAssociatedId(modelName, 'id', data.id, data);
+            model = await userRepository.buildRelationType(modelName, 'id', data.id, data);
             model = await userRepository.save(modelName, model);
             return model;
 

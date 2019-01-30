@@ -5,7 +5,7 @@ const expect = chai.expect;
 const {
 
     buildModel,
-    buildJoinModel,
+    buildJoinType,
     deleteByPk,
     deleteBy,
     findByPk,
@@ -99,7 +99,7 @@ beforeEach(done => {
     expect(domainRecord).to.be.instanceof(Model.DomainType);
     instance3 = domainRecord;
 
-    const profile = buildJoinModel(
+    const profile = buildJoinType(
         'Profile',
         'userId',
         instance1.id,

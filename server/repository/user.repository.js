@@ -97,12 +97,12 @@ function buildModel(model, data) {
 }
 
 // build model with id of another object
-function buildModelWithAssociatedId(model, idFieldName, id, data = {}) {
+function buildRelationType(model, idFieldName, id, data = {}) {
     return $[model].build({...data, [idFieldName]: id});
 }
 
 // build join model
-function buildJoinModel(model, field1, value1, field2 = null, value2 = null,) {
+function buildJoinType(model, field1, value1, field2 = null, value2 = null,) {
     console.log('building profile using user id: ... ' + value1 + ' and domain id: ... ' + value2);
     // if (field2 || value2) {}
 
@@ -117,9 +117,9 @@ function buildJoinModel(model, field1, value1, field2 = null, value2 = null,) {
 
 module.exports = {
 
-    buildModelWithAssociatedId,
+    buildRelationType,
     buildModel,
-    buildJoinModel,
+    buildJoinType,
 
     deleteBy,
     deleteByPk,
