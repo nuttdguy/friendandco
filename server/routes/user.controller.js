@@ -4,7 +4,7 @@ const { userService } = require('../services/index.service');
 
 // activate user account
 async function activate(req, res, next) {
-    const value = req.params.userId;
+    const value = req.params.id;
 
     try {
         let result = await userService.verifyRecord(value);

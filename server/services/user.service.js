@@ -97,7 +97,6 @@ async function signup(data) {
         value = data.username;
     }
 
-
     try {
         // find the user
         const user = await userRepository.findBy(modelName, field, value);
@@ -169,14 +168,15 @@ async function verifyRecord(value) {
     let field = 'id';
 
     try {
+        // being created
         let result = await userRepository.deleteBy(modelName, field, value);
 
         if (result === 1) {
-            result = await userRepository.findBy('User', field, value);
+            let user = await userRepository.findBy('User', field, value);
 
             // set user account to active
-            result.isActive = true;
-            result = await userRepository.update('User', result);
+            user.isActive = true;
+            await userRepository.update('User', user);
 
         }
 

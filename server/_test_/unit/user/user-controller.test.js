@@ -4,7 +4,7 @@ const expect = chai.expect;
 chai.use(chaiHttp);
 
 
-const {deleteBy} = require('../../../services/user.service');
+const {deleteBy, signup, verifyRecord} = require('../../../services/user.service');
 
 /*******************************************
  SETUP
@@ -51,25 +51,46 @@ beforeEach(done => {
 
 afterEach(done => {
 
-    if (userInstance !== null) {
-        deleteBy(userInstance.id, 'id', 'User');
-        deleteBy(userInstance.id, 'id', 'Verify');
-        userInstance = null;
-        verifyInstance = null;
-    }
+    deleteInstances().then(()=> {
+        done();
+    });
+});
+
+after(done => {
 
     server.close();
     done();
 });
 
+async function deleteInstances() {
+    if (userInstance !== null) {
+        await deleteBy(userInstance.id, 'id', 'User');
+        await deleteBy(userInstance.id, 'id', 'Verify');
+    }
+}
 
+async function saveAndValidate() {
+    userInstance = null;
+    verifyInstance = null;
+    userInstance = await signup(userData);
+    await verifyRecord(userInstance.id);
+    return userInstance;
+}
+
+async function signupUser() {
+    userInstance = null;
+    verifyInstance = null;
+    userInstance = await signup(userData);
+    return userInstance;
+}
 
 /*******************************************
  TESTS
  *******************************************/
 
+// TODO NOTE => deleting a temp record is done through route, so model name is not important
 
-describe('Route: /api/users/signup => when username does not exist', () => {
+describe('Post: /api/users/signup => when username does not exist', () => {
 
     it('should signup and create the user', done => {
 
@@ -87,103 +108,74 @@ describe('Route: /api/users/signup => when username does not exist', () => {
                 expect(res.body).to.have.property('username');
                 expect(res.body).to.have.property('email');
 
-                userInstance = res.body;
                 done();
             });
     });
 
 });
 
-describe('Route: /api/users/signup => when username exists', () => {
-
-    before(done => {
-
-        chai.request(server)
-            .post('/api/users/signup')
-            .send(userData)
-            .end( (err, res) => {
-                if (err) {
-                    console.log('/api/users/signup ', err);
-                    done();
-                }
-
-                expect(res.status).to.equal(200);
-                expect(res.body).to.not.have.property('errors');
-                expect(res.body).to.have.property('username');
-                expect(res.body).to.have.property('email');
-
-                userInstance = res.body;
-                done();
-            });
-    });
+describe('Post: /api/users/signup => when username exists', () => {
 
     it('should return user and add message to object if user has already signed up', done => {
 
-        chai.request(server)
-            .post('/api/users/signup')
-            .send(userData)
-            .end( (err, res) => {
-                if (err) {
-                    console.log('/api/users/signup ', err);
+        signupUser().then((user) => {
+
+            chai.request(server)
+                .post('/api/users/signup')
+                .send(userData)
+                .end( (err, res) => {
+                    if (err) {
+                        console.log('/api/users/signup ', err);
+                        done();
+                    }
+
+                    expect(res.status).to.equal(200);
+                    expect(res.body).to.have.property('message');
+
+                    expect(res.body).to.not.have.property('errors');
+                    expect(res.body).to.have.property('username');
+                    expect(res.body).to.have.property('email');
+
                     done();
-                }
+                });
+        }).catch(e => {
+            done(e);
+        });
 
-                expect(res.status).to.equal(200);
-                expect(res.body).to.have.property('message');
-
-                expect(res.body).to.not.have.property('errors');
-                expect(res.body).to.have.property('username');
-                expect(res.body).to.have.property('email');
-
-                userInstance = res.body;
-                done();
-            });
     });
 });
 
-describe('Route: /api/users/activate/:id => sets user account to active after confirming verification link', () => {
-
-    before(done => {
-        chai.request(server)
-            .post('/api/users/signup')
-            .send(userData)
-            .end( (err, res) => {
-                if (err) {
-                    console.log('/api/users/signup ', err);
-                    done();
-                }
-
-                expect(res.status).to.equal(200);
-                expect(res.body).to.not.have.property('errors');
-                expect(res.body).to.have.property('username');
-                expect(res.body).to.have.property('email');
-
-                userInstance = res.body;
-                done();
-            });
-    });
+describe('Get: /api/users/activate/:id => sets user account to active after confirming verification link', () => {
 
     it('should activate user account and delete verification record', done => {
 
-        chai.request(server)
-            .get('/api/users/activate/'+userInstance.id)
-            .end( (err, res) => {
-                if (err) {
-                    console.log(err);
+        signupUser().then((user) => {
+
+            chai.request(server)
+                .get('/api/users/activate/'+user.id)
+                .end( (err, res) => {
+                    if (err) {
+                        console.log(err);
+                        done();
+                    }
+
+
+                    console.log(res.body);
+                    expect(res.status).to.equal(200);
+                    expect(res.body).to.not.have.property('errors');
+                    expect(res.body).to.equal(1);
+
                     done();
-                }
+                });
 
-                expect(res.status).to.equal(200);
-                expect(res.body).to.not.have.property('errors');
-                expect(res.body).to.contain(1);
-
-                done();
-            });
+        }).catch(e=> {
+            done(e);
+        })
     });
 
 });
 
-describe('Route: /api/users/login => when user w/ username does not exist', () => {
+describe('Post: /api/users/login => when user w/ username does not exist', () => {
 
     it('should not find a user', done => {
 
@@ -213,133 +205,107 @@ describe('Route: /api/users/login => when user w/ username does not exist', () =
 
 });
 
-describe('Route: /api/users/login => when user has an account, but has not verified => logging in by username', () => {
-
-    before(done => {
-
-        chai.request(server)
-            .post('/api/users/signup')
-            .send(userData)
-            .end( (err, res) => {
-                if (err) {
-                    console.log('/api/users/signup ', err);
-                    done();
-                }
-
-                expect(res.status).to.equal(200);
-                expect(res.body).to.not.have.property('errors');
-                expect(res.body).to.have.property('username');
-                expect(res.body).to.have.property('email');
-
-                userInstance = res.body;
-                done();
-            });
-    });
+describe('Post: /api/users/login => when user has an account, but has not verified => logging in by username', () => {
 
     it('should find a user having an active account', done => {
 
-        chai.request(server)
-            .post('/api/users/login')
-            .send({
-                username: userData.username,
-                email: userData.email,
-                password: userData.password,
-                passwordConfirm: userData.passwordConfirm
-            })
-            .end( (err, res) => {
-                if (err) {
-                    console.log('/api/users/login =>  ', err);
+        signupUser().then((user) => {
+
+            chai.request(server)
+                .post('/api/users/login')
+                .send({
+                    username: user.username,
+                    email: user.email,
+                    password: userData.password,
+                    passwordConfirm: userData.passwordConfirm
+                })
+                .end( (err, res) => {
+                    if (err) {
+                        console.log('/api/users/login =>  ', err);
+                        done();
+                    }
+
+                    expect(res.status).to.equal(200);
+                    expect(res.body).to.have.property('message');
+                    expect(res.body.isActive).to.equal(false);
+                    expect(res.body).to.not.have.property('errors');
+                    expect(res.body).to.have.property('username');
+                    expect(res.body).to.have.property('email');
+
                     done();
-                }
 
-                expect(res.status).to.equal(200);
-                expect(res.body).to.have.property('message');
-                expect(res.body.isActive).to.equal(false);
-                expect(res.body).to.not.have.property('errors');
-                expect(res.body).to.have.property('username');
-                expect(res.body).to.have.property('email');
-
-                done();
-
-            })
-
+                })
+        }).catch(e => {
+            done(e);
+        })
 
     });
 
 });
 
-describe('Route: /api/users/login when user account has been verified and is active => by username', () => {
-
-    before(done => {
-        // signup the user
-        chai.request(server)
-            .post('/api/users/signup')
-            .send(userData)
-            .end( (err, res) => {
-                if (err) {
-                    console.log('/api/users/signup ', err);
-                    done();
-                }
-
-                expect(res.status).to.equal(200);
-                expect(res.body).to.not.have.property('errors');
-                expect(res.body).to.have.property('username');
-                expect(res.body).to.have.property('email');
-
-                userInstance = res.body;
-
-                // activate the account
-                chai.request(server)
-                    .get('/api/users/activate/'+userInstance.id)
-                    .end( (err, res) => {
-                        if (err) {
-                            console.log(err);
-                            done();
-                        }
-
-                        expect(res.status).to.equal(200);
-                        expect(res.body).to.not.have.property('errors');
-                        expect(res.body).to.contain(1);
-
-                        done();
-                    });
-
-            });
-
-    });
-
+describe('Post: /api/users/login when user account has been verified and is active => by username', () => {
 
     it('should find a user with an active account and return authToken', done => {
 
-        // login the user
-        chai.request(server)
-            .post('/api/users/login')
-            .send({
-                username: userData.username,
-                email: userData.email,
-                password: userData.password,
-                passwordConfirm: userData.passwordConfirm
-            })
-            .end( (err, res) => {
-                if (err) {
-                    console.log('/api/users/login =>  ', err);
+        saveAndValidate().then((user) => {
+            // login the user
+            chai.request(server)
+                .post('/api/users/login')
+                .send({
+                    username: user.username,
+                    email: user.email,
+                    password: userData.password,
+                    passwordConfirm: userData.passwordConfirm
+                })
+                .end((err, res) => {
+                    if (err) {
+                        console.log('/api/users/login =>  ', err);
+                        done();
+                    }
+
+                    expect(res.status).to.equal(200);
+                    expect(res.body).to.have.property('authToken');
+                    expect(res.body).to.have.property('password');
+                    expect(res.body.isActive).to.equal(true);
+
+                    expect(res.body).to.not.have.property('errors');
+                    expect(res.body).to.have.property('username');
+                    expect(res.body).to.have.property('email');
+
                     done();
-                }
 
-                expect(res.status).to.equal(200);
-                expect(res.body).to.have.property('authToken');
-                expect(res.body).to.have.property('password');
-                expect(res.body.isActive).to.equal(true);
+                })
 
-                expect(res.body).to.not.have.property('errors');
-                expect(res.body).to.have.property('username');
-                expect(res.body).to.have.property('email');
-
-                done();
-
-            })
-
-
+        }).catch(e => {
+            done(e);
+        })
     });
-
 });
+
+
+// describe('Delete: /api/users/:id delete a user by id', () => {
+//
+//     it('should delete the user by its id', done => {
+//
+//         saveAndValidate().then((user) => {
+//
+//             // login the user
+//             chai.request(server)
+//                 .delete('/api/users/' + user.id)
+//                 .end((err, res) => {
+//                     if (err) {
+//                         console.log('/api/users/login =>  ', err);
+//                         done();
+//                     }
+//
+//                     expect(res.status).to.equal(200);
+//                     expect(res.body).to.not.have.property('errors');
+//                     expect(res.body).to.equal(1);
+//
+//                     done();
+//
+//                 })
+//         });
+//     });
+//
+// });
