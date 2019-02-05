@@ -20,7 +20,7 @@ const userData = {
     // username: 'pygnasak-controller',
     firstName: 'phouthalang-controller',
     lastName: 'phouthalang-controller',
-    email: 'enrollmi@gmail.com',
+    email: 'enrollmii@gmail.com',
     password: 'password-test--controller',
     passwordConfirm: 'password-test--controller',
     isActive: false
@@ -142,14 +142,14 @@ describe('Post: /api/users/signup => when username exists', () => {
     });
 });
 
-describe('Get: /api/users/activate/:id => sets user account to active after confirming verification link', () => {
+describe('Get: /api/verify/:id => sets user account to active after confirming verification link', () => {
 
     it('should activate user account and delete verification record', done => {
 
         signupUser().then((user) => {
 
             chai.request(server)
-                .get('/api/users/activate/' + user.id)
+                .get('/api/verify/' + user.id)
                 .end((err, res) => {
                     if (err) {
                         console.log(err);

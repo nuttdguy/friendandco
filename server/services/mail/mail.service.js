@@ -23,14 +23,13 @@ module.exports = class Mail  {
     }
 
     // set the html template
-    setHtml(userId, html = null) {
-
-        if (html !== null) {
+    setHtml(verifyUrl, html = null) {
+        if (html === null) {
             this.html = `
              <html>
                  <body>
                     <p>Please confirm your registration by clicking this link</p> <br>
-                    <a href="http://localhost:5000/api/auth/user/verify/${userId}">
+                    <a href="${verifyUrl}">
                     Click to confirm your account</a>
                 </body>
             </html>`

@@ -4,6 +4,9 @@ Allow individuals to create meaningful connections with others by doing activiti
 ## *Todo steps (backend)*
 
 - [ ] User and Authentication domain
+    - [ ] signup
+    - [ ] login
+    - [ ] activate
     - [ ] jwt auth
     - [ ] google auth
 - [ ] Activity domain
@@ -40,7 +43,7 @@ Allow individuals to create meaningful connections with others by doing activiti
 
 - [ ] Routes
     - [ ] Authentication
-    - [  ] Activity
+    - [ ] Activity
     - [ ] Profile
     
 - [ ] Views

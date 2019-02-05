@@ -114,10 +114,11 @@ async function isPasswordMatch(payload, userAccount) {
 }
 
 // create and send a verification email
-async function sendVerificationMail(userId, userEmail) {
+async function sendVerificationMail(userId, userEmail, host) {
     const Mail = require('../services/mail/mail.service');
     const KEYS = require('../config/keys');
     const mail = new Mail();
+    const verifyUrl = `http://${host}/api/verify/${userId}`;
 
     // create transporter
     await mail.createTransporter(
@@ -129,7 +130,7 @@ async function sendVerificationMail(userId, userEmail) {
         KEYS.REJECT_UNAUTHORIZED);
 
     // set html
-    await mail.setHtml(userId);
+    await mail.setHtml(verifyUrl);
 
     // set email options
     await mail.setEmailOptions(

@@ -4,6 +4,8 @@ const { userService } = require('../services/index.service');
 // activate user account
 async function activate(req, res, next) {
     const value = req.params.id;
+    // console.log(req);
+    console.log(req.headers.host);
 
     try {
         let result = await userService.verifyRecord(value);
@@ -63,6 +65,15 @@ async function signup(req, res, next) {
         isValid = validate(data);
         if (isValid) {
             const result = await userService.signup(data);
+            console.log(result);
+
+            if (result !== null) {
+                try {
+                    await userService.sendVerificationMail(result.id, result.email, req.headers.host)
+                } catch (e) {
+                    console.log(e);
+                }
+            }
             res.status(200).json(result);
             next();
         } else {
@@ -96,23 +107,6 @@ async function updateUser(req, res, next) {
     }
 }
 
-// get user
-// async function getUser(req, res, next) {
-//     const userId = req.params.userId;
-//
-//     try {
-//         const result = await userService.getUser(userId);
-//
-//         if (result !== null) {
-//             return res.status(200).json(result);
-//         }
-//
-//         return res.status(200).json({result: 'profile was not found ...'});
-//     } catch (e) {
-//         next(e);
-//     }
-// }
-
 
 // EXPORT REFERENCES
 ///////////////////////////////
@@ -120,7 +114,6 @@ async function updateUser(req, res, next) {
 module.exports = {
     activate,
     deleteBy,
-    // getUser,
     login,
     signup,
 };
